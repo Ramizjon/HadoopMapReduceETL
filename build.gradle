@@ -1,0 +1,67 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+group = "com.ramiz.testone"
+version = '1.0'
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+
+//create a single Jar with all dependencies
+task fatJar(type: Jar) {
+	manifest {
+        attributes 'Implementation-Title': 'Gradle Jar File Example',  
+        	'Implementation-Version': version,
+        	'Main-Class': 'logic.Main'
+    }
+    baseName = project.name + '-all'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+}
+
+jar {
+    manifest {
+        attributes 'Implementation-Title': 'Gradle Jar File Example',
+                   'Implementation-Version': version,
+                   'Main-Class': 'logic.Main'
+    }
+}
+
+//Get dependencies from Maven central repository
+repositories {
+    mavenCentral()
+    jcenter()
+    maven {
+        url "https://repository.cloudera.com/artifactory/cloudera-repos/"
+    }
+}
+
+//Project dependencies
+dependencies {
+	compile 'ch.qos.logback:logback-classic:1.1.2'
+    compile 'org.apache.hadoop:hadoop-client:2.0.0-mr1-cdh4.0.1'
+    compile 'org.apache.hbase:hbase:0.94.0'
+    compile 'org.apache.hbase:hbase-client:0.96.0-hadoop2'
+    compile 'com.twitter:parquet-hadoop:1.0.0'
+	compile 'junit:junit:4.8.2'
+    compile 'com.twitter:parquet-tools:1.4.3'
+    compile 'org.projectlombok:lombok:1.16.6'
+    compile 'org.apache.oozie:oozie-client:4.1.0'
+    compile 'eu.appsatori:gradle-fatjar-plugin:0.3'
+}
+
+eclipse {
+     //Ensure Eclipse build output appears in build directory
+    classpath {
+        defaultOutputDir = file("${buildDir}/eclipse-classes")
+    }
+}
+
+Experience in development of Java applications for Android platform, and using Hadoop API. Familiar with Cloudera Distributed Hadoop and it's main modules. Knowledge of MySQL database management system, HBase and Hive. Understanding main concepts of MapReduce framework. Ability to learn new technologies and work in team.Good spoken english.
+
+Маришева Олександра - Місце: 024, СТУД СК09693694
+Абадулла Раміз - Місце: 043, СТУД СК08990116
+
+
+
+
+
+
