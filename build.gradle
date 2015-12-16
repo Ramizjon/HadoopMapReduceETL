@@ -10,11 +10,19 @@ task fatJar(type: Jar) {
 	manifest {
         attributes 'Implementation-Title': 'Gradle Jar File Example',  
         	'Implementation-Version': version,
-        	'Main-Class': 'WordCount'
+        	'Main-Class': 'logic.Main'
     }
     baseName = project.name + '-all'
     from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
     with jar
+}
+
+jar {
+    manifest {
+        attributes 'Implementation-Title': 'Gradle Jar File Example',
+                   'Implementation-Version': version,
+                   'Main-Class': 'logic.Main'
+    }
 }
 
 //Get dependencies from Maven central repository
@@ -31,7 +39,8 @@ dependencies {
 	compile 'ch.qos.logback:logback-classic:1.1.2'
     compile 'org.apache.hadoop:hadoop-client:2.0.0-mr1-cdh4.0.1'
     compile 'com.twitter:parquet-hadoop:1.0.0'
-	testCompile "junit:junit:4.8.2"
+	compile 'junit:junit:4.8.2'
+    compile 'com.twitter:parquet-tools:1.4.3'
     //classpath 'eu.appsatori:gradle-fatjar-plugin:0.3'
 }
 eclipse {
