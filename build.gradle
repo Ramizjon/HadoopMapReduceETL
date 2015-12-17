@@ -41,6 +41,7 @@ dependencies {
     compile 'com.twitter:parquet-hadoop:1.0.0'
 	compile 'junit:junit:4.8.2'
     compile 'com.twitter:parquet-tools:1.4.3'
+    compile 'org.projectlombok:lombok:1.16.6'
     //classpath 'eu.appsatori:gradle-fatjar-plugin:0.3'
 }
 eclipse {

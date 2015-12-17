@@ -1,8 +1,10 @@
-package logic;
+package experimental;
 import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.io.Resources;
+
+import domain.User;
 
 import java.io.File;
 import java.io.PrintWriter;
@@ -49,7 +51,7 @@ public class ParquetProcessor {
 		int userId = group.getInteger(0, 0);
 		Boolean operation = group.getGroup(1, 0).getGroup(0, 0).getBoolean(0, 0);
 	    String segment = group.getGroup(1, 0).getGroup(0, 0).getString(1, 0);
-    	return new User(userId, new SimpleEntry<Boolean, String>(operation, segment));
+    	return new User(userId, segment);
 	}
 	
 	public LinkedList<User> readParquetFile (String filePath) throws Exception{
