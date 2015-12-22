@@ -1,10 +1,14 @@
 *.zip
- **/classes/
- **/*.class
- **/*.yml
- **/*.gitkeep
- **/resources
- **/target
+**/classes/
+**/*.class
+**/*.yml
+**/*.gitkeep
+**/resources
+**/target
+**/.gradle
+build
+.project
+.settings
   
  #Eclipse Core
  .project

@@ -64,7 +64,6 @@ public class UserModInputFormatTest extends FileInputFormat<Text, Text> {
                 return false;
             }
 
-            // This is where you should implement your custom logic.
             Text line = lineRecordReader.getCurrentValue();
             String str = line.toString();
             String[] arr = str.split("\\t");

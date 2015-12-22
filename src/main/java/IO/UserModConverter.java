@@ -26,7 +26,6 @@ class UserModConverter extends GroupConverter {
       } else {
         converters[i] = new UserModConverter(this, i, type.asGroupType());
       }
-
     }
   }
 

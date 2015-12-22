@@ -32,11 +32,4 @@ public class UserModReadSupport extends ReadSupport<UserModCommand> {
 			parquet.hadoop.api.ReadSupport.ReadContext readContext) {
 			return new UserModRecordConverter(readContext.getRequestedSchema());
 	}
-
-	  /*public RecordMaterializer<UserModCommand> prepareForRead (Configuration configuration,
-	      Map<String, String> keyValueMetaData, MessageType fileSchema,
-	      parquet.hadoop.api.ReadSupport.ReadContext readContext) {
-		  return new GroupRecordConverter(readContext.getRequestedSchema());
-	  }*/
-
-	}
+}
