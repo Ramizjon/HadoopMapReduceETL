@@ -34,6 +34,7 @@ public class UserRepository {
 	public void checkForBulk(){
 		if (userCounter==BUFFER_SIZE){
 			this.addUsersToHbase();
+			cachedList.clear();
 			userCounter = 0;
 		}
 	}
@@ -43,7 +44,7 @@ public class UserRepository {
 		System.out.println(this.cachedList);
 	}
 	
-	//TODO implement adding to real Hbase table
+	//TODO implement adding to real HBase table
 	public void addUsersToHbase (){}
 	
 	//TODO implement remove from HBase

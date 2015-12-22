@@ -24,6 +24,9 @@ import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 import org.apache.hadoop.record.Record;
 import org.apache.hadoop.util.Tool;
 
+import IO.UserModInputFormat;
+import IO.UserModInputFormatTest;
+
 import com.sun.net.ssl.internal.www.protocol.https.Handler;
 
 import dataTO.UserModCommand;
@@ -42,8 +45,8 @@ import parquet.tools.read.SimpleRecord;
 import parquet.tools.read.SimpleRecordMaterializer;
 
 public class Main{
-	public static class ParquetMapper extends Mapper<UserModCommand, NullWritable, NullWritable, NullWritable> {
-	    public void map(LongWritable key, UserModCommand value, Context context) throws IOException, InterruptedException {
+	public static class ParquetMapper extends Mapper<NullWritable, UserModCommand, NullWritable, NullWritable> {
+	    public void map(NullWritable key, UserModCommand value, Context context) throws IOException, InterruptedException {
 	    	OperationHandler handler = new OperationHandler();
 	    	handler.performOperationByType(value);
 	    	UserRepository.getInstance().print();//debug
@@ -62,7 +65,7 @@ public class Main{
 	        
 	    job.setMapperClass(ParquetMapper.class);
 	    
-	    job.setInputFormatClass(ParquetInputFormat.class);
+	    job.setInputFormatClass(UserModInputFormat.class);
 	    job.setOutputFormatClass(TextOutputFormat.class);
 	    
 	    FileInputFormat.addInputPath(job, new Path(args[0]));

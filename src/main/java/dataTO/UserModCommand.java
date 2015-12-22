@@ -13,7 +13,7 @@ public class UserModCommand {
 		this.segment = segment;
 	}
 	
-	public UserModCommand(){
+	public UserModCommand(GroupType schema){
 		
 	}
 	

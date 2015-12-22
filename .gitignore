@@ -1,0 +1,10 @@
+*.zip
+ **/classes/
+ **/*.class
+ **/*.yml
+ **/*.gitkeep
+ **/resources
+ **/target
+  
+ #Eclipse Core
+ .project
