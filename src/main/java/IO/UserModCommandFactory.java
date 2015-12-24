@@ -12,7 +12,7 @@ public class UserModCommandFactory {
 	}
 	
 	public UserModCommand newUserModCommand(){
-		return new UserModCommand(schema);
+		return new UserModCommand();
 	}
 	
 }

@@ -1,12 +1,13 @@
 package logic;
-
-
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import org.apache.log4j.Logger;
+import org.apache.log4j.Priority;
+import org.apache.commons.logging.impl.Log4JLogger;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.Path;
@@ -23,9 +24,12 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 import org.apache.hadoop.record.Record;
 import org.apache.hadoop.util.Tool;
+import org.hsqldb.persist.Log;
+import org.junit.experimental.theories.Theories;
 
 import IO.UserModInputFormat;
-import IO.UserModInputFormatTest;
+import IO_CSV.CustomCsvInputFormat;
+import IO_CSV.UserModInputFormatTest;
 
 import com.sun.net.ssl.internal.www.protocol.https.Handler;
 
@@ -45,27 +49,23 @@ import parquet.tools.read.SimpleRecord;
 import parquet.tools.read.SimpleRecordMaterializer;
 
 public class Main{
-	public static class ParquetMapper extends Mapper<NullWritable, UserModCommand, NullWritable, NullWritable> {
-	    public void map(NullWritable key, UserModCommand value, Context context) throws IOException, InterruptedException {
-	    	OperationHandler handler = new OperationHandler();
-	    	handler.performOperationByType(value);
-	    	UserRepository.getInstance().print();//debug
-	    	//System.out.println(value.toString());
-	    }
-	 }
+	
 	
 	public static void main(String[] args) throws Exception {
 		Configuration conf = new Configuration();
     
-		Job job = new Job(conf, "wordcount");
+		Job job = new Job(conf, "parquetreader");
 		job.setJarByClass(Main.class);
 		
-	    job.setOutputKeyClass(Text.class);
-	    job.setOutputValueClass(IntWritable.class);
+		job.setMapOutputKeyClass(NullWritable.class);
+		job.setMapOutputValueClass(Text.class);
+		
+	    job.setOutputKeyClass(NullWritable.class);
+	    job.setOutputValueClass(Text.class);
 	        
 	    job.setMapperClass(ParquetMapper.class);
 	    
-	    job.setInputFormatClass(UserModInputFormat.class);
+	    job.setInputFormatClass(UserModInputFormatTest.class);
 	    job.setOutputFormatClass(TextOutputFormat.class);
 	    
 	    FileInputFormat.addInputPath(job, new Path(args[0]));
@@ -73,6 +73,4 @@ public class Main{
 	        
 	    job.waitForCompletion(true);
 	}
-
-
 }

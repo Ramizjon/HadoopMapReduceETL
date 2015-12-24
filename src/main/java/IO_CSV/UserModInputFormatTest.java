@@ -1,5 +1,6 @@
-package IO;
+package IO_CSV;
 
+import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.InputSplit;
 import org.apache.hadoop.mapreduce.RecordReader;
@@ -7,21 +8,23 @@ import org.apache.hadoop.mapreduce.TaskAttemptContext;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.LineRecordReader;
 
+import dataTO.UserModCommand;
 import parquet.hadoop.example.ExampleInputFormat;
 
 import java.io.IOException;
 
 
-public class UserModInputFormatTest extends FileInputFormat<Text, Text> {
-    public RecordReader<Text, Text> createRecordReader(InputSplit split, TaskAttemptContext context) throws IOException, InterruptedException {
+public class UserModInputFormatTest extends FileInputFormat<NullWritable, UserModCommand> {
+	
+    public RecordReader<NullWritable, UserModCommand> createRecordReader(InputSplit split, TaskAttemptContext context) throws IOException, InterruptedException {
         return new UserModInputFormatTestClass();
         
     }
 
-    public class UserModInputFormatTestClass extends RecordReader<Text, Text> {
+    public class UserModInputFormatTestClass extends RecordReader<NullWritable, UserModCommand> {
         private LineRecordReader lineRecordReader = null;
         private Text key = null;
-        private Text value = null;
+        private UserModCommand value = null;
 
         @Override
         public void close() throws IOException {
@@ -34,12 +37,12 @@ public class UserModInputFormatTest extends FileInputFormat<Text, Text> {
         }
 
         @Override
-        public Text getCurrentKey() throws IOException, InterruptedException {
-            return key;
+        public NullWritable getCurrentKey() throws IOException, InterruptedException {
+            return null;
         }
 
         @Override
-        public Text getCurrentValue() throws IOException, InterruptedException {
+        public UserModCommand getCurrentValue() throws IOException, InterruptedException {
             return value;
         }
 
@@ -66,10 +69,10 @@ public class UserModInputFormatTest extends FileInputFormat<Text, Text> {
 
             Text line = lineRecordReader.getCurrentValue();
             String str = line.toString();
-            String[] arr = str.split("\\t");
+            String[] arr = str.split(",");
 
-            key = new Text(arr[1]);
-            value = new Text(arr[4]);
+            key = null;
+            value = new UserModCommand(Integer.parseInt(arr[0]), arr[1], arr[2]);
 
             return true;
         }

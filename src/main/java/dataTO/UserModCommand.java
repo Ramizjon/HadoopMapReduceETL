@@ -13,8 +13,7 @@ public class UserModCommand {
 		this.segment = segment;
 	}
 	
-	public UserModCommand(GroupType schema){
-		
+	public UserModCommand(){
 	}
 	
 	public int getUserId() {
