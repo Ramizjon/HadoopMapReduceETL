@@ -28,7 +28,6 @@ import org.hsqldb.persist.Log;
 import org.junit.experimental.theories.Theories;
 
 import IO.UserModInputFormat;
-import IO_CSV.CustomCsvInputFormat;
 import IO_CSV.UserModInputFormatTest;
 
 import com.sun.net.ssl.internal.www.protocol.https.Handler;
