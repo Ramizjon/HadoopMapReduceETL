@@ -1,15 +1,16 @@
 package domain;
 import java.util.AbstractMap.SimpleEntry;
+import java.util.LinkedList;
 import java.util.Map;
 
 public class User {
 	int userId;
-	String segment;
+	LinkedList<String> segments;
 	
-	public User(int userId, String segment) {
+	public User(int userId, LinkedList<String> segments) {
 		super();
 		this.userId = userId;
-		this.segment = segment;
+		this.segments = segments;
 	}
 	
 	public int getUserId() {
@@ -19,11 +20,11 @@ public class User {
 		this.userId = userId;
 	}
 
-	public String getSegment() {
-		return segment;
+	public LinkedList<String> getSegments() {
+		return segments;
 	}
 
-	public void setSegment(String segment) {
-		this.segment = segment;
+	public void setSegments(LinkedList<String> segment) {
+		this.segments = segment;
 	}
 }

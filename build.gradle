@@ -47,10 +47,11 @@ dependencies {
     compile 'org.apache.oozie:oozie-client:4.1.0'
     compile 'eu.appsatori:gradle-fatjar-plugin:0.3'
 }
+
+
 eclipse {
      //Ensure Eclipse build output appears in build directory
     classpath {
         defaultOutputDir = file("${buildDir}/eclipse-classes")
     }
 }
-

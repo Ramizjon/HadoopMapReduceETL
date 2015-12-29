@@ -12,6 +12,7 @@ import dataTO.UserModCommand;
 import parquet.hadoop.example.ExampleInputFormat;
 
 import java.io.IOException;
+import java.util.LinkedList;
 
 
 public class UserModInputFormatTest extends FileInputFormat<NullWritable, UserModCommand> {
@@ -71,8 +72,12 @@ public class UserModInputFormatTest extends FileInputFormat<NullWritable, UserMo
             String str = line.toString();
             String[] arr = str.split(",");
 
+            LinkedList<String> segmentsList = new LinkedList<String>();
+            for (int i = 2; i < arr.length; i++){
+            	segmentsList.add(arr[i]);
+            }
             key = null;
-            value = new UserModCommand(Integer.parseInt(arr[0]), arr[1], arr[2]);
+            value = new UserModCommand(Integer.parseInt(arr[0]), arr[1], segmentsList);
 
             return true;
         }

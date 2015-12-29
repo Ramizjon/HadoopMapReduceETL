@@ -1,16 +1,18 @@
 package dataTO;
 
+import java.util.LinkedList;
+
 import parquet.schema.GroupType;
 
 public class UserModCommand {
 	int userId;
 	String command;
-	String segment;
+	LinkedList<String> segments;
 	
-	public UserModCommand(int userId, String command, String segment) {
+	public UserModCommand(int userId, String command, LinkedList<String> segments) {
 		this.userId = userId;
 		this.command = command;
-		this.segment = segment;
+		this.segments = segments;
 	}
 	
 	public UserModCommand(){
@@ -28,10 +30,14 @@ public class UserModCommand {
 	public void setCommand(String command) {
 		this.command = command;
 	}
-	public String getSegment() {
-		return segment;
+	public LinkedList<String> getSegments() {
+		return segments;
 	}
-	public void setSegment(String segment) {
-		this.segment = segment;
+	public void setSegments(LinkedList<String> segments) {
+		this.segments = segments;
+	}
+	
+	public void addSegment (String segment){
+		this.segments.add(segment);
 	}
 }

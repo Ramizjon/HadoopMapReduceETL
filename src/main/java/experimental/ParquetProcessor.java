@@ -47,13 +47,13 @@ import parquet.schema.Type;
 
 public class ParquetProcessor {
 
-	public User parseGroup (Group group){
+	/*public User parseGroup (Group group){
 		int userId = group.getInteger(0, 0);
 		Boolean operation = group.getGroup(1, 0).getGroup(0, 0).getBoolean(0, 0);
 	    String segment = group.getGroup(1, 0).getGroup(0, 0).getString(1, 0);
-    	return new User(userId, segment);
+    	//return new User(userId, segment);
 	}
-	
+
 	public LinkedList<User> readParquetFile (String filePath) throws Exception{
 		ParquetReader<Group> reader = null;
 		LinkedList<User> usersList = new LinkedList<User>();
@@ -72,4 +72,5 @@ public class ParquetProcessor {
 		  }
 		return usersList;
 	}
+		*/
 }

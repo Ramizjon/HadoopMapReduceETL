@@ -1,6 +1,7 @@
 package logic;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.LinkedList;
 
 import org.apache.hadoop.conf.Configuration;
@@ -17,7 +18,7 @@ import domain.User;
 
 public class UserRepository {
 	LinkedList <User> cachedList;
-	private final int BUFFER_SIZE = 4;
+	private final int BUFFER_SIZE = 1;
 	private static UserRepository instance;
 	private Configuration config;
 	private  HTable hTable;
@@ -40,8 +41,8 @@ public class UserRepository {
 		}
 	}
 	
-	public void addUserToTempQueue(int userId, String segment){
-		cachedList.add(new User(userId, segment));
+	public void addUserToTempQueue(int userId, LinkedList<String> segments){
+		cachedList.add(new User(userId, segments));
 		this.checkForBulk();
 	}
 	
@@ -56,29 +57,33 @@ public class UserRepository {
 	public String print(){
 		StringBuilder sb = new StringBuilder();
 		for (User user: cachedList){
-			sb.append(user.getSegment() + " ");
+			sb.append(user.getSegments() + " ");
 		}
 		return ("------------\n" + sb.toString());
 	}
-	
 	
 	public void addUsersToHbase (){
 		Put put = null;
 		for (User u: cachedList){
 			put = new Put(Bytes.toBytes("Id" + String.valueOf(u.getUserId())));
-			put.add(Bytes.toBytes("general"),Bytes.toBytes("segment"),Bytes.toBytes(u.getSegment()));
-			try {
-				hTable.put(put);
-			} catch (IOException e) {
-				e.printStackTrace();
+			for (String segm: u.getSegments()){
+				String timeStamp = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(System.currentTimeMillis());
+				put.add(Bytes.toBytes("general"),Bytes.toBytes(segm),Bytes.toBytes(timeStamp));
+				try {
+					hTable.put(put);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 	}
 	
 	
-	public void removeUserFromHbase(String rowId, String segment){
+	public void removeUserFromHbase(String rowId, LinkedList<String> segments){
 		Delete delete = new Delete (Bytes.toBytes(rowId));
-		delete.deleteColumns(Bytes.toBytes("general"), Bytes.toBytes("segment"));
+		for (String s: segments){
+			delete.deleteColumns(Bytes.toBytes("general"), Bytes.toBytes(s));
+		}
 		try {
 			hTable.delete(delete);
 		} catch (IOException e) {
