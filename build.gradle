@@ -54,8 +54,4 @@ eclipse {
     classpath {
         defaultOutputDir = file("${buildDir}/eclipse-classes")
     }
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> b3be5d4... modified input value for hbase cell. Now, it's timestamp. Added support for multiple segments per one input line (list is used)

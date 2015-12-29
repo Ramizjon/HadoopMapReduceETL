@@ -1,5 +1,7 @@
 package dataformats;
 
+import mapreduce.UserModCommand;
+
 import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.InputSplit;
@@ -7,12 +9,12 @@ import org.apache.hadoop.mapreduce.RecordReader;
 import org.apache.hadoop.mapreduce.TaskAttemptContext;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.LineRecordReader;
+
 import parquet.hadoop.example.ExampleInputFormat;
 
 import java.io.IOException;
 import java.util.LinkedList;
 
-import mapreduce.UserModCommand;
 
 
 public class UserModInputCSVFormat extends FileInputFormat<NullWritable, UserModCommand> {

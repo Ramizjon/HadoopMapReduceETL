@@ -1,5 +1,7 @@
 package IO_CSV;
 
+import mapreduce.UserModCommand;
+
 import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.InputSplit;
@@ -8,7 +10,6 @@ import org.apache.hadoop.mapreduce.TaskAttemptContext;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.LineRecordReader;
 
-import dataTO.UserModCommand;
 import parquet.hadoop.example.ExampleInputFormat;
 
 import java.io.IOException;

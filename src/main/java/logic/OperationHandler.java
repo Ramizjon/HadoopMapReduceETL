@@ -1,5 +1,5 @@
 package logic;
-import dataTO.UserModCommand;
+import mapreduce.UserModCommand;
 
 public class OperationHandler {
 	public void performOperationByType(UserModCommand command){

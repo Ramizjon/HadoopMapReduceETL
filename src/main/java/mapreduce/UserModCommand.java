@@ -2,8 +2,6 @@ package mapreduce;
 
 import java.util.LinkedList;
 
-import java.util.LinkedList;
-
 import parquet.schema.GroupType;
 
 public class UserModCommand {
