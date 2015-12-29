@@ -34,6 +34,4 @@ public class UserModCommand {
 	public void setSegment(String segment) {
 		this.segment = segment;
 	}
-	
-	
 }

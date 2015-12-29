@@ -38,11 +38,14 @@ repositories {
 dependencies {
 	compile 'ch.qos.logback:logback-classic:1.1.2'
     compile 'org.apache.hadoop:hadoop-client:2.0.0-mr1-cdh4.0.1'
+    compile 'org.apache.hbase:hbase:0.94.0'
+    compile 'org.apache.hbase:hbase-client:0.96.0-hadoop2'
     compile 'com.twitter:parquet-hadoop:1.0.0'
 	compile 'junit:junit:4.8.2'
     compile 'com.twitter:parquet-tools:1.4.3'
     compile 'org.projectlombok:lombok:1.16.6'
-    //classpath 'eu.appsatori:gradle-fatjar-plugin:0.3'
+    compile 'org.apache.oozie:oozie-client:4.1.0'
+    compile 'eu.appsatori:gradle-fatjar-plugin:0.3'
 }
 eclipse {
      //Ensure Eclipse build output appears in build directory
@@ -50,3 +53,4 @@ eclipse {
         defaultOutputDir = file("${buildDir}/eclipse-classes")
     }
 }
+

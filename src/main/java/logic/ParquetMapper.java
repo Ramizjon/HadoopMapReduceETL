@@ -18,7 +18,7 @@ public  class ParquetMapper extends Mapper<NullWritable, UserModCommand, NullWri
     public void map(NullWritable key, UserModCommand value, Context context) throws IOException, InterruptedException {
     	OperationHandler handler = new OperationHandler();
     	handler.performOperationByType(value);
-    	NullWritable nw = NullWritable.get();
-    	context.write(nw, new Text(String.valueOf(value.getUserId() + " " + value.getSegment())));
+    	//NullWritable nw = NullWritable.get();
+    	//context.write(nw, new Text(UserRepository.getInstance().print()));
     }
  }
