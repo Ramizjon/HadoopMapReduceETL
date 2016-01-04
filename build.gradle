@@ -48,10 +48,20 @@ dependencies {
     compile 'eu.appsatori:gradle-fatjar-plugin:0.3'
 }
 
-
 eclipse {
      //Ensure Eclipse build output appears in build directory
     classpath {
         defaultOutputDir = file("${buildDir}/eclipse-classes")
     }
 }
+
+Experience in development of Java applications for Android platform, and using Hadoop API. Familiar with Cloudera Distributed Hadoop and it's main modules. Knowledge of MySQL database management system, HBase and Hive. Understanding main concepts of MapReduce framework. Ability to learn new technologies and work in team.Good spoken english.
+
+Маришева Олександра - Місце: 024, СТУД СК09693694
+Абадулла Раміз - Місце: 043, СТУД СК08990116
+
+
+
+
+
+
