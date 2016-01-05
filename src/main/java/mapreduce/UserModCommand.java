@@ -1,4 +1,4 @@
-package dataTO;
+package mapreduce;
 
 import java.util.LinkedList;
 

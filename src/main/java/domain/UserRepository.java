@@ -1,4 +1,4 @@
-package logic;
+package domain;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -12,8 +12,6 @@ import org.apache.hadoop.hbase.client.Delete;
 import org.apache.hadoop.hbase.client.HTable;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.util.Bytes;
-
-import domain.User;
 
 
 public class UserRepository {
