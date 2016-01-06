@@ -16,7 +16,7 @@ import java.util.LinkedList;
 import mapreduce.UserModCommand;
 
 
-public class UserModInputFormatTest extends FileInputFormat<NullWritable, UserModCommand> {
+public class UserModInputCSVFormat extends FileInputFormat<NullWritable, UserModCommand> {
 	
     public RecordReader<NullWritable, UserModCommand> createRecordReader(InputSplit split, TaskAttemptContext context) throws IOException, InterruptedException {
         return new UserModInputFormatTestClass();
@@ -82,6 +82,5 @@ public class UserModInputFormatTest extends FileInputFormat<NullWritable, UserMo
 
             return true;
         }
-
     }
 }

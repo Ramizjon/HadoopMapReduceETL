@@ -12,19 +12,36 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
+import dataformats.*;
 
-import dataformats.UserModInputFormatTest;
-
-public class Main extends Configured implements Tool{
+public class Main{
 	private  Job job;
 	private  Configuration conf;
 	
 	 public static void main(String args[]) throws Exception {
-		    int result = ToolRunner.run(new Main(), args);
-		    System.exit(result);
+		 Configuration conf = new Configuration();
+		    
+			Job job = new Job(conf, "parquetreader");
+			job.setJarByClass(Main.class);
+			
+			job.setMapOutputKeyClass(NullWritable.class);
+			job.setMapOutputValueClass(Text.class);
+			
+		    job.setOutputKeyClass(NullWritable.class);
+		    job.setOutputValueClass(Text.class);
+		    
+		    job.setMapperClass(ParquetMapper.class);
+		    
+		    job.setInputFormatClass(UserModInputCSVFormat.class);
+		    job.setOutputFormatClass(TextOutputFormat.class);
+		    
+		    FileInputFormat.addInputPath(job, new Path(args[0]));
+		    FileOutputFormat.setOutputPath(job, new Path(args[1]));
+		        
+		    job.waitForCompletion(true);
 	}
 
-	public int run (String args[]) throws Exception {
+	/*public int run (String args[]) throws Exception {
 		conf = new Configuration();
 		createJob();
 		FileInputFormat.addInputPath(job, new Path(args[0]));
@@ -33,6 +50,7 @@ public class Main extends Configured implements Tool{
 	}
 	
 	private  void createJob() {
+		conf = new Configuration();
 		try {
 			job = new Job(conf, "parquetreader");
 		} catch (IOException e) {
@@ -52,5 +70,5 @@ public class Main extends Configured implements Tool{
 	    job.setOutputFormatClass(TextOutputFormat.class);
 	 
 	    //job.waitForCompletion(true);
-	}
+	}*/
 }
