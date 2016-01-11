@@ -1,4 +1,4 @@
-package logic;
+package com.segmentreader.domain;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -13,8 +13,6 @@ import org.apache.hadoop.hbase.client.HTable;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.util.Bytes;
 
-import domain.User;
-
 
 public class UserRepository {
 	LinkedList <User> cachedList;
@@ -23,10 +21,10 @@ public class UserRepository {
 	private Configuration config;
 	private  HTable hTable;
 	
-	//TODO approach will be changed
+	
 	public static UserRepository getInstance (){
 		if (instance == null){
-			instance  = new UserRepository();
+			instance = new UserRepository();
 		}
 		return instance;
 	}

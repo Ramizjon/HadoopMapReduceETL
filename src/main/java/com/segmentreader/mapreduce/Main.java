@@ -1,4 +1,4 @@
-package mapreduce;
+package com.segmentreader.mapreduce;
 import java.io.IOException;
 
 import org.apache.hadoop.conf.Configuration;
@@ -12,7 +12,8 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
-import dataformats.*;
+
+import com.segmentreader.dataformats.*;
 
 public class Main{
 	private  Job job;
@@ -30,7 +31,7 @@ public class Main{
 		    job.setOutputKeyClass(NullWritable.class);
 		    job.setOutputValueClass(Text.class);
 		    
-		    job.setMapperClass(ParquetMapper.class);
+		    job.setMapperClass(LineMapper.class);
 		    
 		    job.setInputFormatClass(UserModInputCSVFormat.class);
 		    job.setOutputFormatClass(TextOutputFormat.class);

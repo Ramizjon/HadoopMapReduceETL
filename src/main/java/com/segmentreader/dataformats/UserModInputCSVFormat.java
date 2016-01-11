@@ -1,6 +1,4 @@
-package dataformats;
-
-import mapreduce.UserModCommand;
+package com.segmentreader.dataformats;
 
 import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
@@ -10,7 +8,8 @@ import org.apache.hadoop.mapreduce.TaskAttemptContext;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.LineRecordReader;
 
-import parquet.hadoop.example.ExampleInputFormat;
+import com.segmentreader.mapreduce.UserModCommand;
+
 
 import java.io.IOException;
 import java.util.LinkedList;

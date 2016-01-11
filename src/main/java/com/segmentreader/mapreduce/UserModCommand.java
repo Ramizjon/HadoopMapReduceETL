@@ -1,8 +1,6 @@
-package mapreduce;
+package com.segmentreader.mapreduce;
 
 import java.util.LinkedList;
-
-import parquet.schema.GroupType;
 
 public class UserModCommand {
 	int userId;

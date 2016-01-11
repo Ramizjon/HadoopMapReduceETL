@@ -5,15 +5,28 @@ version = '1.0'
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
 
-//create a single Jar with all dependencies
+configurations {
+    provided
+    compile.extendsFrom provided
+}
+
+ext {
+    cdhVersion = "cdh5.4.2"
+    hadoopClientVersion = "2.6.0"
+    jUnitVersion = "4.8.2"
+    hBaseVersion = "1.0.0"
+    slf4JVersion = "1.7.13"
+    mainClass = 'com.segmentreader.mapreduce.Main'
+}
+
 task fatJar(type: Jar) {
-	manifest {
+        manifest {
         attributes 'Implementation-Title': 'Gradle Jar File Example',  
-        	'Implementation-Version': version,
-        	'Main-Class': 'mapreduce.Main'
+        'Implementation-Version': version,
+        'Main-Class': "${mainClass}"
     }
     baseName = project.name + '-all'
-    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    from { (configurations.compile-configurations.provided).collect { it.isDirectory() ? it : zipTree(it) } }
     with jar
 }
 
@@ -21,11 +34,10 @@ jar {
     manifest {
         attributes 'Implementation-Title': 'Gradle Jar File Example',
                    'Implementation-Version': version,
-                   'Main-Class': 'logic.Main'
+                   'Main-Class': "${mainClass}"
     }
 }
 
-//Get dependencies from Maven central repository
 repositories {
     mavenCentral()
     jcenter()
@@ -34,23 +46,23 @@ repositories {
     }
 }
 
-//Project dependencies
+
 dependencies {
-	compile 'ch.qos.logback:logback-classic:1.1.2'
-    compile 'org.apache.hadoop:hadoop-client:2.0.0-mr1-cdh4.0.1'
-    compile 'com.twitter:parquet-hadoop:1.0.0'
-	compile 'junit:junit:4.8.2'
-    compile 'com.twitter:parquet-tools:1.4.3'
-    compile 'org.projectlombok:lombok:1.16.6'
-    compile 'org.apache.hbase:hbase:0.94.3'
-    compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.+'
-    compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.+'
-    //classpath 'eu.appsatori:gradle-fatjar-plugin:0.3'
+    //compile 'ch.qos.logback:logback-classic:1.1.2'
+    //compile 'com.twitter:parquet-hadoop:1.0.0'
+    //compile 'com.twitter:parquet-tools:1.4.3'
+    //compile 'org.projectlombok:lombok:1.16.6'
+
+    provided "org.apache.hadoop:hadoop-client:${hadoopClientVersion}-${cdhVersion}"
+    testCompile "junit:junit:${jUnitVersion}"
+    compile "org.apache.hbase:hbase-client:${hBaseVersion}-${cdhVersion}"
+    compile "org.slf4j:slf4j-api:${slf4JVersion}"
+    //compile 'ch.qos.logback:logback-classic:' + hbaseClassicVersion
+    
 }
 
 
 eclipse {
-     //Ensure Eclipse build output appears in build directory
     classpath {
         defaultOutputDir = file("${buildDir}/eclipse-classes")
     }
