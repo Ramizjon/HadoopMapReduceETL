@@ -10,4 +10,5 @@ public class AddOperationHandler implements OperationHandler {
 		UserRepository.getInstance().addUserToTempQueue(value.getUserId(), value.getSegments());
 	}
 
+
 }

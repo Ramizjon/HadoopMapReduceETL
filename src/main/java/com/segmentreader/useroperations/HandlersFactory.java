@@ -21,7 +21,7 @@ public class HandlersFactory {
 		}
 	}
 	
-	public Map getHandlers() {
+	public Map<String, OperationHandler> getHandlers() {
 		return handlers;
 	}
 	

@@ -16,7 +16,9 @@ ext {
     jUnitVersion = "4.8.2"
     hBaseVersion = "1.0.0"
     slf4JVersion = "1.7.13"
-    mainClass = 'com.segmentreader.mapreduce.Main'
+    parquetVersion = "1.5.0"
+    hiveBundleVersion = "1.4.1"
+    mainClass = "com.segmentreader.mapreduce.Main"
 }
 
 task fatJar(type: Jar) {
@@ -57,6 +59,8 @@ dependencies {
     testCompile "junit:junit:${jUnitVersion}"
     compile "org.apache.hbase:hbase-client:${hBaseVersion}-${cdhVersion}"
     compile "org.slf4j:slf4j-api:${slf4JVersion}"
+    //compile "com.twitter:parquet-hadoop:${parquetVersion}"
+    //compile "com.twitter:parquet-hive-bundle:${hiveBundleVersion}"
     //compile 'ch.qos.logback:logback-classic:' + hbaseClassicVersion
     
 }
