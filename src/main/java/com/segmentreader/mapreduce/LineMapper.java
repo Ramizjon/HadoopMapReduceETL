@@ -3,6 +3,7 @@ package com.segmentreader.mapreduce;
 import java.io.IOException;
 import java.util.Map;
 
+import org.apache.avro.generic.GenericRecord;
 import org.apache.hadoop.io.ArrayWritable;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.NullWritable;
@@ -24,7 +25,8 @@ public class LineMapper extends Mapper<NullWritable, UserModCommand, NullWritabl
 	private static final String appName = "segmentreader";
 
 	Map<String, OperationHandler> handlers = new HandlersFactory().getHandlers();
-
+	//private GenericRecord myGenericRecord = new GenericData.Record(mySchema);
+	
 	public void map(NullWritable key, UserModCommand value, Context context)
 			throws IOException, InterruptedException {
 	   logger.info("I started MapReduce job!");
@@ -36,11 +38,10 @@ public class LineMapper extends Mapper<NullWritable, UserModCommand, NullWritabl
 //	    data[i] =  new BinaryWritable (Binary.fromString(parts[i]));
 //	   }
 //	   ArrayWritable aw = new ArrayWritable(Writable.class, data);
-//	   NullWritable nw = NullWritable.get();
 //	   context.write(nw, aw);
+	   NullWritable nw = NullWritable.get();
 	   context.getCounter(appName, mapCounter).increment(1);
-		
-		// context.write(nw, new Text(UserRepository.getInstance().print()));
+	   context.write(nw, new Text(value.toLine()));
 	}
 
 	

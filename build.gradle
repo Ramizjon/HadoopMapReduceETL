@@ -61,7 +61,7 @@ dependencies {
     compile "org.slf4j:slf4j-api:${slf4JVersion}"
     //compile "com.twitter:parquet-hadoop:${parquetVersion}"
     //compile "com.twitter:parquet-hive-bundle:${hiveBundleVersion}"
-    //compile 'ch.qos.logback:logback-classic:' + hbaseClassicVersion
+   // compile 'ch.qos.logback:logback-classic:' + {hbaseClassicVersion
     
 }
 

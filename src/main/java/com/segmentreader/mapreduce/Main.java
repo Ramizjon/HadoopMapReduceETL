@@ -24,6 +24,7 @@ public class Main {
 
 		Job job = new Job(conf, "parquetreader");
 		job.setJarByClass(Main.class);
+		job.setNumReduceTasks(0);
 
 		job.setMapOutputKeyClass(NullWritable.class);
 		job.setMapOutputValueClass(Text.class);
