@@ -9,6 +9,7 @@
 build
 .project
 .settings
-  
- #Eclipse Core
- .project
+.classpath 
+#Eclipse Core
+.project
+/bin/
