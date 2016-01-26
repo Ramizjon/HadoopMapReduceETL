@@ -39,9 +39,9 @@ public class LineMapper extends Mapper<NullWritable, UserModCommand, NullWritabl
 //	   }
 //	   ArrayWritable aw = new ArrayWritable(Writable.class, data);
 //	   context.write(nw, aw);
-	   NullWritable nw = NullWritable.get();
-	   context.getCounter(appName, mapCounter).increment(1);
-	   context.write(nw, new Text(value.toLine()));
+	  // NullWritable nw = NullWritable.get();
+	   //context.getCounter(appName, mapCounter).increment(1);
+	   //context.write(nw, new Text(UserRepository.getInstance().print()));
 	}
 
 	

@@ -9,7 +9,9 @@
 build
 .project
 .settings
-.classpath 
-#Eclipse Core
-.project
+.classpath
+build.gradle
+  
+ #Eclipse Core
+ .project
 /bin/

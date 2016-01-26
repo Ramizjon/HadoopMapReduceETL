@@ -21,7 +21,6 @@ ext {
     mainClass = "com.segmentreader.mapreduce.Main"
 }
 
-//create a single Jar with all dependencies
 task fatJar(type: Jar) {
         manifest {
         attributes 'Implementation-Title': 'Gradle Jar File Example',  
@@ -49,6 +48,7 @@ repositories {
     }
 }
 
+
 dependencies {
     //compile 'ch.qos.logback:logback-classic:1.1.2'
     //compile 'com.twitter:parquet-hadoop:1.0.0'
@@ -62,7 +62,9 @@ dependencies {
     //compile "com.twitter:parquet-hadoop:${parquetVersion}"
     //compile "com.twitter:parquet-hive-bundle:${hiveBundleVersion}"
    // compile 'ch.qos.logback:logback-classic:' + {hbaseClassicVersion
+    
 }
+
 
 eclipse {
     classpath {
