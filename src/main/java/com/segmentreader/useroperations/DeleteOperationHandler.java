@@ -1,13 +1,18 @@
 package com.segmentreader.useroperations;
 
 import com.segmentreader.domain.UserRepository;
+import com.segmentreader.domain.HBaseUserRepositoryImpl;
 import com.segmentreader.mapreduce.UserModCommand;
 
-public class DeleteOperationHandler implements OperationHandler{
+public abstract class DeleteOperationHandler implements OperationHandler{
 
+	UserRepository instance = getRepoInstance();
+	
 	@Override
 	public void handle(UserModCommand value) {
-		UserRepository.getInstance().removeUserFromHbase("Id"+String.valueOf(value.getUserId()), value.getSegments());
+	    instance.removeUser("Id"+String.valueOf(value.getUserId()), value.getSegments());
 	}
+	
+	protected abstract HBaseUserRepositoryImpl getRepoInstance();
 
 }

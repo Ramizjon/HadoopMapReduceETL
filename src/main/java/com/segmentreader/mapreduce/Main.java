@@ -27,25 +27,22 @@ public class Main {
 		job.setNumReduceTasks(0);
 
 		job.setMapOutputKeyClass(NullWritable.class);
-		//job.setMapOutputValueClass(Text.class);
+		job.setMapOutputValueClass(Text.class);
 
 		job.setOutputKeyClass(NullWritable.class);
-		//job.setOutputValueClass(Text.class);
+		job.setOutputValueClass(Text.class);
 
-		job.setMapperClass(LineMapper.class);
+		job.setMapperClass(AppContext.UserSegmentsMapper.class);
 
 		job.setInputFormatClass(UserModInputCSVFormat.class);
-		//job.setOutputFormatClass(TextOutputFormat.class);
+		job.setOutputFormatClass(TextOutputFormat.class);
 
 		FileInputFormat.addInputPath(job, new Path(args[0]));
 		FileOutputFormat.setOutputPath(job, new Path(args[1]));
 
-		//job.getCounters().findCounter(LineMapper.getCounterName()).getValue();
-		
 		if (!job.waitForCompletion(true)) {
 			throw new IOException("Application hasn't finished correctly");
 		}
-		
 	}
 
 	
