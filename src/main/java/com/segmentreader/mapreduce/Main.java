@@ -3,102 +3,52 @@ package com.segmentreader.mapreduce;
 import java.io.IOException;
 
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
-import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
+import org.apache.hadoop.util.Tool;
+import org.apache.hadoop.util.ToolRunner;
 
+import com.segmentreader.dataformats.UserModInputCSVFormat;
 
-import com.segmentreader.dataformats.*;
+public class Main extends Configured implements Tool {
 
-//extends Configured implements Tool
-public class Main {
-	private Job job;
-	private Configuration conf;
-	
-	public static void main(String args[]) throws Exception {
-		Configuration conf = new Configuration();
+    public static void main(String[] args) throws Exception {
+        int res = ToolRunner.run(new Configuration(), new Main(), args);
+        System.exit(res);
+    }
 
-		Job job = new Job(conf, "parquetreader");
-		job.setJarByClass(Main.class);
-		job.setNumReduceTasks(0);
-
-		job.setMapOutputKeyClass(NullWritable.class);
-		job.setMapOutputValueClass(Text.class);
-
-		job.setOutputKeyClass(NullWritable.class);
-		job.setOutputValueClass(Text.class);
-
-		job.setMapperClass(AppContext.UserSegmentsMapper.class);
-
-		job.setInputFormatClass(UserModInputCSVFormat.class);
-		job.setOutputFormatClass(TextOutputFormat.class);
-
-		FileInputFormat.addInputPath(job, new Path(args[0]));
-		FileOutputFormat.setOutputPath(job, new Path(args[1]));
-
-		if (!job.waitForCompletion(true)) {
-			throw new IOException("Application hasn't finished correctly");
-		}
-	}
-
-	
-	/*
-	
-	 public static void main(String[] args) throws Exception {
-	        try {
-	            int res = ToolRunner.run(new Configuration(), new Main(), args);
-	            System.exit(res);
-	        } catch (Exception e) {
-	            e.printStackTrace();
-	            System.exit(255);
-	        }
-	 }
-	
-	
-	  public int run (String args[]) throws Exception { 
-		String inputFile = args[0];
-		String outputFile = args[1];
-		String compression = (args.length > 2) ? args[2] : "none";
-		createJob();
-		CompressionCodecName codec = CompressionCodecName.UNCOMPRESSED;
-		if(compression.equalsIgnoreCase("snappy")) {
-		    codec = CompressionCodecName.SNAPPY;
-		} else if(compression.equalsIgnoreCase("gzip")) {
-		    codec = CompressionCodecName.GZIP;
-		}
-		ExampleOutputFormat.setCompression(job, codec);
-		
-		FileInputFormat.setInputPaths(job, new Path(inputFile));
+    public int run(String args[]) throws Exception {
+        String inputFile = args[0];
+        String outputFile = args[1];
+        Job job = createJob();
+        FileInputFormat.addInputPath(job, new Path(inputFile));
         FileOutputFormat.setOutputPath(job, new Path(outputFile));
         job.waitForCompletion(true);
-		return 0;   
-	  }
-	  
-	  
-	  private void createJob() { 
-		try {
-			job = new Job(getConf(), "parquetreader");
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		job.setJarByClass(Main.class);
+        return 0;
+    }
 
-		job.setMapOutputKeyClass(NullWritable.class);
-		job.setMapOutputValueClass(ArrayWritable.class);
+    private Job createJob() throws IOException {
+        Job job = new Job(getConf(), "parquetreader");
+        job.setJarByClass(Main.class);
+        job.setNumReduceTasks(0);
 
-		job.setOutputKeyClass(NullWritable.class);
-		job.setOutputValueClass(ArrayWritable.class);
+        job.setMapOutputKeyClass(NullWritable.class);
+        job.setMapOutputValueClass(Text.class);
 
-		job.setMapperClass(LineMapper.class);
+        job.setOutputKeyClass(NullWritable.class);
+        job.setOutputValueClass(Text.class);
 
-		job.setInputFormatClass(UserModInputCSVFormat.class);
-		job.setOutputFormatClass(TextOutputFormat.class);
-	  }
-	  */
-	 
+        job.setMapperClass(AppContext.UserSegmentsMapper.class);
+
+        job.setInputFormatClass(UserModInputCSVFormat.class);
+        // job.setOutputFormatClass(TextOutputFormat.class);
+
+        return job;
+    }
+
 }
