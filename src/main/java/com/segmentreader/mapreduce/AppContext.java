@@ -6,16 +6,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.segmentreader.domain.UserRepositoryImpl;
+import com.segmentreader.domain.HBaseUserRepositoryImpl;
 import com.segmentreader.useroperations.AddOperationHandler;
 import com.segmentreader.useroperations.DeleteOperationHandler;
 import com.segmentreader.useroperations.OperationHandler;
 
 public class AppContext {
 
-    private static UserRepositoryImpl userRepository = new UserRepositoryImpl();
+    private static HBaseUserRepositoryImpl userRepository = new HBaseUserRepositoryImpl();
 
-    public static class Mapper extends UserSegmentsMapper {
+    public static class UserSegmentsMapper extends AbstractUserSegmentsMapper {
         protected Map<String, OperationHandler> getHandlers() {
             Map<String, OperationHandler> handlersMap = new HashMap<String, OperationHandler>();
             handlersMap.put(OperationHandler.ADD_OPERATION,
@@ -34,7 +34,7 @@ public class AppContext {
     public static class AddOperationHandlerImpl extends AddOperationHandler {
 
         @Override
-        protected UserRepositoryImpl getRepoInstance() {
+        protected HBaseUserRepositoryImpl getRepoInstance() {
             return userRepository;
         }
 
@@ -44,13 +44,9 @@ public class AppContext {
             DeleteOperationHandler {
 
         @Override
-        protected UserRepositoryImpl getRepoInstance() {
+        protected HBaseUserRepositoryImpl getRepoInstance() {
             return userRepository;
         }
 
-    }
-
-    public static UserRepositoryImpl getUserRepository() {
-        return userRepository;
     }
 }

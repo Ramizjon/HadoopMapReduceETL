@@ -12,14 +12,14 @@ import org.apache.hadoop.hbase.client.HTable;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.util.Bytes;
 
-public class UserRepositoryImpl implements UserRepository, Closeable {
+public class HBaseUserRepositoryImpl implements UserRepository, Closeable {
     LinkedList<User> cachedList;
     private final int BUFFER_SIZE = 1;
-    private static UserRepositoryImpl instance;
+    private static HBaseUserRepositoryImpl instance;
     private Configuration config;
     private HTable hTable;
 
-    public UserRepositoryImpl() {
+    public HBaseUserRepositoryImpl() {
         cachedList = new LinkedList<User>();
         config = HBaseConfiguration.create();
         try {
@@ -29,6 +29,7 @@ public class UserRepositoryImpl implements UserRepository, Closeable {
         }
     }
 
+    @Override
     public void addUser(int userId, LinkedList<String> segments) {
         cachedList.add(new User(userId, segments));
         this.checkForBulk();
@@ -36,7 +37,7 @@ public class UserRepositoryImpl implements UserRepository, Closeable {
 
     private void checkForBulk() {
         if (cachedList.size() == BUFFER_SIZE) {
-            this.addUsersToHbase();
+            this.flush();
             cachedList.clear();
         }
     }
@@ -50,7 +51,7 @@ public class UserRepositoryImpl implements UserRepository, Closeable {
         return ("------------\n" + sb.toString());
     }
 
-    public void addUsersToHbase() {
+    protected void flush() {
         Put put = null;
         for (User u : cachedList) {
             put = new Put(Bytes.toBytes("Id" + String.valueOf(u.getUserId())));
@@ -68,6 +69,7 @@ public class UserRepositoryImpl implements UserRepository, Closeable {
         }
     }
 
+    @Override
     public void removeUser(String rowId, LinkedList<String> segments) {
         Delete delete = new Delete(Bytes.toBytes(rowId));
         for (String s : segments) {
@@ -78,10 +80,6 @@ public class UserRepositoryImpl implements UserRepository, Closeable {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    protected void flush() {
-        addUsersToHbase();
     }
 
     @Override

@@ -11,11 +11,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.segmentreader.useroperations.OperationHandler;
 
-public abstract class UserSegmentsMapper extends Mapper<NullWritable, UserModCommand, NullWritable, Text> {
-	private static final Logger logger = LoggerFactory.getLogger(UserSegmentsMapper.class);
+public abstract class AbstractUserSegmentsMapper extends Mapper<NullWritable, UserModCommand, NullWritable, Text> {
+	private static final Logger logger = LoggerFactory.getLogger(AbstractUserSegmentsMapper.class);
 	private static final String mapCounter = "mycounter";
 	private static final String appName = "segmentreader";
 	
+	//class dependencies
 	private List<Closeable> closeables = getCloseables();
 	private Map<String, OperationHandler> handlers = getHandlers();
 

@@ -32,7 +32,7 @@ public class Main {
 		job.setOutputKeyClass(NullWritable.class);
 		job.setOutputValueClass(Text.class);
 
-		job.setMapperClass(AppContext.Mapper.class);
+		job.setMapperClass(AppContext.UserSegmentsMapper.class);
 
 		job.setInputFormatClass(UserModInputCSVFormat.class);
 		job.setOutputFormatClass(TextOutputFormat.class);
