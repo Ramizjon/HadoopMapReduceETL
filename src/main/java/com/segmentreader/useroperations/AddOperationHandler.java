@@ -1,14 +1,19 @@
 package com.segmentreader.useroperations;
 
-import com.segmentreader.domain.UserRepository;
+
+import com.segmentreader.domain.UserRepositoryImpl;
 import com.segmentreader.mapreduce.UserModCommand;
 
-public class AddOperationHandler implements OperationHandler {
+public abstract class AddOperationHandler implements OperationHandler {
 
+	UserRepositoryImpl userRepository = getRepoInstance();
+	
 	@Override
 	public void handle(UserModCommand value) {
-		UserRepository.getInstance().addUserToTempQueue(value.getUserId(), value.getSegments());
+		userRepository.addUserToTempQueue(value.getUserId(), value.getSegments());
 	}
+
+	protected abstract UserRepositoryImpl getRepoInstance();
 
 
 }

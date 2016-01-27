@@ -32,7 +32,7 @@ public class Main {
 		job.setOutputKeyClass(NullWritable.class);
 		//job.setOutputValueClass(Text.class);
 
-		job.setMapperClass(LineMapper.class);
+		job.setMapperClass(AppContext.Mapper.class);
 
 		job.setInputFormatClass(UserModInputCSVFormat.class);
 		//job.setOutputFormatClass(TextOutputFormat.class);
@@ -45,7 +45,6 @@ public class Main {
 		if (!job.waitForCompletion(true)) {
 			throw new IOException("Application hasn't finished correctly");
 		}
-		
 	}
 
 	

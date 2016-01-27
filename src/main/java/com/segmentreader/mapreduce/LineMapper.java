@@ -15,16 +15,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.segmentreader.domain.UserRepository;
-import com.segmentreader.useroperations.HandlersFactory;
 import com.segmentreader.useroperations.OperationHandler;
 import com.sun.java_cup.internal.runtime.virtual_parse_stack;
 
-public class LineMapper extends Mapper<NullWritable, UserModCommand, NullWritable, Text> {
+public abstract class LineMapper extends Mapper<NullWritable, UserModCommand, NullWritable, Text> {
 	private static final Logger logger = LoggerFactory.getLogger(LineMapper.class);
 	private static final String mapCounter = "mycounter";
 	private static final String appName = "segmentreader";
 
-	Map<String, OperationHandler> handlers = new HandlersFactory().getHandlers();
+	private Map<String, OperationHandler> handlers = getHandlers();
 	//private GenericRecord myGenericRecord = new GenericData.Record(mySchema);
 	
 	public void map(NullWritable key, UserModCommand value, Context context)
@@ -43,6 +42,8 @@ public class LineMapper extends Mapper<NullWritable, UserModCommand, NullWritabl
 	   //context.getCounter(appName, mapCounter).increment(1);
 	   //context.write(nw, new Text(UserRepository.getInstance().print()));
 	}
+	
+	abstract Map<String, OperationHandler> getHandlers();
 
 	
 }
