@@ -42,15 +42,6 @@ public class HBaseUserRepositoryImpl implements UserRepository, Closeable {
         }
     }
 
-    // just for debug
-    public String print() {
-        StringBuilder sb = new StringBuilder();
-        for (User user : cachedList) {
-            sb.append(user.getSegments() + " ");
-        }
-        return ("------------\n" + sb.toString());
-    }
-
     protected void flush() {
         Put put = null;
         for (User u : cachedList) {
@@ -85,11 +76,6 @@ public class HBaseUserRepositoryImpl implements UserRepository, Closeable {
     @Override
     public void close() throws IOException {
         flush();
-    }
-
-    // TODO implement receiving User from HBase by id
-    public User getUser(int userId) {
-        return new User(userId, null);
     }
 
 }
