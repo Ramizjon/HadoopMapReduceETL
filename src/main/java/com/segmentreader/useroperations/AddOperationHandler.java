@@ -10,7 +10,7 @@ public abstract class AddOperationHandler implements OperationHandler {
 	
 	@Override
 	public void handle(UserModCommand value) {
-		userRepository.addUserToTempQueue(value.getUserId(), value.getSegments());
+		userRepository.addUser(value.getUserId(), value.getSegments());
 	}
 
 	protected abstract UserRepositoryImpl getRepoInstance();

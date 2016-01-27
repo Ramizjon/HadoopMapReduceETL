@@ -30,7 +30,7 @@ public class UserRepositoryImpl implements UserRepository {
 		}
 	}
 	
-	public void addUserToTempQueue(int userId, LinkedList<String> segments){
+	public void addUser(int userId, LinkedList<String> segments){
 		cachedList.add(new User(userId, segments));
 		this.checkForBulk();
 	}
@@ -67,8 +67,7 @@ public class UserRepositoryImpl implements UserRepository {
 		}
 	}
 	
-	
-	public void removeUserFromHbase(String rowId, LinkedList<String> segments){
+	public void removeUser(String rowId, LinkedList<String> segments){
 		Delete delete = new Delete (Bytes.toBytes(rowId));
 		for (String s: segments){
 			delete.deleteColumns(Bytes.toBytes("general"), Bytes.toBytes(s));
@@ -80,9 +79,16 @@ public class UserRepositoryImpl implements UserRepository {
 		}
 	}
 	
+	@Override
+	public void flush() {
+		addUsersToHbase();
+	}
+	
 	//TODO implement receiving User from HBase by id
 	public User getUser(int userId){
 		return new User(userId, null);
 	}
+
+	
 	
 }

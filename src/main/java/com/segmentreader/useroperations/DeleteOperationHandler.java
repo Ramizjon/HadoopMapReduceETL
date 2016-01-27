@@ -9,7 +9,7 @@ public abstract class DeleteOperationHandler implements OperationHandler{
 	
 	@Override
 	public void handle(UserModCommand value) {
-		getRepoInstance().removeUserFromHbase("Id"+String.valueOf(value.getUserId()), value.getSegments());
+		getRepoInstance().removeUser("Id"+String.valueOf(value.getUserId()), value.getSegments());
 	}
 	
 	protected abstract UserRepositoryImpl getRepoInstance();

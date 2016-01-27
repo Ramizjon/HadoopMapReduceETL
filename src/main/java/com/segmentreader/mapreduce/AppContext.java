@@ -3,10 +3,9 @@ package com.segmentreader.mapreduce;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.segmentreader.domain.UserRepository;
 import com.segmentreader.domain.UserRepositoryImpl;
-import com.segmentreader.useroperations.AddOperationHandlerImpl;
-import com.segmentreader.useroperations.DeleteOperationHandlerImpl;
+import com.segmentreader.useroperations.AddOperationHandler;
+import com.segmentreader.useroperations.DeleteOperationHandler;
 import com.segmentreader.useroperations.OperationHandler;
 
 public class AppContext {
@@ -15,17 +14,31 @@ public class AppContext {
 
 	public static class Mapper extends LineMapper {
 		Map<String, OperationHandler> getHandlers() {
-			OperationHandler[] handlersArr = new OperationHandler[] {
-					new AddOperationHandlerImpl(),
-					new DeleteOperationHandlerImpl() };
-			String[] operationTypes = new String[] { "add", "delete" };
 			Map<String, OperationHandler> handlersMap = new HashMap<String, OperationHandler>();
-			for (int i = 0; i < handlersArr.length; i++) {
-				handlersMap.put(operationTypes[i], handlersArr[i]);
-			}
+			handlersMap.put(OperationHandler.ADD_OPERATION,  new AppContext.AddOperationHandlerImpl());
+			handlersMap.put(OperationHandler.DELETE_OPERATION, new AppContext.DeleteOperationHandlerImpl());
 			return handlersMap;
 		}
 	}
+	
+ public static class AddOperationHandlerImpl extends AddOperationHandler{
+
+		@Override
+		protected UserRepositoryImpl getRepoInstance() {
+			return userRepository;
+		}
+
+	}
+	
+	public static class DeleteOperationHandlerImpl extends DeleteOperationHandler {
+
+		@Override
+		protected UserRepositoryImpl getRepoInstance() {
+			return userRepository;
+		}
+
+	}
+
 
 	public static UserRepositoryImpl getUserRepository() {
 		return userRepository;
