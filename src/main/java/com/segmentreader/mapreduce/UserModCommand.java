@@ -3,11 +3,11 @@ package com.segmentreader.mapreduce;
 import java.util.LinkedList;
 
 public class UserModCommand {
-	int userId;
+	String userId;
 	String command;
 	LinkedList<String> segments;
 	
-	public UserModCommand(int userId, String command, LinkedList<String> segments) {
+	public UserModCommand(String userId, String command, LinkedList<String> segments) {
 		this.userId = userId;
 		this.command = command;
 		this.segments = segments;
@@ -16,10 +16,10 @@ public class UserModCommand {
 	public UserModCommand(){
 	}
 	
-	public int getUserId() {
+	public String getUserId() {
 		return userId;
 	}
-	public void setUserId(int userId) {
+	public void setUserId(String userId) {
 		this.userId = userId;
 	}
 	public String getCommand() {

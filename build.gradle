@@ -2,8 +2,8 @@ apply plugin: 'java'
 apply plugin: 'eclipse'
 group = "com.ramiz.testone"
 version = '1.0'
-sourceCompatibility = 1.7
-targetCompatibility = 1.7
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
 
 configurations {
     provided
@@ -18,6 +18,7 @@ ext {
     slf4JVersion = "1.7.13"
     parquetVersion = "1.5.0"
     hiveBundleVersion = "1.4.1"
+    simpleJoptVersion = "4.9"
     mainClass = "com.segmentreader.mapreduce.Main"
 }
 
@@ -59,6 +60,8 @@ dependencies {
     testCompile "junit:junit:${jUnitVersion}"
     compile "org.apache.hbase:hbase-client:${hBaseVersion}-${cdhVersion}"
     compile "org.slf4j:slf4j-api:${slf4JVersion}"
+    compile "net.sf.jopt-simple:jopt-simple:${simpleJoptVersion}"
+    
     //compile "com.twitter:parquet-hadoop:${parquetVersion}"
     //compile "com.twitter:parquet-hive-bundle:${hiveBundleVersion}"
    // compile 'ch.qos.logback:logback-classic:' + {hbaseClassicVersion
