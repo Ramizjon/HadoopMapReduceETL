@@ -12,8 +12,17 @@ import com.segmentreader.useroperations.AddOperationHandler;
 import com.segmentreader.useroperations.DeleteOperationHandler;
 import com.segmentreader.useroperations.OperationHandler;
 
+
+/**
+ * Contains all necessary classes, being a connecting link of application
+ * @author Ramizjon
+ *
+ */
 public class AppContext {
 
+    /**
+     * Instance to access a user repository
+     */
     private static HBaseUserRepositoryImpl userRepository = null;
     
     private static HBaseUserRepositoryImpl getUserRepoInstance() {
@@ -27,6 +36,12 @@ public class AppContext {
         return userRepository;
     }
 
+    /**
+     * implementation of main application mapper class
+     * 
+     * @author Ramizjon
+     *
+     */
     public static class UserSegmentsMapper extends AbstractUserSegmentsMapper {
         protected Map<String, OperationHandler> getHandlers() {
             Map<String, OperationHandler> handlersMap = new HashMap<String, OperationHandler>();
@@ -43,6 +58,11 @@ public class AppContext {
         }
     }
 
+    /**
+     * Implementation of AddOperationHandler, that has direct access to repository instance
+     * @author Ramizjon
+     *
+     */
     public static class AddOperationHandlerImpl extends AddOperationHandler {
 
         @Override
@@ -51,6 +71,11 @@ public class AppContext {
         }
     }
 
+    /**
+     * Implementation of DeleteOperationHandler, that has direct access to repository instance
+     * @author Ramizjon
+     *
+     */
     public static class DeleteOperationHandlerImpl extends
             DeleteOperationHandler {
 
