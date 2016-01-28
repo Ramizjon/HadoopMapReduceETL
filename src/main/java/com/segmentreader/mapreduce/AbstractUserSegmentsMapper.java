@@ -38,6 +38,7 @@ public abstract class AbstractUserSegmentsMapper extends Mapper<NullWritable, Us
 		for (Closeable closeable: closeables) {
 			closeable.close();
 		}
+		logger.info("Clean up completed");
 	}
 	
 	protected abstract Map<String, OperationHandler> getHandlers();

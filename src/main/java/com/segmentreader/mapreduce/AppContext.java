@@ -37,7 +37,6 @@ public class AppContext {
         protected HBaseUserRepositoryImpl getRepoInstance() {
             return userRepository;
         }
-
     }
 
     public static class DeleteOperationHandlerImpl extends

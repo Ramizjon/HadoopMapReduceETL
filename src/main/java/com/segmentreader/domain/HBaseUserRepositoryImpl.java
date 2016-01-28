@@ -11,8 +11,13 @@ import org.apache.hadoop.hbase.client.Delete;
 import org.apache.hadoop.hbase.client.HTable;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.util.Bytes;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.segmentreader.mapreduce.AbstractUserSegmentsMapper;
 
 public class HBaseUserRepositoryImpl implements UserRepository, Closeable {
+    private static final Logger logger = LoggerFactory.getLogger(HBaseUserRepositoryImpl.class);
     LinkedList<User> cachedList;
     private final int BUFFER_SIZE = 1;
     private static HBaseUserRepositoryImpl instance;
@@ -25,7 +30,7 @@ public class HBaseUserRepositoryImpl implements UserRepository, Closeable {
         try {
             hTable = new HTable(config, "users");
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("Failed to create HBase table");
         }
     }
 
@@ -40,15 +45,6 @@ public class HBaseUserRepositoryImpl implements UserRepository, Closeable {
             this.flush();
             cachedList.clear();
         }
-    }
-
-    // just for debug
-    public String print() {
-        StringBuilder sb = new StringBuilder();
-        for (User user : cachedList) {
-            sb.append(user.getSegments() + " ");
-        }
-        return ("------------\n" + sb.toString());
     }
 
     protected void flush() {
@@ -80,6 +76,7 @@ public class HBaseUserRepositoryImpl implements UserRepository, Closeable {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        logger.info("User removed from row " + rowId);
     }
 
     @Override
@@ -87,9 +84,5 @@ public class HBaseUserRepositoryImpl implements UserRepository, Closeable {
         flush();
     }
 
-    // TODO implement receiving User from HBase by id
-    public User getUser(int userId) {
-        return new User(userId, null);
-    }
 
 }
