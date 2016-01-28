@@ -2,14 +2,21 @@ package com.segmentreader.mapreduce;
 
 import java.io.IOException;
 
+import joptsimple.OptionParser;
+import joptsimple.OptionSet;
+import joptsimple.OptionSpec;
+import joptsimple.OptionException;
+
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapred.JobClient;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+import org.apache.hadoop.mapreduce.lib.output.NullOutputFormat;
 import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
 import org.slf4j.Logger;
@@ -27,13 +34,25 @@ public class Main extends Configured implements Tool {
     }
 
     public int run(String args[]) throws Exception {
-        String inputFile = args[0];
-        String outputFile = args[1];
-        Job job = createJob();
-        logger.info("Job id: " + job.getJobID().toString());
-        FileInputFormat.addInputPath(job, new Path(inputFile));
-        FileOutputFormat.setOutputPath(job, new Path(outputFile));
-        return job.waitForCompletion(true) ? 0 : -1;
+        int ret = 0;
+        OptionParser optionParser = new OptionParser("i:");
+        OptionSpec<String> inputOptionSpec = optionParser.accepts("i","input path").withRequiredArg().ofType(String.class).required();
+        try {
+            OptionSet options = optionParser.parse(args);
+            String inputFile = options.valueOf(inputOptionSpec);
+            Job job = createJob();
+            
+            FileInputFormat.addInputPath(job, new Path(inputFile));
+            job.submit();
+            // FileOutputFormat.setOutputPath(job, new Path(outputFile));
+            logger.info("Job id: {}", job.getJobID());
+            ret =  job.waitForCompletion(true) ? 0 : -1;
+        }
+        catch (OptionException e) {
+            optionParser.printHelpOn(System.out);  
+            ret = -1;
+        }
+        return ret;
     }
 
     private Job createJob() throws IOException {
@@ -41,16 +60,18 @@ public class Main extends Configured implements Tool {
         job.setJarByClass(Main.class);
         job.setNumReduceTasks(0);
 
-        job.setMapOutputKeyClass(NullWritable.class);
-        job.setMapOutputValueClass(Text.class);
+        //job.setMapOutputKeyClass(NullWritable.class);
+        //job.setMapOutputValueClass(NullWritable.class);
 
-        job.setOutputKeyClass(NullWritable.class);
-        job.setOutputValueClass(Text.class);
+        //job.setOutputKeyClass(NullWritable.class);
+        //job.setOutputValueClass(NullWritable.class);
 
         job.setMapperClass(AppContext.UserSegmentsMapper.class);
 
         job.setInputFormatClass(UserModInputCSVFormat.class);
-        // job.setOutputFormatClass(TextOutputFormat.class);
+        
+        job.setOutputFormatClass(NullOutputFormat.class);
+        
         logger.info("Mapreduce job created");
         return job;
     }

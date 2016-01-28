@@ -1,6 +1,7 @@
 package com.segmentreader.mapreduce;
 
 import java.io.Closeable;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -13,7 +14,18 @@ import com.segmentreader.useroperations.OperationHandler;
 
 public class AppContext {
 
-    private static HBaseUserRepositoryImpl userRepository = new HBaseUserRepositoryImpl();
+    private static HBaseUserRepositoryImpl userRepository = null;
+    
+    private static HBaseUserRepositoryImpl getUserRepoInstance() {
+        if (userRepository == null){
+                try {
+                    userRepository = new HBaseUserRepositoryImpl();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+        }
+        return userRepository;
+    }
 
     public static class UserSegmentsMapper extends AbstractUserSegmentsMapper {
         protected Map<String, OperationHandler> getHandlers() {
@@ -27,7 +39,7 @@ public class AppContext {
 
         @Override
         protected List<Closeable> getCloseables() {
-            return Arrays.<Closeable> asList(userRepository);
+            return Arrays.<Closeable> asList(getUserRepoInstance());
         }
     }
 
@@ -35,7 +47,7 @@ public class AppContext {
 
         @Override
         protected HBaseUserRepositoryImpl getRepoInstance() {
-            return userRepository;
+            return getUserRepoInstance();
         }
     }
 
@@ -44,7 +56,7 @@ public class AppContext {
 
         @Override
         protected HBaseUserRepositoryImpl getRepoInstance() {
-            return userRepository;
+            return getUserRepoInstance();
         }
 
     }

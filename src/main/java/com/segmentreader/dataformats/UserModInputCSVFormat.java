@@ -72,13 +72,17 @@ public class UserModInputCSVFormat extends FileInputFormat<NullWritable, UserMod
             Text line = lineRecordReader.getCurrentValue();
             String str = line.toString();
             String[] arr = str.split(",");
+            
+            if (arr.length < 3){
+                throw new IOException("Validation failed: not enough arguments");
+            }
 
             LinkedList<String> segmentsList = new LinkedList<String>();
             for (int i = 2; i < arr.length; i++){
             	segmentsList.add(arr[i]);
             }
             key = null;
-            value = new UserModCommand(Integer.parseInt(arr[0]), arr[1], segmentsList);
+            value = new UserModCommand(arr[0], arr[1], segmentsList);
 
             return true;
         }

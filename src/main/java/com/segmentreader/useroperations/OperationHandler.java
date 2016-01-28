@@ -1,5 +1,7 @@
 package com.segmentreader.useroperations;
 
+import java.io.IOException;
+
 import com.segmentreader.mapreduce.UserModCommand;
 
 public interface OperationHandler {
@@ -10,5 +12,5 @@ public interface OperationHandler {
      * Handles user operation regarding it's type
      * @param value
      */
-	void handle(UserModCommand value);
+	void handle(UserModCommand value) throws IOException;
 }

@@ -2,19 +2,19 @@ package com.segmentreader.domain;
 import java.util.LinkedList;
 import java.util.List;
 public class User {
-	int userId;
+	String userId;
 	List<String> segments;
 	
-	public User(int userId, List<String> segments) {
+	public User(String userId, List<String> segments) {
 		super();
 		this.userId = userId;
 		this.segments = segments;
 	}
 	
-	public int getUserId() {
+	public String getUserId() {
 		return userId;
 	}
-	public void setUserId(int userId) {
+	public void setUserId(String userId) {
 		this.userId = userId;
 	}
 
