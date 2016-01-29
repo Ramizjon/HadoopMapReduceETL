@@ -5,40 +5,60 @@ import static org.mockito.Mockito.*;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
 
+import javax.ws.rs.PUT;
+
+import org.apache.hadoop.hbase.client.Delete;
+import org.apache.hadoop.hbase.client.HTable;
+import org.apache.hadoop.hbase.client.Put;
 import org.junit.Test;
 
 public class HBaseUserRepositoryImplTestCase {
 
+    private HBaseUserRepositoryImpl createRepository(HTable hTable)
+            throws IOException {
+        return new HBaseUserRepositoryImpl() {
+            @Override
+            protected HTable createHTable() throws IOException {
+                return hTable;
+            }
+        };
+    }
+
     @Test
-    public void testUserRepositoryImplAddUserSuccess() throws IOException{
-        HBaseUserRepositoryImpl userRepo = mock(HBaseUserRepositoryImpl.class);
-        doNothing().when(userRepo).addUser("11", Arrays.asList("magic mouse"));
+    public void testUserRepositoryImplAddUserSingleRecord() throws IOException {
+        HTable hTable = mock(HTable.class);
+        HBaseUserRepositoryImpl userRepo = createRepository(hTable);
+        userRepo.setBufferSize(1);
+        List<String> list = Arrays.asList("magic mouse");
+        userRepo.addUser("11", list);
         
-        userRepo.addUser("11", Arrays.asList("magic mouse"));
-        
-        verify(userRepo).addUser("11", Arrays.asList("magic mouse"));
+        verify(hTable, times(1)).put(any(Put.class));
     }
-    
-    
-    @Test(expected=IOException.class)
-    public void testUserRepositoryImplAddUserFailure() throws IOException{
-        HBaseUserRepositoryImpl userRepo = mock(HBaseUserRepositoryImpl.class);
-        doThrow(new IOException()).when(userRepo).addUser("11", Arrays.asList(""));
-        
-        userRepo.addUser("11", Arrays.asList(""));
-        
-        verify(userRepo).addUser("11", Arrays.asList(""));
-    }
-    
+
     @Test
-    public void testUserRepositoryImplRemoveUser() throws IOException{
-        HBaseUserRepositoryImpl userRepo = mock(HBaseUserRepositoryImpl.class);
-        doNothing().when(userRepo).removeUser("22");
-        
-        userRepo.removeUser("22");
-        
-        verify(userRepo).removeUser("22");
+    public void testUserRepositoryImplAddUserMultipleRecords()
+            throws IOException {
+        HTable hTable = mock(HTable.class);
+        HBaseUserRepositoryImpl userRepo = createRepository(hTable);
+        userRepo.setBufferSize(2);
+
+        List<String> list = Arrays.asList("magic mouse");
+        userRepo.addUser("11", list);
+        verify(hTable, times(0)).put(any(Put.class));
+        userRepo.addUser("23", list);
+        verify(hTable, times(2)).put(any(Put.class));
     }
+
+    @Test
+    public void testUserRepositoryImplDeleteUserSingleRecord() throws IOException {
+        HTable hTable = mock(HTable.class);
+        HBaseUserRepositoryImpl userRepo = createRepository(hTable);
+        userRepo.setBufferSize(1);;
+        userRepo.removeUser("user1");
+        verify(hTable, times(1)).delete(any(Delete.class));
+    }
+
 
 }

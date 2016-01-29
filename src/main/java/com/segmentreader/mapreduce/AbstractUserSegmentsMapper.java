@@ -12,7 +12,7 @@ import org.apache.hadoop.mapreduce.Mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.segmentreader.dataformats.Convertor;
+import com.segmentreader.dataformats.ConvertorImpl;
 import com.segmentreader.mapreduce.UserModCommand;
 import com.segmentreader.useroperations.OperationHandler;
 
@@ -29,7 +29,7 @@ public abstract class AbstractUserSegmentsMapper extends
     // class dependencies
     private List<Closeable> closeables = getCloseables();
     private Map<String, OperationHandler> handlers = getHandlers();
-    private Convertor convertor = getConvertor();
+    private ConvertorImpl convertor = getConvertor();
 
     public void map(LongWritable key, Text value, Context context)
             throws IOException, InterruptedException {
@@ -59,6 +59,6 @@ public abstract class AbstractUserSegmentsMapper extends
 
     protected abstract Map<String, OperationHandler> getHandlers();
     protected abstract List<Closeable> getCloseables();
-    protected abstract Convertor getConvertor();
+    protected abstract ConvertorImpl getConvertor();
 
 }

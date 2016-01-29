@@ -19,20 +19,29 @@ import com.segmentreader.mapreduce.AbstractUserSegmentsMapper;
 
 public class HBaseUserRepositoryImpl implements UserRepository, Closeable {
     private static final Logger logger = LoggerFactory
-            .getLogger(HBaseUserRepositoryImplTestCase.class);
+            .getLogger(HBaseUserRepositoryImpl.class);
 
-    private static final int BUFFER_SIZE = 1;
+    private static final int BUFFER_SIZE = 20;
     private static final String COLUMN_FAMILY = "general";
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat(
             "yyyy/MM/dd HH:mm:ss");
 
     List<User> cachedList;
     private HTable hTable;
+    private int bufferSize = BUFFER_SIZE;
 
     public HBaseUserRepositoryImpl() throws IOException {
         cachedList = new LinkedList<User>();
+        hTable = createHTable();
+    }
+
+    protected HTable createHTable() throws IOException {
         Configuration config = HBaseConfiguration.create();
-        hTable = new HTable(config, "users");
+        return new HTable(config, "users");
+    }
+    
+    public void setBufferSize(int bufferSize) {
+        this.bufferSize = bufferSize;
     }
 
     @Override
@@ -42,8 +51,12 @@ public class HBaseUserRepositoryImpl implements UserRepository, Closeable {
         this.checkForBulk();
     }
 
+    public void setHTable(HTable hTableArg) {
+        hTable = hTableArg;
+    }
+
     private void checkForBulk() throws IOException {
-        if (cachedList.size() == BUFFER_SIZE) {
+        if (cachedList.size() == bufferSize) {
             this.flush();
             cachedList.clear();
         }
@@ -54,9 +67,9 @@ public class HBaseUserRepositoryImpl implements UserRepository, Closeable {
         for (User u : cachedList) {
             put = new Put(Bytes.toBytes(u.getUserId()));
             for (String segm : u.getSegments()) {
-                String timeStamp = DATE_FORMAT.format(System.currentTimeMillis());
-                put.add(Bytes.toBytes(COLUMN_FAMILY),
-                        Bytes.toBytes(segm),
+                String timeStamp = DATE_FORMAT.format(System
+                        .currentTimeMillis());
+                put.add(Bytes.toBytes(COLUMN_FAMILY), Bytes.toBytes(segm),
                         Bytes.toBytes(timeStamp));
             }
             hTable.put(put);
@@ -64,8 +77,7 @@ public class HBaseUserRepositoryImpl implements UserRepository, Closeable {
     }
 
     @Override
-    public void removeUser(String rowId)
-            throws IOException {
+    public void removeUser(String rowId) throws IOException {
         Delete delete = new Delete(Bytes.toBytes(rowId));
         hTable.delete(delete);
         logger.debug("User removed from row {}", rowId);

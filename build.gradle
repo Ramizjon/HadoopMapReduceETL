@@ -62,7 +62,7 @@ dependencies {
     compile "org.slf4j:slf4j-api:${slf4JVersion}"
     compile "net.sf.jopt-simple:jopt-simple:${simpleJoptVersion}"
     testCompile "junit:junit:${jUnitVersion}"
-    compile "org.mockito:mockito-all:${mockitoVersion}"
+    testCompile "org.mockito:mockito-all:${mockitoVersion}"
     
     //compile "com.twitter:parquet-hadoop:${parquetVersion}"
    	//compile "com.twitter:parquet-hive-bundle:${hiveBundleVersion}"
