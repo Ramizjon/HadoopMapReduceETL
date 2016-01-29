@@ -4,6 +4,7 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.LinkedList;
+import java.util.List;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
@@ -18,14 +19,14 @@ import com.segmentreader.mapreduce.AbstractUserSegmentsMapper;
 
 public class HBaseUserRepositoryImpl implements UserRepository, Closeable {
     private static final Logger logger = LoggerFactory
-            .getLogger(HBaseUserRepositoryImpl.class);
+            .getLogger(HBaseUserRepositoryImplTestCase.class);
 
     private static final int BUFFER_SIZE = 1;
     private static final String COLUMN_FAMILY = "general";
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat(
             "yyyy/MM/dd HH:mm:ss");
 
-    LinkedList<User> cachedList;
+    List<User> cachedList;
     private HTable hTable;
 
     public HBaseUserRepositoryImpl() throws IOException {
@@ -35,7 +36,7 @@ public class HBaseUserRepositoryImpl implements UserRepository, Closeable {
     }
 
     @Override
-    public void addUser(String userId, LinkedList<String> segments)
+    public void addUser(String userId, List<String> segments)
             throws IOException {
         cachedList.add(new User(userId, segments));
         this.checkForBulk();

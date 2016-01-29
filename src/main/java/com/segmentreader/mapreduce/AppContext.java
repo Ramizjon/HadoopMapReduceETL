@@ -7,7 +7,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.segmentreader.dataformats.Convertor;
 import com.segmentreader.domain.HBaseUserRepositoryImpl;
+import com.segmentreader.domain.HBaseUserRepositoryImplTestCase;
+import com.segmentreader.domain.UserRepository;
 import com.segmentreader.useroperations.AddOperationHandler;
 import com.segmentreader.useroperations.DeleteOperationHandler;
 import com.segmentreader.useroperations.OperationHandler;
@@ -56,6 +59,11 @@ public class AppContext {
         protected List<Closeable> getCloseables() {
             return Arrays.<Closeable> asList(getUserRepoInstance());
         }
+
+        @Override
+        protected Convertor getConvertor() {
+            return new Convertor();
+        }
     }
 
     /**
@@ -66,7 +74,7 @@ public class AppContext {
     public static class AddOperationHandlerImpl extends AddOperationHandler {
 
         @Override
-        protected HBaseUserRepositoryImpl getRepoInstance() {
+        protected UserRepository getRepoInstance() {
             return getUserRepoInstance();
         }
     }
@@ -80,7 +88,7 @@ public class AppContext {
             DeleteOperationHandler {
 
         @Override
-        protected HBaseUserRepositoryImpl getRepoInstance() {
+        protected UserRepository getRepoInstance() {
             return getUserRepoInstance();
         }
 

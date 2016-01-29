@@ -2,27 +2,22 @@ package com.segmentreader.mapreduce;
 
 import java.io.IOException;
 
+import joptsimple.OptionException;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
-import joptsimple.OptionException;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.NullWritable;
-import org.apache.hadoop.io.Text;
-import org.apache.hadoop.mapred.JobClient;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
-import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.NullOutputFormat;
 import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.segmentreader.dataformats.UserModInputCSVFormat;
 
 public class Main extends Configured implements Tool {
     private static final Logger logger = LoggerFactory.getLogger(Main.class);
@@ -41,7 +36,6 @@ public class Main extends Configured implements Tool {
             OptionSet options = optionParser.parse(args);
             String inputFile = options.valueOf(inputOptionSpec);
             Job job = createJob();
-            
             FileInputFormat.addInputPath(job, new Path(inputFile));
             job.submit();
             // FileOutputFormat.setOutputPath(job, new Path(outputFile));
@@ -59,7 +53,7 @@ public class Main extends Configured implements Tool {
         Job job = new Job(getConf(), "parquetreader");
         job.setJarByClass(Main.class);
         job.setNumReduceTasks(0);
-
+        
         //job.setMapOutputKeyClass(NullWritable.class);
         //job.setMapOutputValueClass(NullWritable.class);
 
@@ -67,8 +61,7 @@ public class Main extends Configured implements Tool {
         //job.setOutputValueClass(NullWritable.class);
 
         job.setMapperClass(AppContext.UserSegmentsMapper.class);
-
-        job.setInputFormatClass(UserModInputCSVFormat.class);
+        job.setInputFormatClass(TextInputFormat.class);
         
         job.setOutputFormatClass(NullOutputFormat.class);
         
