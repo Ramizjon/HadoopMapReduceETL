@@ -1,19 +1,21 @@
 package com.segmentreader.mapreduce;
 
 import java.util.LinkedList;
+import java.util.List;
 
 public class UserModCommand {
 	String userId;
 	String command;
-	LinkedList<String> segments;
+	List<String> segments;
 	
-	public UserModCommand(String userId, String command, LinkedList<String> segments) {
+	public UserModCommand(String userId, String command, List<String> segments) {
 		this.userId = userId;
 		this.command = command;
 		this.segments = segments;
 	}
 	
 	public UserModCommand(){
+	    segments = new LinkedList<>();
 	}
 	
 	public String getUserId() {
@@ -28,10 +30,10 @@ public class UserModCommand {
 	public void setCommand(String command) {
 		this.command = command;
 	}
-	public LinkedList<String> getSegments() {
+	public List<String> getSegments() {
 		return segments;
 	}
-	public void setSegments(LinkedList<String> segments) {
+	public void setSegments(List<String> segments) {
 		this.segments = segments;
 	}
 	
@@ -46,5 +48,35 @@ public class UserModCommand {
 			sb.append(s + " ");
 		}
 		return sb.toString();
+	}
+	
+	@Override
+	public boolean equals (Object o){
+	    if (this == o)
+	        return true;
+	    
+	    if ((o == null) || !(o instanceof UserModCommand)){
+	        return false;
+	    }
+	    
+	    UserModCommand temp = (UserModCommand) o;
+	    
+	    if(!temp.getUserId().equals(this.getUserId()) ||
+	            !temp.getCommand().equals(this.getCommand())||
+	            !temp.getSegments().equals(this.getSegments())){
+	        return false;
+	    }
+	    return true;
+	}
+	
+	
+	@Override
+	public int hashCode(){
+	    final int stPoint = 14;
+	    int result = 1;
+	    result = result * stPoint + getCommand().hashCode();
+	    result = result * stPoint + getUserId().hashCode();
+	    result = result * stPoint + getSegments().hashCode();
+	    return result;
 	}
 }
