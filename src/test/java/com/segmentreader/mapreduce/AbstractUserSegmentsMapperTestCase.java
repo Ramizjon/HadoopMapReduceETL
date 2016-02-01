@@ -54,7 +54,7 @@ public class AbstractUserSegmentsMapperTestCase {
         Context context = mock(Context.class);
         Counter mapRedCounter = mock(Counter.class);
         UserModCommand userMod = new UserModCommand("user22", "delete", Arrays.asList("iphone"));
-        Map handlers = ImmutableMap.of("delete", handler);
+        Map<String, OperationHandler> handlers = ImmutableMap.of("delete", handler);
         
         String input = "user22,delete,iphone";
         AbstractUserSegmentsMapper testMapper = createInstance(handlers, null, convertor);
@@ -76,7 +76,7 @@ public class AbstractUserSegmentsMapperTestCase {
         OperationHandler handler = mock(OperationHandler.class);
         Convertor convertor = mock(Convertor.class);
         Context context = mock(Context.class);
-        Map handlers = ImmutableMap.of("delete", handler);
+        Map<String, OperationHandler> handlers = ImmutableMap.of("delete", handler);
         String input = "user22,delete"; //not specifying segments in order to invoke error
         doThrow(IOException.class).when(convertor).convert(anyString());
         AbstractUserSegmentsMapper testMapper = createInstance(handlers, null, convertor);
