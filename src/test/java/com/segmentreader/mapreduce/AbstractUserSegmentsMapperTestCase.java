@@ -51,10 +51,11 @@ public class AbstractUserSegmentsMapperTestCase {
         Context context = mock(Context.class);
         Counter mapRedCounter = mock(Counter.class);
         UserModCommand userMod = new UserModCommand("user22", "delete", Arrays.asList("iphone"));
-        String input = "user22,delete,iphone";
-        AbstractUserSegmentsMapper testMapper = createInstance(new HashMap<String, OperationHandler>(){{
+        Map handlers = new HashMap<String, OperationHandler>(){{
             put("delete",handler);
-        }}, null, convertor);
+        }};
+        String input = "user22,delete,iphone";
+        AbstractUserSegmentsMapper testMapper = createInstance(handlers, null, convertor);
         when(context.getCounter("segmentreader", "mycounter")).thenReturn(mapRedCounter);
         when(convertor.convert(input)).thenReturn(userMod);
         
@@ -73,11 +74,12 @@ public class AbstractUserSegmentsMapperTestCase {
         OperationHandler handler = mock(OperationHandler.class);
         ConvertorImpl convertor = new ConvertorImpl();
         Context context = mock(Context.class);
+        Map handlers = new HashMap<String, OperationHandler>(){{
+            put("delete",handler);
+        }};
         String input = "user22,delete"; //not specifying segments in order to invoke error
         
-        AbstractUserSegmentsMapper testMapper = createInstance(new HashMap<String, OperationHandler>(){{
-            put("delete",handler);
-        }}, null, convertor);
+        AbstractUserSegmentsMapper testMapper = createInstance(handlers, null, convertor);
         
         //act stage
         testMapper.map(new LongWritable(1), new Text(input), context);
@@ -89,9 +91,7 @@ public class AbstractUserSegmentsMapperTestCase {
         ConvertorImpl convertor = mock(ConvertorImpl.class);
         Context context = mock(Context.class);
         List<Closeable> closeables = Arrays.asList(mock (Closeable.class));
-        AbstractUserSegmentsMapper testMapper = createInstance(new HashMap<String, OperationHandler>(){{
-            put("delete",handler);
-        }}, closeables, convertor);
+        AbstractUserSegmentsMapper testMapper = createInstance(new HashMap(), closeables, convertor);
         
         testMapper.cleanup(context);
         

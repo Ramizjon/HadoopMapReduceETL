@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.segmentreader.dataformats.Convertor;
 import com.segmentreader.dataformats.ConvertorImpl;
 import com.segmentreader.domain.HBaseUserRepositoryImpl;
 import com.segmentreader.domain.UserRepository;
@@ -60,7 +61,7 @@ public class AppContext {
         }
 
         @Override
-        protected ConvertorImpl getConvertor() {
+        protected Convertor getConvertor() {
             return new ConvertorImpl();
         }
     }

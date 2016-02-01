@@ -13,7 +13,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.segmentreader.dataformats.Convertor;
-import com.segmentreader.dataformats.ConvertorImpl;
 import com.segmentreader.useroperations.OperationHandler;
 
 public abstract class AbstractUserSegmentsMapper extends
@@ -59,6 +58,6 @@ public abstract class AbstractUserSegmentsMapper extends
 
     protected abstract Map<String, OperationHandler> getHandlers();
     protected abstract List<Closeable> getCloseables();
-    protected abstract ConvertorImpl getConvertor();
+    protected abstract Convertor getConvertor();
 
 }

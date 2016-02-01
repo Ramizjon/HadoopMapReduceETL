@@ -15,7 +15,7 @@ public class ConvertorImpl implements Convertor {
             throw new IOException("Validation failed: not enough arguments");
         }
 
-        List segmentsList = Arrays.asList(arr).subList(2, arr.length);
+        List<String> segmentsList = Arrays.asList(arr).subList(2, arr.length);
         return new UserModCommand(arr[0], arr[1], segmentsList);
     }
 
