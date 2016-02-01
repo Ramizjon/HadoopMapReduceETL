@@ -1,0 +1,21 @@
+<workflow-app xmlns="uri:oozie:workflow:0.1" name="${celosWorkflowName}">
+    <start to="mr-node" />
+    <action name="mr-node">
+        <java>
+            <job-tracker>quickstart.cloudera:8032</job-tracker>
+            <name-node>hdfs://quickstart.cloudera:8020</name-node>
+            <main-class>com.segmentreader.mapreduce.Main</main-class>
+            <arg>-i</arg>
+            <arg>/user/cloudera/input/${year}-${month}-${day}/${hour}00/</arg>
+            
+        </java>
+        <ok to="end" />
+        <error to="fail" />
+    </action>
+    
+    <kill name="fail">
+        <message>Java app failed, error
+            message[${wf:errorMessage(wf:lastErrorNode())}]</message>
+    </kill>
+    <end name="end" />
+</workflow-app>
