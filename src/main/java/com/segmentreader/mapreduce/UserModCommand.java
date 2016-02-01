@@ -49,4 +49,34 @@ public class UserModCommand {
 		}
 		return sb.toString();
 	}
+	
+	@Override
+	public boolean equals (Object o){
+	    if (this == o)
+	        return true;
+	    
+	    if ((o == null) || !(o instanceof UserModCommand)){
+	        return false;
+	    }
+	    
+	    UserModCommand temp = (UserModCommand) o;
+	    
+	    if(!temp.getUserId().equals(this.getUserId()) ||
+	            !temp.getCommand().equals(this.getCommand())||
+	            !temp.getSegments().equals(this.getSegments())){
+	        return false;
+	    }
+	    return true;
+	}
+	
+	
+	@Override
+	public int hashCode(){
+	    final int stPoint = 14;
+	    int result = 1;
+	    result = result * stPoint + getCommand().hashCode();
+	    result = result * stPoint + getUserId().hashCode();
+	    result = result * stPoint + getSegments().hashCode();
+	    return result;
+	}
 }

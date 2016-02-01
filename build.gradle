@@ -20,6 +20,7 @@ ext {
     hiveBundleVersion = "1.4.1"
     simpleJoptVersion = "4.9"
     mockitoVersion = "1.9.5"
+    guavaVersion = "19.0"
     mainClass = "com.segmentreader.mapreduce.Main"
 }
 
@@ -61,6 +62,7 @@ dependencies {
     compile "org.apache.hbase:hbase-client:${hBaseVersion}-${cdhVersion}"
     compile "org.slf4j:slf4j-api:${slf4JVersion}"
     compile "net.sf.jopt-simple:jopt-simple:${simpleJoptVersion}"
+    compile "com.google.guava:guava:${guavaVersion}"
     testCompile "junit:junit:${jUnitVersion}"
     testCompile "org.mockito:mockito-all:${mockitoVersion}"
     

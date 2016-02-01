@@ -3,7 +3,7 @@ package com.segmentreader.dataformats;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
-import java.util.LinkedList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Test;
@@ -16,22 +16,19 @@ public class ConvertorImplTestCase {
     public void testConvertorWithValidInput() throws IOException {
        String input = "14,add,generatedlink,closedtab";
        Convertor convertor = new ConvertorImpl();
-       List<String> expectedSegments = new LinkedList(){{
-           add("generatedlink");
-           add("closedtab");
-       }};
+       List<String> expectedSegments = Arrays.asList(input.split(",")).subList(2, 4);
        
+       UserModCommand expected = new UserModCommand("14","add",expectedSegments);
        UserModCommand umc = convertor.convert(input);
        
-       assertEquals("14", umc.getUserId());
-       assertEquals("add", umc.getCommand());
-       assertEquals(expectedSegments,umc.getSegments());
+       assertEquals(expected, umc);
     }
     
     @Test(expected=IOException.class)
-    public void testConvertorWithInValidInput() throws IOException {
+    public void testConvertorWithInvalidInput() throws IOException {
        String input = "14,add";
        Convertor convertor = new ConvertorImpl();
+       
        convertor.convert(input);
     }
 
