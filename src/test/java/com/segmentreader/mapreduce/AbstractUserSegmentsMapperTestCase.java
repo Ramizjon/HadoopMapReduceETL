@@ -70,7 +70,7 @@ public class AbstractUserSegmentsMapperTestCase {
         verify(mapRedCounter, times(1)).increment(1);
     }
     
-    @Test(expected=NullPointerException.class)
+    @Test(expected=IOException.class)
     public void testMapperWithInvalidArgs() throws IOException, InterruptedException{
         //prepare stage
         OperationHandler handler = mock(OperationHandler.class);

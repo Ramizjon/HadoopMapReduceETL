@@ -12,6 +12,7 @@ import org.apache.hadoop.mapreduce.Mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.amazonaws.services.cloudfront.model.InvalidArgumentException;
 import com.segmentreader.dataformats.Convertor;
 import com.segmentreader.useroperations.OperationHandler;
 
@@ -40,10 +41,9 @@ public abstract class AbstractUserSegmentsMapper extends
             handlers.get(cmd.getCommand()).handle(cmd);
             //context.write(NullWritable.get(), new Text(value.toLine()));
             context.getCounter(appName, mapCounter).increment(1);
-        } catch (IOException e) {
-            logger.error("Exception occured. User: {}, exception code: {}", cmd.getUserId(), e);
+        } catch (InvalidArgumentException e) {
+            logger.error("Exception occured. Arguments: {}, exception code: {}", value.toString(), e);
             context.getCounter(appName, errorCounter).increment(1);
-            throw e;
         }
     }
 
