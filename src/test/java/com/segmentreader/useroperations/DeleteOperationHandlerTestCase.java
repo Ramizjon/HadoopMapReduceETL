@@ -1,7 +1,8 @@
 package com.segmentreader.useroperations;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -10,7 +11,6 @@ import org.junit.Test;
 
 import com.segmentreader.domain.UserRepository;
 import com.segmentreader.mapreduce.UserModCommand;
-import com.segmentreader.useroperations.DeleteOperationHandler;
 
 
 public class DeleteOperationHandlerTestCase {
@@ -25,7 +25,7 @@ public class DeleteOperationHandlerTestCase {
     }
 
     @Test
-    public void testDeleteHandlerWithValidSemgents() throws IOException {
+    public void testDeleteHandlerWithValidSegments() throws IOException {
         UserRepository userRepo = mock(UserRepository.class);
         DeleteOperationHandler deleteHandler = createInstance(userRepo);
         UserModCommand userMod = new UserModCommand("user22", "add", Arrays.asList("website click"));
