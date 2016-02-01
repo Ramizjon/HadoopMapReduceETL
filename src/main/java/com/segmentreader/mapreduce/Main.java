@@ -31,9 +31,13 @@ public class Main extends Configured implements Tool {
     public int run(String args[]) throws Exception {
         int ret = 0;
         OptionParser optionParser = new OptionParser("i:");
+        optionParser.accepts("verbose");
         OptionSpec<String> inputOptionSpec = optionParser.accepts("i","input path").withRequiredArg().ofType(String.class).required();
         try {
             OptionSet options = optionParser.parse(args);
+            if (options.has("verbose")){
+                System.setProperty("org.slf4j.simpleLogger.defaultLogLevel", "debug");
+            }
             String inputFile = options.valueOf(inputOptionSpec);
             Job job = createJob();
             FileInputFormat.addInputPath(job, new Path(inputFile));
