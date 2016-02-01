@@ -1,30 +1,24 @@
 package com.segmentreader.mapreduce;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Counter;
 import org.apache.hadoop.mapreduce.Mapper.Context;
 import org.junit.Test;
-import org.mockito.Mockito;
-import org.apache.hadoop.mapreduce.Mapper;
-import org.apache.hadoop.mapreduce.Counter;
 
-import com.segmentreader.dataformats.Convertor;
 import com.segmentreader.dataformats.ConvertorImpl;
-import com.segmentreader.domain.UserRepository;
-import com.segmentreader.mapreduce.AbstractUserSegmentsMapper;
-import com.segmentreader.mapreduce.AppContext;
-import com.segmentreader.mapreduce.UserModCommand;
-import com.segmentreader.useroperations.DeleteOperationHandler;
 import com.segmentreader.useroperations.OperationHandler;
 
 public class AbstractUserSegmentsMapperTestCase {

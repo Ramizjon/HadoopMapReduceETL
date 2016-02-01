@@ -15,8 +15,6 @@ import org.apache.hadoop.hbase.util.Bytes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.segmentreader.mapreduce.AbstractUserSegmentsMapper;
-
 public class HBaseUserRepositoryImpl implements UserRepository, Closeable {
     private static final Logger logger = LoggerFactory
             .getLogger(HBaseUserRepositoryImpl.class);
@@ -31,7 +29,7 @@ public class HBaseUserRepositoryImpl implements UserRepository, Closeable {
     private int bufferSize = BUFFER_SIZE;
 
     public HBaseUserRepositoryImpl() throws IOException {
-        cachedList = new LinkedList<User>();
+        cachedList = new LinkedList<>();
         hTable = createHTable();
     }
 

@@ -15,7 +15,7 @@ public class UserModCommand {
 	}
 	
 	public UserModCommand(){
-	    segments = new LinkedList<String>();
+	    segments = new LinkedList<>();
 	}
 	
 	public String getUserId() {
