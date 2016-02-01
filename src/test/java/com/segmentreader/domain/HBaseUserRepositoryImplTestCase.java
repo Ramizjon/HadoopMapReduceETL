@@ -1,13 +1,10 @@
 package com.segmentreader.domain;
 
-import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-
-import javax.ws.rs.PUT;
 
 import org.apache.hadoop.hbase.client.Delete;
 import org.apache.hadoop.hbase.client.HTable;
@@ -59,6 +56,5 @@ public class HBaseUserRepositoryImplTestCase {
         userRepo.removeUser("user1");
         verify(hTable, times(1)).delete(any(Delete.class));
     }
-
 
 }

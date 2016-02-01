@@ -9,7 +9,6 @@ import java.util.Map;
 
 import com.segmentreader.dataformats.ConvertorImpl;
 import com.segmentreader.domain.HBaseUserRepositoryImpl;
-import com.segmentreader.domain.HBaseUserRepositoryImplTestCase;
 import com.segmentreader.domain.UserRepository;
 import com.segmentreader.useroperations.AddOperationHandler;
 import com.segmentreader.useroperations.DeleteOperationHandler;
