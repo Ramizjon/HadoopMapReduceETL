@@ -1,5 +1,7 @@
 package com.segmentreader.mapreduce;
 
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -18,13 +20,13 @@ import org.apache.hadoop.mapreduce.Counter;
 import org.apache.hadoop.mapreduce.Mapper.Context;
 import org.junit.Test;
 
-import com.segmentreader.dataformats.ConvertorImpl;
+import com.segmentreader.dataformats.Convertor;
 import com.segmentreader.useroperations.OperationHandler;
 
 public class AbstractUserSegmentsMapperTestCase {
 
     private AbstractUserSegmentsMapper createInstance(Map<String, OperationHandler> handlers,
-            List<Closeable> closeables, ConvertorImpl convertor) {
+            List<Closeable> closeables, Convertor convertor) {
         return new AbstractUserSegmentsMapper() {
             @Override
             protected Map<String, OperationHandler> getHandlers() {
@@ -37,7 +39,7 @@ public class AbstractUserSegmentsMapperTestCase {
             }
 
             @Override
-            protected ConvertorImpl getConvertor() {
+            protected Convertor getConvertor() {
                 return convertor;
             }
         };
@@ -47,7 +49,7 @@ public class AbstractUserSegmentsMapperTestCase {
     public void testMapperWithValidArgs() throws IOException, InterruptedException{
         //prepare stage
         OperationHandler handler = mock(OperationHandler.class);
-        ConvertorImpl convertor = mock(ConvertorImpl.class);
+        Convertor convertor = mock(Convertor.class);
         Context context = mock(Context.class);
         Counter mapRedCounter = mock(Counter.class);
         UserModCommand userMod = new UserModCommand("user22", "delete", Arrays.asList("iphone"));
@@ -72,13 +74,13 @@ public class AbstractUserSegmentsMapperTestCase {
     public void testMapperWithInvalidArgs() throws IOException, InterruptedException{
         //prepare stage
         OperationHandler handler = mock(OperationHandler.class);
-        ConvertorImpl convertor = new ConvertorImpl();
+        Convertor convertor = mock(Convertor.class);
         Context context = mock(Context.class);
         Map handlers = new HashMap<String, OperationHandler>(){{
             put("delete",handler);
         }};
         String input = "user22,delete"; //not specifying segments in order to invoke error
-        
+        doThrow(IOException.class).when(convertor).convert(anyString());
         AbstractUserSegmentsMapper testMapper = createInstance(handlers, null, convertor);
         
         //act stage
@@ -88,7 +90,7 @@ public class AbstractUserSegmentsMapperTestCase {
     @Test
     public void testMapperCleanup() throws IOException, InterruptedException {
         OperationHandler handler = mock(OperationHandler.class);
-        ConvertorImpl convertor = mock(ConvertorImpl.class);
+        Convertor convertor = mock(Convertor.class);
         Context context = mock(Context.class);
         List<Closeable> closeables = Arrays.asList(mock (Closeable.class));
         AbstractUserSegmentsMapper testMapper = createInstance(new HashMap(), closeables, convertor);
