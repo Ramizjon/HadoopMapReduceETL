@@ -8,7 +8,7 @@ LOCATION "${inputDir}";
 
 CREATE TABLE IF NOT EXISTS user_operations(
   id string,
-  operation string, 
+  operation string,
   segments array<string>
 )
 PARTITIONED BY (
@@ -20,11 +20,11 @@ PARTITIONED BY (
 STORED AS PARQUET;
 
 INSERT OVERWRITE TABLE user_operations
-PARTITION (year = "${year}", month = "${month}", day = "${day}", hour = "${hour}")
+PARTITION (year = ${year}, month = ${month}, day = ${day}, hour = ${hour})
 SELECT 
       split(items,",")[0] id,
       split(items,",")[1] operation,
-      split(regexp_extract(items,"([^\s]+),([^\s]+),(\w+)",0),",") segments
+      split(regexp_extract(items,"([a-zA-Z0-9_]+),([a-zA-Z0-9_]+),(.*)",3),",") segments
       FROM temp_users;
       
 DROP TABLE temp_users;
