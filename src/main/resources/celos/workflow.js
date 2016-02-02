@@ -13,6 +13,7 @@ function defineWorkflow() {
         "externalService": celos.oozieExternalService({
             // These properties are passed to the Oozie job
             "oozie.wf.application.path": APPLICATION_PATH,
+            "oozie.use.system.libpath": "true",
             "inputPath": INPUT_PATH
         })
     });

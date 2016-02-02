@@ -1,5 +1,20 @@
 <workflow-app xmlns="uri:oozie:workflow:0.1" name="${celosWorkflowName}">
-    <start to="mr-node" />
+    <start to="hiveaction" />
+    <action name="hiveaction">
+        <hive xmlns="uri:oozie:hive-action:0.2">
+            <job-tracker>quickstart.cloudera:8032</job-tracker>
+            <name-node>hdfs://quickstart.cloudera:8020</name-node>
+            <job-xml>hive-site.xml</job-xml>
+            <script>script.sql</script>
+            <param>inputDir=${inputPath}</param>
+            <param>year=${year}</param>
+            <param>month=${month}</param>
+            <param>day=${day}</param>
+            <param>hour=${hour}</param>
+        </hive>
+        <ok to="mr-node"/>
+        <error to="fail"/>
+    </action>
     <action name="mr-node">
         <java>
             <job-tracker>quickstart.cloudera:8032</job-tracker>
