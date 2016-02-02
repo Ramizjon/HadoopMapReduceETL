@@ -3,7 +3,6 @@ package com.segmentreader.dataformats;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
-import java.text.ParseException;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -19,7 +18,7 @@ import com.segmentreader.mapreduce.UserModCommand;
 public class ConvertorImplTestCase {
 
     @Test
-    public void testConvertorWithValidInput() throws IOException, ParseException {
+    public void testConvertorWithValidInput() throws IOException {
        String epoch = Instant.EPOCH.toString();
        String input = epoch+",14,add,generatedlink,closedtab";
        Convertor convertor = new ConvertorImpl();
@@ -36,7 +35,7 @@ public class ConvertorImplTestCase {
     
     @Test(expected=InvalidArgumentException
             .class)
-    public void testConvertorWithInvalidInput() throws IOException, InvalidArgumentException, ParseException {
+    public void testConvertorWithInvalidInput() throws IOException, InvalidArgumentException {
        String input = Instant.EPOCH.toString()+",14,add";
        Convertor convertor = new ConvertorImpl();
        convertor.convert(input);
