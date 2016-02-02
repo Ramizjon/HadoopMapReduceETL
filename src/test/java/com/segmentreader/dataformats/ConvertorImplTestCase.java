@@ -3,11 +3,12 @@ package com.segmentreader.dataformats;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
-import java.sql.Timestamp;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 import org.junit.Test;
@@ -19,13 +20,14 @@ public class ConvertorImplTestCase {
 
     @Test
     public void testConvertorWithValidInput() throws IOException, ParseException {
-       String input = "2014-08-22 15:02:51:580+12:15,14,add,generatedlink,closedtab";
+       String epoch = Instant.EPOCH.toString();
+       String input = epoch+",14,add,generatedlink,closedtab";
        Convertor convertor = new ConvertorImpl();
        List<String> expectedSegments = Arrays.asList(input.split(",")).subList(3, 5);
        
-       SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss:SSS+hh:mm");
-       Date parsedTimeStamp = dateFormat.parse("2014-08-22 15:02:51:580+12:15");
-       Timestamp timestamp = new Timestamp(parsedTimeStamp.getTime());
+       DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
+       LocalDateTime localDateTime = LocalDateTime.parse(epoch, formatter);
+       Instant timestamp = localDateTime.toInstant(ZoneOffset.UTC);
        UserModCommand expected = new UserModCommand(timestamp, "14","add",expectedSegments);
        UserModCommand umc = convertor.convert(input);
        
@@ -35,7 +37,7 @@ public class ConvertorImplTestCase {
     @Test(expected=InvalidArgumentException
             .class)
     public void testConvertorWithInvalidInput() throws IOException, InvalidArgumentException, ParseException {
-       String input = "2014-08-22 15:02:51:580+12:15,14,add";
+       String input = Instant.EPOCH.toString()+",14,add";
        Convertor convertor = new ConvertorImpl();
        convertor.convert(input);
     }

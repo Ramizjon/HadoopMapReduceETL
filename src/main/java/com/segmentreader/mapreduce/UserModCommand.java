@@ -1,16 +1,16 @@
 package com.segmentreader.mapreduce;
 
-import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.LinkedList;
 import java.util.List;
 
 public class UserModCommand {
-    Timestamp timestamp;
+    Instant timestamp;
     String userId;
     String command;
     List<String> segments;
 
-    public UserModCommand(Timestamp timestamp, String userId, String command, List<String> segments) {
+    public UserModCommand(Instant timestamp, String userId, String command, List<String> segments) {
         this.userId = userId;
         this.command = command;
         this.segments = segments;
@@ -49,11 +49,11 @@ public class UserModCommand {
         this.segments.add(segment);
     }
 
-    public Timestamp getTimestamp() {
+    public Instant getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(Timestamp timestamp) {
+    public void setTimestamp(Instant timestamp) {
         this.timestamp = timestamp;
     }
 

@@ -9,11 +9,12 @@ import static org.mockito.Mockito.when;
 
 import java.io.Closeable;
 import java.io.IOException;
-import java.sql.Timestamp;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,13 +59,13 @@ public class AbstractUserSegmentsMapperTestCase {
         Convertor convertor = mock(Convertor.class);
         Context context = mock(Context.class);
         Counter mapRedCounter = mock(Counter.class);
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss:SSS+hh:mm");
-        Date parsedTimeStamp = dateFormat.parse("2014-08-22 15:02:51:580+12:15");
-        Timestamp timestamp = new Timestamp(parsedTimeStamp.getTime());
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        LocalDateTime localDateTime = LocalDateTime.parse(Instant.EPOCH.toString(), formatter);
+        Instant timestamp = localDateTime.toInstant(ZoneOffset.UTC);
         UserModCommand userMod = new UserModCommand(timestamp, "user22", "delete", Arrays.asList("iphone"));
         Map<String, OperationHandler> handlers = ImmutableMap.of("delete", handler);
         
-        String input = "2014-08-22 15:02:51:580+12:15, user22,delete,iphone";
+        String input = Instant.EPOCH.toString()+", user22,delete,iphone";
         AbstractUserSegmentsMapper testMapper = createInstance(handlers, null, convertor);
         when(context.getCounter("segmentreader", "mycounter")).thenReturn(mapRedCounter);
         when(convertor.convert(input)).thenReturn(userMod);
@@ -85,7 +86,7 @@ public class AbstractUserSegmentsMapperTestCase {
         Convertor convertor = mock(Convertor.class);
         Context context = mock(Context.class);
         Map<String, OperationHandler> handlers = ImmutableMap.of("delete", handler);
-        String input = "2014-08-22 15:02:51:580+12:15,user22,delete"; //not specifying segments in order to invoke error
+        String input = Instant.EPOCH.toString()+",user22,delete"; //not specifying segments in order to invoke error
         doThrow(IOException.class).when(convertor).convert(anyString());
         AbstractUserSegmentsMapper testMapper = createInstance(handlers, null, convertor);
         

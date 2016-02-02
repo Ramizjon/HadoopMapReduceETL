@@ -6,7 +6,10 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import java.io.IOException;
-import java.sql.Timestamp;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 
@@ -32,7 +35,9 @@ public class HBaseUserRepositoryImplTestCase {
         HTable hTable = mock(HTable.class);
         HBaseUserRepositoryImpl userRepo = createRepository(hTable);
         userRepo.setBufferSize(1);
-        Timestamp timestamp = mock(Timestamp.class);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        LocalDateTime localDateTime = LocalDateTime.parse(Instant.EPOCH.toString(), formatter);
+        Instant timestamp = localDateTime.toInstant(ZoneOffset.UTC);
         List<String> list = Arrays.asList("magic mouse");
         
         userRepo.addUser(timestamp, "11", list);
@@ -44,7 +49,9 @@ public class HBaseUserRepositoryImplTestCase {
     public void testUserRepositoryImplAddUserMultipleRecords()
             throws IOException {
         HTable hTable = mock(HTable.class);
-        Timestamp timestamp = mock(Timestamp.class);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        LocalDateTime localDateTime = LocalDateTime.parse(Instant.EPOCH.toString(), formatter);
+        Instant timestamp = localDateTime.toInstant(ZoneOffset.UTC);
         HBaseUserRepositoryImpl userRepo = createRepository(hTable);
         userRepo.setBufferSize(2);
 

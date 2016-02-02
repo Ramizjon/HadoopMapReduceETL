@@ -5,11 +5,12 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import java.io.IOException;
-import java.sql.Timestamp;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
-import java.util.Date;
 
 import org.junit.Test;
 
@@ -32,9 +33,9 @@ public class AddOperationHandlerTestCase {
         // arrange
         UserRepository repo = mock(UserRepository.class);
         AddOperationHandler handler = createInstance(repo);
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss:SSS+hh:mm");
-        Date parsedTimeStamp = dateFormat.parse("2014-08-22 15:02:51:580+12:15");
-        Timestamp timestamp = new Timestamp(parsedTimeStamp.getTime());
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        LocalDateTime localDateTime = LocalDateTime.parse(Instant.EPOCH.toString(), formatter);
+        Instant timestamp = localDateTime.toInstant(ZoneOffset.UTC);
         UserModCommand nonEmptyUserMod = new UserModCommand(timestamp, "user33", "add", Arrays.asList("website click"));
         // act
         handler.handle(nonEmptyUserMod);

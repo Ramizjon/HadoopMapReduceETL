@@ -1,10 +1,11 @@
 package com.segmentreader.dataformats;
 
-import java.sql.Timestamp;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 import com.amazonaws.services.cloudfront.model.InvalidArgumentException;
@@ -21,9 +22,11 @@ public class ConvertorImpl implements Convertor {
 
         List<String> segmentsList = Arrays.asList(arr).subList(3, arr.length);
         
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss:SSS+hh:mm");
-        Date parsedTimeStamp = dateFormat.parse(arr[0]);
-        Timestamp timestamp = new Timestamp(parsedTimeStamp.getTime());
+        
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        LocalDateTime localDateTime = LocalDateTime.parse(arr[0], formatter);
+        Instant timestamp = localDateTime.toInstant(ZoneOffset.UTC);
+
         return new UserModCommand(timestamp, arr[1], arr[2], segmentsList);
     }
 

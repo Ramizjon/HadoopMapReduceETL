@@ -1,15 +1,15 @@
 package com.segmentreader.domain;
 
-import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.LinkedList;
 import java.util.List;
 
 public class User {
+    Instant timestamp;
     String userId;
     List<String> segments;
-    Timestamp timestamp;
 
-    public User(Timestamp timestamp, String userId, List<String> segments) {
+    public User(Instant timestamp, String userId, List<String> segments) {
         super();
         this.timestamp = timestamp;
         this.userId = userId;
@@ -32,11 +32,11 @@ public class User {
         this.segments = segment;
     }
 
-    public Timestamp getTimestamp() {
+    public Instant getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(Timestamp timestamp) {
+    public void setTimestamp(Instant timestamp) {
         this.timestamp = timestamp;
     }
 
