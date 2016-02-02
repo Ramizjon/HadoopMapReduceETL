@@ -5,13 +5,16 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import java.io.IOException;
+import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 
 import org.junit.Test;
 
 import com.segmentreader.domain.UserRepository;
 import com.segmentreader.mapreduce.UserModCommand;
-import com.segmentreader.useroperations.AddOperationHandler;
 
 public class AddOperationHandlerTestCase {
 
@@ -25,16 +28,19 @@ public class AddOperationHandlerTestCase {
     }
     
     @Test
-    public void testAddHandlerWithValidSegments() throws IOException {
+    public void testAddHandlerWithValidSegments() throws IOException, ParseException {
         // arrange
         UserRepository repo = mock(UserRepository.class);
         AddOperationHandler handler = createInstance(repo);
-        UserModCommand nonEmptyUserMod = new UserModCommand("user33", "add", Arrays.asList("website click"));
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss:SSS+hh:mm");
+        Date parsedTimeStamp = dateFormat.parse("2014-08-22 15:02:51:580+12:15");
+        Timestamp timestamp = new Timestamp(parsedTimeStamp.getTime());
+        UserModCommand nonEmptyUserMod = new UserModCommand(timestamp, "user33", "add", Arrays.asList("website click"));
         // act
         handler.handle(nonEmptyUserMod);
         
         //assert
-        verify(repo, times(1)).addUser("user33", Arrays.asList("website click"));
+        verify(repo, times(1)).addUser(timestamp,"user33", Arrays.asList("website click"));
     }
    
    

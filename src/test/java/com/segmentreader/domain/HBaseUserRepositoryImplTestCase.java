@@ -1,8 +1,12 @@
 package com.segmentreader.domain;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.List;
 
@@ -28,8 +32,10 @@ public class HBaseUserRepositoryImplTestCase {
         HTable hTable = mock(HTable.class);
         HBaseUserRepositoryImpl userRepo = createRepository(hTable);
         userRepo.setBufferSize(1);
+        Timestamp timestamp = mock(Timestamp.class);
         List<String> list = Arrays.asList("magic mouse");
-        userRepo.addUser("11", list);
+        
+        userRepo.addUser(timestamp, "11", list);
         
         verify(hTable, times(1)).put(any(Put.class));
     }
@@ -38,13 +44,14 @@ public class HBaseUserRepositoryImplTestCase {
     public void testUserRepositoryImplAddUserMultipleRecords()
             throws IOException {
         HTable hTable = mock(HTable.class);
+        Timestamp timestamp = mock(Timestamp.class);
         HBaseUserRepositoryImpl userRepo = createRepository(hTable);
         userRepo.setBufferSize(2);
 
         List<String> list = Arrays.asList("magic mouse");
-        userRepo.addUser("11", list);
+        userRepo.addUser(timestamp, "11", list);
         verify(hTable, times(0)).put(any(Put.class));
-        userRepo.addUser("23", list);
+        userRepo.addUser(timestamp, "23", list);
         verify(hTable, times(2)).put(any(Put.class));
     }
 

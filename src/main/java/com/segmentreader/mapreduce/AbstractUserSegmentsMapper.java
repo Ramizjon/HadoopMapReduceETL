@@ -2,6 +2,7 @@ package com.segmentreader.mapreduce;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
 
@@ -41,7 +42,7 @@ public abstract class AbstractUserSegmentsMapper extends
             handlers.get(cmd.getCommand()).handle(cmd);
             //context.write(NullWritable.get(), new Text(value.toLine()));
             context.getCounter(appName, mapCounter).increment(1);
-        } catch (InvalidArgumentException e) {
+        } catch (InvalidArgumentException | ParseException e) {
             logger.error("Exception occured. Arguments: {}, exception code: {}", value.toString(), e);
             context.getCounter(appName, errorCounter).increment(1);
         }

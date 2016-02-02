@@ -2,6 +2,7 @@ package com.segmentreader.domain;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.LinkedList;
 import java.util.List;
@@ -22,7 +23,7 @@ public class HBaseUserRepositoryImpl implements UserRepository, Closeable {
     private static final int BUFFER_SIZE = 20;
     private static final String COLUMN_FAMILY = "general";
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat(
-            "yyyy/MM/dd HH:mm:ss");
+            "yyyy-MM-dd hh:mm:ss:SSS+hh:mm");
 
     List<User> cachedList;
     private HTable hTable;
@@ -43,9 +44,9 @@ public class HBaseUserRepositoryImpl implements UserRepository, Closeable {
     }
 
     @Override
-    public void addUser(String userId, List<String> segments)
+    public void addUser(Timestamp timestamp,String userId, List<String> segments)
             throws IOException {
-        cachedList.add(new User(userId, segments));
+        cachedList.add(new User(timestamp, userId, segments));
         this.checkForBulk();
     }
 
@@ -65,8 +66,7 @@ public class HBaseUserRepositoryImpl implements UserRepository, Closeable {
         for (User u : cachedList) {
             put = new Put(Bytes.toBytes(u.getUserId()));
             for (String segm : u.getSegments()) {
-                String timeStamp = DATE_FORMAT.format(System
-                        .currentTimeMillis());
+                String timeStamp = DATE_FORMAT.format(u.getTimestamp());
                 put.add(Bytes.toBytes(COLUMN_FAMILY), Bytes.toBytes(segm),
                         Bytes.toBytes(timeStamp));
             }

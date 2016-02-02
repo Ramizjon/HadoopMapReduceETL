@@ -12,9 +12,8 @@ public abstract class AddOperationHandler implements OperationHandler {
 	
 	@Override
 	public void handle(UserModCommand value) throws IOException {
-		userRepository.addUser(value.getUserId(), value.getSegments());
+		userRepository.addUser(value.getTimestamp(), value.getUserId(), value.getSegments());
 	}
 	
 	protected abstract UserRepository getRepoInstance();
-
 }

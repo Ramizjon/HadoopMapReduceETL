@@ -5,7 +5,11 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import java.io.IOException;
+import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 
 import org.junit.Test;
 
@@ -25,10 +29,13 @@ public class DeleteOperationHandlerTestCase {
     }
 
     @Test
-    public void testDeleteHandlerWithValidSegments() throws IOException {
+    public void testDeleteHandlerWithValidSegments() throws IOException, ParseException {
         UserRepository userRepo = mock(UserRepository.class);
         DeleteOperationHandler deleteHandler = createInstance(userRepo);
-        UserModCommand userMod = new UserModCommand("user22", "add", Arrays.asList("website click"));
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss:SSS+hh:mm");
+        Date parsedTimeStamp = dateFormat.parse("2014-08-22 15:02:51:580+12:15");
+        Timestamp timestamp = new Timestamp(parsedTimeStamp.getTime());
+        UserModCommand userMod = new UserModCommand(timestamp, "user22", "add", Arrays.asList("website click"));
         
         deleteHandler.handle(userMod);
         
