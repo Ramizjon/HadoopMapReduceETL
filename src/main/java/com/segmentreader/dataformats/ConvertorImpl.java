@@ -1,8 +1,6 @@
 package com.segmentreader.dataformats;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
@@ -20,12 +18,7 @@ public class ConvertorImpl implements Convertor {
         }
 
         List<String> segmentsList = Arrays.asList(arr).subList(3, arr.length);
-        
-        
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
-        LocalDateTime localDateTime = LocalDateTime.parse(arr[0], formatter);
-        Instant timestamp = localDateTime.toInstant(ZoneOffset.UTC);
-
+        Instant timestamp = Instant.from(DateTimeFormatter.ISO_DATE_TIME.parse(arr[0]));
         return new UserModCommand(timestamp, arr[1], arr[2], segmentsList);
     }
 

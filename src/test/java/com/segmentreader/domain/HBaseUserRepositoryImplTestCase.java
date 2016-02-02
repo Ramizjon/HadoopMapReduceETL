@@ -7,8 +7,6 @@ import static org.mockito.Mockito.verify;
 
 import java.io.IOException;
 import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
@@ -35,9 +33,7 @@ public class HBaseUserRepositoryImplTestCase {
         HTable hTable = mock(HTable.class);
         HBaseUserRepositoryImpl userRepo = createRepository(hTable);
         userRepo.setBufferSize(1);
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
-        LocalDateTime localDateTime = LocalDateTime.parse(Instant.EPOCH.toString(), formatter);
-        Instant timestamp = localDateTime.toInstant(ZoneOffset.UTC);
+        Instant timestamp = Instant.from(DateTimeFormatter.ISO_DATE_TIME.parse("2011-12-03T10:15:30+01:00"));
         List<String> list = Arrays.asList("magic mouse");
         
         userRepo.addUser(timestamp, "11", list);
@@ -49,9 +45,7 @@ public class HBaseUserRepositoryImplTestCase {
     public void testUserRepositoryImplAddUserMultipleRecords()
             throws IOException {
         HTable hTable = mock(HTable.class);
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
-        LocalDateTime localDateTime = LocalDateTime.parse(Instant.EPOCH.toString(), formatter);
-        Instant timestamp = localDateTime.toInstant(ZoneOffset.UTC);
+        Instant timestamp = Instant.from(DateTimeFormatter.ISO_DATE_TIME.parse("2011-12-03T10:15:30+01:00"));
         HBaseUserRepositoryImpl userRepo = createRepository(hTable);
         userRepo.setBufferSize(2);
 

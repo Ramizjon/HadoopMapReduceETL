@@ -4,8 +4,6 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
@@ -19,14 +17,10 @@ public class ConvertorImplTestCase {
 
     @Test
     public void testConvertorWithValidInput() throws IOException {
-       String epoch = Instant.EPOCH.toString();
-       String input = epoch+",14,add,generatedlink,closedtab";
+       String input = "2011-12-03T10:15:30+01:00,14,add,generatedlink,closedtab";
        Convertor convertor = new ConvertorImpl();
        List<String> expectedSegments = Arrays.asList(input.split(",")).subList(3, 5);
-       
-       DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
-       LocalDateTime localDateTime = LocalDateTime.parse(epoch, formatter);
-       Instant timestamp = localDateTime.toInstant(ZoneOffset.UTC);
+       Instant timestamp = Instant.from(DateTimeFormatter.ISO_DATE_TIME.parse("2011-12-03T10:15:30+01:00"));
        UserModCommand expected = new UserModCommand(timestamp, "14","add",expectedSegments);
        UserModCommand umc = convertor.convert(input);
        
