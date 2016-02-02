@@ -5,7 +5,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import java.io.IOException;
-import java.text.ParseException;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -29,7 +28,7 @@ public class AddOperationHandlerTestCase {
     }
     
     @Test
-    public void testAddHandlerWithValidSegments() throws IOException, ParseException {
+    public void testAddHandlerWithValidSegments() throws IOException {
         // arrange
         UserRepository repo = mock(UserRepository.class);
         AddOperationHandler handler = createInstance(repo);

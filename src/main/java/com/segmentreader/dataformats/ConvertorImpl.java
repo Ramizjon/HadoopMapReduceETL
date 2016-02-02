@@ -1,6 +1,5 @@
 package com.segmentreader.dataformats;
 
-import java.text.ParseException;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -13,7 +12,7 @@ import com.segmentreader.mapreduce.UserModCommand;
 
 public class ConvertorImpl implements Convertor {
 
-    public UserModCommand convert(String value) throws InvalidArgumentException, ParseException {
+    public UserModCommand convert(String value) throws InvalidArgumentException {
         String[] arr = value.split(",");
 
         if (arr.length < 4) {

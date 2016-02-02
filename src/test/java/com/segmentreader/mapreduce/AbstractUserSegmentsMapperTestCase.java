@@ -9,7 +9,6 @@ import static org.mockito.Mockito.when;
 
 import java.io.Closeable;
 import java.io.IOException;
-import java.text.ParseException;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -53,7 +52,7 @@ public class AbstractUserSegmentsMapperTestCase {
     }
 
     @Test
-    public void testMapperWithValidArgs() throws IOException, InterruptedException, ParseException{
+    public void testMapperWithValidArgs() throws IOException, InterruptedException{
         //prepare stage
         OperationHandler handler = mock(OperationHandler.class);
         Convertor convertor = mock(Convertor.class);
@@ -80,7 +79,7 @@ public class AbstractUserSegmentsMapperTestCase {
     }
     
     @Test(expected=IOException.class)
-    public void testMapperWithInvalidArgs() throws IOException, InterruptedException, InvalidArgumentException, ParseException{
+    public void testMapperWithInvalidArgs() throws IOException, InterruptedException, InvalidArgumentException{
         //prepare stage
         OperationHandler handler = mock(OperationHandler.class);
         Convertor convertor = mock(Convertor.class);
