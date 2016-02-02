@@ -10,7 +10,7 @@ function defineWorkflow() {
         "id": "parquetreader",
         "schedule": celos.hourlySchedule(),
         "schedulingStrategy": celos.serialSchedulingStrategy(),
-        "trigger": celos.hdfsCheckTrigger(inputPath + "/_SUCCESS"),
+        "trigger": celos.hdfsCheckTrigger(INPUT_PATH + "/_SUCCESS"),
         "externalService": celos.oozieExternalService({
             // These properties are passed to the Oozie job
             "oozie.wf.application.path": APPLICATION_PATH,
@@ -21,4 +21,3 @@ function defineWorkflow() {
 }
 
 defineWorkflow();
-
