@@ -2,7 +2,6 @@ package com.segmentreader.domain;
 
 import java.io.Closeable;
 import java.io.IOException;
-import java.time.Instant;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -41,9 +40,9 @@ public class HBaseUserRepositoryImpl implements UserRepository, Closeable {
     }
 
     @Override
-    public void addUser(Instant timestamp,String userId, List<String> segments)
+    public void addUser(User user)
             throws IOException {
-        cachedList.add(new User(timestamp, userId, segments));
+        cachedList.add(user);
         this.checkForBulk();
     }
 

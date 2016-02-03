@@ -11,6 +11,7 @@ import java.util.Arrays;
 
 import org.junit.Test;
 
+import com.segmentreader.domain.User;
 import com.segmentreader.domain.UserRepository;
 import com.segmentreader.mapreduce.UserModCommand;
 
@@ -36,7 +37,7 @@ public class AddOperationHandlerTestCase {
         handler.handle(nonEmptyUserMod);
         
         //assert
-        verify(repo, times(1)).addUser(timestamp,"user33", Arrays.asList("website click"));
+        verify(repo, times(1)).addUser(new User(timestamp,"user33", Arrays.asList("website click")));
     }
    
    

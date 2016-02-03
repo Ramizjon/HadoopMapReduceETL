@@ -36,7 +36,7 @@ public class HBaseUserRepositoryImplTestCase {
         Instant timestamp = Instant.from(DateTimeFormatter.ISO_DATE_TIME.parse("2011-12-03T10:15:30+01:00"));
         List<String> list = Arrays.asList("magic mouse");
         
-        userRepo.addUser(timestamp, "11", list);
+        userRepo.addUser(new User(timestamp, "11", list));
         
         verify(hTable, times(1)).put(any(Put.class));
     }
@@ -50,9 +50,9 @@ public class HBaseUserRepositoryImplTestCase {
         userRepo.setBufferSize(2);
 
         List<String> list = Arrays.asList("magic mouse");
-        userRepo.addUser(timestamp, "11", list);
+        userRepo.addUser(new User(timestamp, "11", list));
         verify(hTable, times(0)).put(any(Put.class));
-        userRepo.addUser(timestamp, "23", list);
+        userRepo.addUser(new User(timestamp, "23", list));
         verify(hTable, times(2)).put(any(Put.class));
     }
 

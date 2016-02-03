@@ -1,14 +1,13 @@
 package com.segmentreader.mapreduce;
 
 import java.io.IOException;
-import java.time.Instant;
-import java.time.format.DateTimeFormatter;
 
 import joptsimple.OptionException;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
 
+import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.mapreduce.Job;
@@ -16,6 +15,7 @@ import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.NullOutputFormat;
 import org.apache.hadoop.util.Tool;
+import org.apache.hadoop.util.ToolRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,11 +23,9 @@ public class Main extends Configured implements Tool {
     private static final Logger logger = LoggerFactory.getLogger(Main.class);
 
     public static void main(String[] args) throws Exception {
-        Instant timestamp = Instant.from(DateTimeFormatter.ISO_DATE_TIME.parse("2011-12-03T10:15:30+01:00"));
-        System.out.println(timestamp.toString());
-       // int res = ToolRunner.run(new Configuration(), new Main(), args);
-        //logger.info("Application has finished execution with result: " + res);
-        //System.exit(res);
+        int res = ToolRunner.run(new Configuration(), new Main(), args);
+        logger.info("Application has finished execution with result: " + res);
+        System.exit(res);
     }
 
     public int run(String args[]) throws Exception {
