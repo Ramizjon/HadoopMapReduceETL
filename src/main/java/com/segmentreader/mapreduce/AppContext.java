@@ -39,13 +39,8 @@ public class AppContext {
         return userRepository;
     }
 
-    /**
-     * implementation of main application mapper class
-     * 
-     * @author Ramizjon
-     *
-     */
-    public static class UserSegmentsMapper extends AbstractUserSegmentsMapper {
+    public static class CookieReducer extends AbstractCookieReducer {
+
         protected Map<String, OperationHandler> getHandlers() {
             Map<String, OperationHandler> handlersMap = new HashMap<String, OperationHandler>();
             handlersMap.put(OperationHandler.ADD_OPERATION,
@@ -54,7 +49,17 @@ public class AppContext {
                     new AppContext.DeleteOperationHandlerImpl());
             return handlersMap;
         }
-
+    }
+    
+    
+    /**
+     * implementation of main application mapper class
+     * 
+     * @author Ramizjon
+     *
+     */
+    public static class UserSegmentsMapper extends AbstractUserSegmentsMapper {
+        
         @Override
         protected List<Closeable> getCloseables() {
             return Arrays.<Closeable> asList(getUserRepoInstance());

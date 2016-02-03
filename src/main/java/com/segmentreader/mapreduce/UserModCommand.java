@@ -41,6 +41,10 @@ public class UserModCommand {
 		this.segments.add(segment);
 	}
 	
+	public void addSegments (List<String> segments){
+	    this.segments.addAll(segments);
+	}
+	
 	public String toLine (){
 		StringBuilder sb = new StringBuilder();
 		sb.append(getUserId()  + " " + getCommand() + " ");

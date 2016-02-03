@@ -29,11 +29,7 @@ public class AbstractUserSegmentsMapperTestCase {
     private AbstractUserSegmentsMapper createInstance(Map<String, OperationHandler> handlers,
             List<Closeable> closeables, Convertor convertor) {
         return new AbstractUserSegmentsMapper() {
-            @Override
-            protected Map<String, OperationHandler> getHandlers() {
-                return handlers;
-            }
-
+ 
             @Override
             protected List<Closeable> getCloseables() {
                 return closeables;

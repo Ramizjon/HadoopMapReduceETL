@@ -10,10 +10,12 @@ import joptsimple.OptionSpec;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
-import org.apache.hadoop.mapreduce.lib.output.NullOutputFormat;
+import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
 import org.slf4j.Logger;
@@ -30,15 +32,17 @@ public class Main extends Configured implements Tool {
 
     public int run(String args[]) throws Exception {
         int ret = 0;
-        OptionParser optionParser = new OptionParser("i:");
+        OptionParser optionParser = new OptionParser("i:o:");
         OptionSpec<String> inputOptionSpec = optionParser.accepts("i","input path").withRequiredArg().ofType(String.class).required();
+        OptionSpec<String> outPutOptionSpec = optionParser.accepts("o","output path").withRequiredArg().ofType(String.class).required();
         try {
             OptionSet options = optionParser.parse(args);
             String inputFile = options.valueOf(inputOptionSpec);
+            String outputPath = options.valueOf(outPutOptionSpec);
             Job job = createJob();
             FileInputFormat.addInputPath(job, new Path(inputFile));
+            FileOutputFormat.setOutputPath(job, new Path(outputPath));
             job.submit();
-            // FileOutputFormat.setOutputPath(job, new Path(outputFile));
             logger.info("Job id: {}", job.getJobID());
             ret =  job.waitForCompletion(true) ? 0 : -1;
         }
@@ -52,18 +56,17 @@ public class Main extends Configured implements Tool {
     private Job createJob() throws IOException {
         Job job = new Job(getConf(), "parquetreader");
         job.setJarByClass(Main.class);
-        job.setNumReduceTasks(0);
         
-        //job.setMapOutputKeyClass(NullWritable.class);
-        //job.setMapOutputValueClass(NullWritable.class);
+        job.setMapOutputKeyClass(Text.class);
+        job.setMapOutputValueClass(UserModCommand.class);
 
-        //job.setOutputKeyClass(NullWritable.class);
-        //job.setOutputValueClass(NullWritable.class);
+        job.setOutputKeyClass(Text.class);
+        job.setOutputValueClass(Text.class);
 
         job.setMapperClass(AppContext.UserSegmentsMapper.class);
+        job.setReducerClass(AppContext.CookieReducer.class);
         job.setInputFormatClass(TextInputFormat.class);
-        
-        job.setOutputFormatClass(NullOutputFormat.class);
+        job.setOutputFormatClass(TextOutputFormat.class);
         
         logger.info("Mapreduce job created");
         return job;
