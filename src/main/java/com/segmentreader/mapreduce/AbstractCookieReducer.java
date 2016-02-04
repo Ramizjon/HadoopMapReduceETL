@@ -33,7 +33,7 @@ public abstract class AbstractCookieReducer extends
                 .collect(Collectors.groupingBy(UserModCommand::getCommand));
         
         //creating single usermodcommand for every command type
-        UserModCommand addCommand = new UserModCommand(key.toString(),addOp,new LinkedList<>());
+        UserModCommand addCommand = new UserModCommand(userModList.get(0).getTimestamp(), key.toString(),addOp,new LinkedList<>());
         Optional<UserModCommand> addCommandOpt = Optional.of(addCommand);
         //getting merged list from every list in every UMC
         if (addCommandOpt.isPresent()){
@@ -44,7 +44,7 @@ public abstract class AbstractCookieReducer extends
             handlers.get(addOp).handle(addCommand);
         }
         
-        UserModCommand deleteCommand = new UserModCommand(key.toString(),deleteOp,new LinkedList<>());
+        UserModCommand deleteCommand = new UserModCommand(userModList.get(0).getTimestamp(), key.toString(),deleteOp,new LinkedList<>());
         Optional<UserModCommand> deleteCommandOpt = Optional.of(addCommand);
         if (deleteCommandOpt.isPresent()){
             deleteCommand.setSegments(

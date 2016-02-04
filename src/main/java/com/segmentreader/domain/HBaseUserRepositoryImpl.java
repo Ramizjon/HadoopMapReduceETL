@@ -14,6 +14,8 @@ import org.apache.hadoop.hbase.util.Bytes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.segmentreader.mapreduce.UserModCommand;
+
 public class HBaseUserRepositoryImpl implements UserRepository, Closeable {
     private static final Logger logger = LoggerFactory
             .getLogger(HBaseUserRepositoryImpl.class);
@@ -21,7 +23,7 @@ public class HBaseUserRepositoryImpl implements UserRepository, Closeable {
     private static final int BUFFER_SIZE = 20;
     private static final String COLUMN_FAMILY = "general";
 
-    List<User> cachedList;
+    List<UserModCommand> cachedList;
     private HTable hTable;
     private int bufferSize = BUFFER_SIZE;
 
@@ -40,7 +42,7 @@ public class HBaseUserRepositoryImpl implements UserRepository, Closeable {
     }
 
     @Override
-    public void addUser(User user)
+    public void addUser(UserModCommand user)
             throws IOException {
         cachedList.add(user);
         this.checkForBulk();
@@ -59,7 +61,7 @@ public class HBaseUserRepositoryImpl implements UserRepository, Closeable {
 
     protected void flush() throws IOException {
         Put put = null;
-        for (User u : cachedList) {
+        for (UserModCommand u : cachedList) {
             put = new Put(Bytes.toBytes(u.getUserId()));
             for (String segm : u.getSegments()) {
                 String timeStamp = u.getTimestamp().toString();

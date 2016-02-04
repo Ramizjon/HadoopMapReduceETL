@@ -7,6 +7,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.Map;
 
@@ -34,11 +35,12 @@ public class AbstractCookieReducerTestCase {
     public void testAbstractCookieReducer() throws IOException, InterruptedException {
         OperationHandler handler = mock(OperationHandler.class);
         Counter mapRedCounter = mock(Counter.class);
+        Instant timeStamp = Instant.EPOCH;
         Map<String, OperationHandler> handlers = ImmutableMap.of(OperationHandler.DELETE_OPERATION, handler,
                 OperationHandler.ADD_OPERATION, handler);
-        UserModCommand umc = new UserModCommand("11",OperationHandler.ADD_OPERATION, 
+        UserModCommand umc = new UserModCommand(timeStamp,"11",OperationHandler.ADD_OPERATION, 
                 Arrays.asList("iphone", "macbook", "magic mouse"));
-        UserModCommand umc1 = new UserModCommand("11",OperationHandler.DELETE_OPERATION, 
+        UserModCommand umc1 = new UserModCommand(timeStamp,"11",OperationHandler.DELETE_OPERATION, 
                 Arrays.asList("dakine bag", "dakine case", "dakine gloves"));
 
         Iterable<UserModCommand> values = Arrays.asList(umc,umc1);
