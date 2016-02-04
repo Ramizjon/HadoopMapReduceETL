@@ -1,8 +1,10 @@
 package com.segmentreader.mapreduce;
 
 import java.io.IOException;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.hadoop.io.Text;
@@ -23,22 +25,7 @@ public abstract class AbstractCookieReducer extends
     @Override
     public void reduce( Text key, Iterable<UserModCommand> values, Context context)
             throws IOException, InterruptedException {
-       
-       
-        /*
-        Iterator<UserModCommand> iterator = values.iterator();
-        Map <String, UserModCommand> commandsMap = new HashMap<>();
-        commandsMap.put(addOp, new UserModCommand(key.toString(), addOp, new LinkedList<>()));
-        commandsMap.put(deleteOp, new UserModCommand(key.toString(), deleteOp, new LinkedList<>()));
-        
-        while(iterator.hasNext()) { 
-            UserModCommand umc = iterator.next();
-            commandsMap.get(umc.getCommand()).addSegments(umc.getSegments());
-        }
-        */
-        
-        
-        //Java 8 solution
+
         List<UserModCommand> userModList = Lists.newArrayList(values);
         
         //grouping usermodcommand's list by command types
@@ -46,25 +33,30 @@ public abstract class AbstractCookieReducer extends
                 .collect(Collectors.groupingBy(UserModCommand::getCommand));
         
         //creating single usermodcommand for every command type
-        UserModCommand addCommand = new UserModCommand();
+        UserModCommand addCommand = new UserModCommand(key.toString(),addOp,new LinkedList<>());
+        Optional<UserModCommand> addCommandOpt = Optional.of(addCommand);
         //getting merged list from every list in every UMC
-        addCommand.setSegments(
-                commandsMap.get(addOp).stream()
-                .map(UserModCommand::getSegments).collect(Collectors.toList())
-                .stream().flatMap(List::stream).collect(Collectors.toList()));
+        if (addCommandOpt.isPresent()){
+            addCommand.setSegments(
+                    commandsMap.get(addOp).stream()
+                    .map(UserModCommand::getSegments).collect(Collectors.toList())
+                    .stream().flatMap(List::stream).collect(Collectors.toList()));
+            handlers.get(addOp).handle(addCommand);
+        }
         
-        UserModCommand deleteCommand = new UserModCommand();
-        deleteCommand.setSegments(
-                commandsMap.get(deleteOp).stream()
-                .map(UserModCommand::getSegments).collect(Collectors.toList())
-                .stream().flatMap(List::stream).collect(Collectors.toList()));
-
+        UserModCommand deleteCommand = new UserModCommand(key.toString(),deleteOp,new LinkedList<>());
+        Optional<UserModCommand> deleteCommandOpt = Optional.of(addCommand);
+        if (deleteCommandOpt.isPresent()){
+            deleteCommand.setSegments(
+                    commandsMap.get(deleteOp).stream()
+                    .map(UserModCommand::getSegments).collect(Collectors.toList())
+                    .stream().flatMap(List::stream).collect(Collectors.toList()));
+        }
         //as result calling handle operations only two times
-        handlers.get(addOp).handle(addCommand);
+        
         handlers.get(deleteOp).handle(deleteCommand);
     
         context.getCounter(appName,reduceCounter).increment(1);
-        context.write(new Text("hi"), new Text("there"));
     }
 
      protected abstract Map<String, OperationHandler> getHandlers();
