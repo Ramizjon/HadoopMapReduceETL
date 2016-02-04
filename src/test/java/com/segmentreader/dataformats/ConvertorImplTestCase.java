@@ -16,38 +16,34 @@ import com.segmentreader.mapreduce.UserModCommand;
 
 public class ConvertorImplTestCase {
 
-    private static final String inputDate = "2011-12-03T10:15:30+01:00";
-    
     @Test
     public void testConvertorWithValidInput() throws IOException {
-       String input = inputDate+",14,add,generatedlink,closedtab";
+       String input = "2011-12-03T10:15:30+01:00,14,add,generatedlink,closedtab";
        Convertor convertor = new ConvertorImpl();
        List<String> expectedSegments = Arrays.asList(input.split(",")).subList(3, 5);
-       Instant timestamp = Instant.from(DateTimeFormatter.ISO_DATE_TIME.parse(inputDate));
+       Instant timestamp = parseDateToInstant("2011-12-03T10:15:30+01:00");
        UserModCommand expected = new UserModCommand(timestamp, "14","add",expectedSegments);
        UserModCommand umc = convertor.convert(input);
        
        assertEquals(expected, umc);
     }
     
-    @Test(expected=InvalidArgumentException
-            .class)
-    public void testConvertorInputWithoutArguments() throws IOException, InvalidArgumentException {
-       String input = inputDate+",14,add";
+    @Test(expected=InvalidArgumentException.class)
+    public void testConvertorInputWithoutSegmentsList() throws IOException, InvalidArgumentException {
+       String input = "2011-12-03T10:15:30+01:00,14,add";
        Convertor convertor = new ConvertorImpl();
        convertor.convert(input);
     }
     
-    @Test(expected=DateTimeParseException
-            .class)
-    public void testConvertorInputWithoutArguma() throws IOException, InvalidArgumentException {
-       String input = "2016-12-11"+",14,add,incapsulate,run";
+    @Test(expected=DateTimeParseException.class)
+    public void testConvertorInputWithWrongDateFormat() throws IOException, InvalidArgumentException {
+       String input = "2016-12-11,14,add,incapsulate,run";
        Convertor convertor = new ConvertorImpl();
        convertor.convert(input);
     }
     
-    
-    
-    
-
+    private Instant parseDateToInstant (String date) {
+       return Instant.from(DateTimeFormatter.ISO_DATE_TIME.parse(date));
+    }
+   
 }

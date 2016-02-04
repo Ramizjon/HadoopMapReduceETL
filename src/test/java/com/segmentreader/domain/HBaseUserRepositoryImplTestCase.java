@@ -18,8 +18,6 @@ import org.junit.Test;
 
 public class HBaseUserRepositoryImplTestCase {
 
-    private static final String inputDate = "2011-12-03T10:15:30+01:00";
-    
     private HBaseUserRepositoryImpl createRepository(HTable hTable)
             throws IOException {
         return new HBaseUserRepositoryImpl() {
@@ -35,7 +33,7 @@ public class HBaseUserRepositoryImplTestCase {
         HTable hTable = mock(HTable.class);
         HBaseUserRepositoryImpl userRepo = createRepository(hTable);
         userRepo.setBufferSize(1);
-        Instant timestamp = Instant.from(DateTimeFormatter.ISO_DATE_TIME.parse(inputDate));
+        Instant timestamp = parseDateToInstant("2011-12-03T10:15:30+01:00");
         List<String> list = Arrays.asList("magic mouse");
         
         userRepo.addUser(new User(timestamp, "11", list));
@@ -47,7 +45,7 @@ public class HBaseUserRepositoryImplTestCase {
     public void testUserRepositoryImplAddUserMultipleRecords()
             throws IOException {
         HTable hTable = mock(HTable.class);
-        Instant timestamp = Instant.from(DateTimeFormatter.ISO_DATE_TIME.parse(inputDate));
+        Instant timestamp = parseDateToInstant("2011-12-03T10:15:30+01:00");
         HBaseUserRepositoryImpl userRepo = createRepository(hTable);
         userRepo.setBufferSize(2);
 
@@ -67,4 +65,7 @@ public class HBaseUserRepositoryImplTestCase {
         verify(hTable, times(1)).delete(any(Delete.class));
     }
 
+    private Instant parseDateToInstant (String date) {
+        return Instant.from(DateTimeFormatter.ISO_DATE_TIME.parse(date));
+     }
 }
