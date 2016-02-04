@@ -55,6 +55,7 @@ public abstract class AbstractCookieReducer extends
         //as result calling handle operations only two times
         
         handlers.get(deleteOp).handle(deleteCommand);
+        handlers.get(addOp).handle(addCommand);
     
         context.getCounter(appName,reduceCounter).increment(1);
     }
