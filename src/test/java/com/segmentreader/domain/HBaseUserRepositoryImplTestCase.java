@@ -1,8 +1,13 @@
 package com.segmentreader.domain;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import java.io.IOException;
+import java.time.Instant;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 
@@ -28,8 +33,10 @@ public class HBaseUserRepositoryImplTestCase {
         HTable hTable = mock(HTable.class);
         HBaseUserRepositoryImpl userRepo = createRepository(hTable);
         userRepo.setBufferSize(1);
+        Instant timestamp = parseDateToInstant("2011-12-03T10:15:30+01:00");
         List<String> list = Arrays.asList("magic mouse");
-        userRepo.addUser("11", list);
+        
+        userRepo.addUser(new User(timestamp, "11", list));
         
         verify(hTable, times(1)).put(any(Put.class));
     }
@@ -38,13 +45,14 @@ public class HBaseUserRepositoryImplTestCase {
     public void testUserRepositoryImplAddUserMultipleRecords()
             throws IOException {
         HTable hTable = mock(HTable.class);
+        Instant timestamp = parseDateToInstant("2011-12-03T10:15:30+01:00");
         HBaseUserRepositoryImpl userRepo = createRepository(hTable);
         userRepo.setBufferSize(2);
 
         List<String> list = Arrays.asList("magic mouse");
-        userRepo.addUser("11", list);
+        userRepo.addUser(new User(timestamp, "11", list));
         verify(hTable, times(0)).put(any(Put.class));
-        userRepo.addUser("23", list);
+        userRepo.addUser(new User(timestamp, "23", list));
         verify(hTable, times(2)).put(any(Put.class));
     }
 
@@ -57,4 +65,7 @@ public class HBaseUserRepositoryImplTestCase {
         verify(hTable, times(1)).delete(any(Delete.class));
     }
 
+    private Instant parseDateToInstant (String date) {
+        return Instant.from(DateTimeFormatter.ISO_DATE_TIME.parse(date));
+     }
 }
