@@ -18,8 +18,12 @@ public class ConvertorImpl implements Convertor {
         }
 
         List<String> segmentsList = Arrays.asList(arr).subList(3, arr.length);
-        Instant timestamp = Instant.from(DateTimeFormatter.ISO_DATE_TIME.parse(arr[0]));
+        Instant timestamp = parseDateToInstant(arr[0]);
         return new UserModCommand(timestamp, arr[1], arr[2], segmentsList);
     }
+    
+    private Instant parseDateToInstant (String date) {
+        return Instant.from(DateTimeFormatter.ISO_DATE_TIME.parse(date));
+     }
 
 }
