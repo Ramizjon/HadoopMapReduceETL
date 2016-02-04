@@ -9,6 +9,8 @@ import static org.mockito.Mockito.when;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.time.Instant;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -20,6 +22,7 @@ import org.apache.hadoop.mapreduce.Counter;
 import org.apache.hadoop.mapreduce.Mapper.Context;
 import org.junit.Test;
 
+import com.amazonaws.services.cloudfront.model.InvalidArgumentException;
 import com.google.common.collect.ImmutableMap;
 import com.segmentreader.dataformats.Convertor;
 import com.segmentreader.useroperations.OperationHandler;
@@ -53,10 +56,11 @@ public class AbstractUserSegmentsMapperTestCase {
         Convertor convertor = mock(Convertor.class);
         Context context = mock(Context.class);
         Counter mapRedCounter = mock(Counter.class);
-        UserModCommand userMod = new UserModCommand("user22", "delete", Arrays.asList("iphone"));
+        Instant timestamp = Instant.from(DateTimeFormatter.ISO_DATE_TIME.parse("2011-12-03T10:15:30+01:00"));
+        UserModCommand userMod = new UserModCommand(timestamp, "user22", "delete", Arrays.asList("iphone"));
         Map<String, OperationHandler> handlers = ImmutableMap.of("delete", handler);
         
-        String input = "user22,delete,iphone";
+        String input = "2011-12-03T10:15:30+01:00, user22,delete,iphone";
         AbstractUserSegmentsMapper testMapper = createInstance(handlers, null, convertor);
         when(context.getCounter("segmentreader", "mycounter")).thenReturn(mapRedCounter);
         when(convertor.convert(input)).thenReturn(userMod);
@@ -71,13 +75,13 @@ public class AbstractUserSegmentsMapperTestCase {
     }
     
     @Test(expected=IOException.class)
-    public void testMapperWithInvalidArgs() throws IOException, InterruptedException{
+    public void testMapperWithInvalidArgs() throws IOException, InterruptedException, InvalidArgumentException{
         //prepare stage
         OperationHandler handler = mock(OperationHandler.class);
         Convertor convertor = mock(Convertor.class);
         Context context = mock(Context.class);
         Map<String, OperationHandler> handlers = ImmutableMap.of("delete", handler);
-        String input = "user22,delete"; //not specifying segments in order to invoke error
+        String input = "2011-12-03T10:15:30+01:00,user22,delete"; //not specifying segments in order to invoke error
         doThrow(IOException.class).when(convertor).convert(anyString());
         AbstractUserSegmentsMapper testMapper = createInstance(handlers, null, convertor);
         

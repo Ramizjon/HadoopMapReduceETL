@@ -5,6 +5,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import java.io.IOException;
+import java.time.Instant;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 
 import org.junit.Test;
@@ -28,7 +30,8 @@ public class DeleteOperationHandlerTestCase {
     public void testDeleteHandlerWithValidSegments() throws IOException {
         UserRepository userRepo = mock(UserRepository.class);
         DeleteOperationHandler deleteHandler = createInstance(userRepo);
-        UserModCommand userMod = new UserModCommand("user22", "add", Arrays.asList("website click"));
+        Instant timestamp = Instant.from(DateTimeFormatter.ISO_DATE_TIME.parse("2011-12-03T10:15:30+01:00"));
+        UserModCommand userMod = new UserModCommand(timestamp, "user22", "add", Arrays.asList("website click"));
         
         deleteHandler.handle(userMod);
         
