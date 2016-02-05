@@ -57,15 +57,6 @@ public class UserModCommand {
         this.timestamp = timestamp;
     }
 
-    public String toLine() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(getUserId() + " " + getCommand() + " ");
-        for (String s : this.segments) {
-            sb.append(s + " ");
-        }
-        return sb.toString();
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o)
@@ -96,4 +87,5 @@ public class UserModCommand {
         result = result * stPoint + getTimestamp().hashCode();
         return result;
     }
+
 }

@@ -9,6 +9,8 @@ build
 .project
 .settings
 .classpath
+.idea/
+.iml
 build.gradle
   
  #Eclipse Core

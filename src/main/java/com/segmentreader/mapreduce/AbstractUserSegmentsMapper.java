@@ -20,7 +20,7 @@ public abstract class AbstractUserSegmentsMapper extends
             .getLogger(AbstractUserSegmentsMapper.class);
     
     private static final String mapCounter = "mapcounter";
-    private static final String errorCounter = "errorcounter";
+    private static final String errorCounter = "map_error_counter";
     private static final String appName = "segmentreader";
 
     // class dependencies

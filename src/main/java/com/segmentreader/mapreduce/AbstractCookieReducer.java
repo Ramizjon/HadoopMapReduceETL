@@ -1,23 +1,26 @@
 package com.segmentreader.mapreduce;
 
 import java.io.IOException;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
+import com.google.common.collect.ImmutableMap;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
 
 import com.google.common.collect.Lists;
 import com.segmentreader.useroperations.OperationHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class AbstractCookieReducer extends
         Reducer<Text, UserModCommand, Text, Text> {
 
+    private static final Logger logger = LoggerFactory
+            .getLogger(AbstractUserSegmentsMapper.class);
     private Map<String, OperationHandler> handlers = getHandlers();
     private static final String reduceCounter = "reduce_counter";
+    private static final String errorCounter = "reduce_error_counter";
     private static final String appName = "segmentreader";
     private static final String addOp = OperationHandler.ADD_OPERATION;
     private static final String deleteOp = OperationHandler.DELETE_OPERATION;
@@ -27,36 +30,27 @@ public abstract class AbstractCookieReducer extends
             throws IOException, InterruptedException {
 
         List<UserModCommand> userModList = Lists.newArrayList(values);
-        
-        //grouping usermodcommand's list by command types
-        Map <String, List<UserModCommand>> commandsMap = userModList.stream()
-                .collect(Collectors.groupingBy(UserModCommand::getCommand));
-        
-        //creating single usermodcommand for every command type
-        UserModCommand addCommand = new UserModCommand(userModList.get(0).getTimestamp(), key.toString(),addOp,new LinkedList<>());
-        Optional<UserModCommand> addCommandOpt = Optional.of(addCommand);
-        //getting merged list from every list in every UMC
-        if (addCommandOpt.isPresent()){
-            addCommand.setSegments(
-                    commandsMap.get(addOp).stream()
-                    .map(UserModCommand::getSegments).collect(Collectors.toList())
-                    .stream().flatMap(List::stream).collect(Collectors.toList()));
-            handlers.get(addOp).handle(addCommand);
-        }
-        
-        UserModCommand deleteCommand = new UserModCommand(userModList.get(0).getTimestamp(), key.toString(),deleteOp,new LinkedList<>());
-        Optional<UserModCommand> deleteCommandOpt = Optional.of(addCommand);
-        if (deleteCommandOpt.isPresent()){
-            deleteCommand.setSegments(
-                    commandsMap.get(deleteOp).stream()
-                    .map(UserModCommand::getSegments).collect(Collectors.toList())
-                    .stream().flatMap(List::stream).collect(Collectors.toList()));
-        }
-        //as result calling handle operations only two times
-        
-        handlers.get(deleteOp).handle(deleteCommand);
-        handlers.get(addOp).handle(addCommand);
-    
+
+        userModList.stream()
+            .filter(p -> !p.getSegments().isEmpty())
+            .collect(Collectors.groupingBy(UserModCommand::getCommand))
+            .entrySet().stream()
+            .collect(Collectors.toMap( e -> ImmutableMap.of(e.getKey(), e.getValue().stream()
+                            .map(UserModCommand::getSegments).collect(Collectors.toList())
+                    .stream().flatMap(List::stream).collect(Collectors.toSet())),
+                    k -> k.getValue().stream().sorted((e1, e2) -> e1.getTimestamp()
+                            .compareTo(e2.getTimestamp())).findFirst().get().getTimestamp())
+            ).forEach((k,v) -> {
+                k.forEach( (s, f) -> {
+                    UserModCommand cmd = new UserModCommand(v, key.toString(), s, new ArrayList<>(f));
+                    try {
+                        handlers.get(s).handle(cmd);
+                    } catch (IOException e) {
+                        logger.error("Exception occured. Arguments: {}, exception code: {}", key.toString(), e);
+                        context.getCounter(appName, errorCounter).increment(1);
+                    }
+                });
+        });
         context.getCounter(appName,reduceCounter).increment(1);
     }
 
