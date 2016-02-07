@@ -1,6 +1,7 @@
 package com.segmentreader.mapreduce;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -32,19 +33,21 @@ public abstract class AbstractCookieReducer extends
         List<UserModCommand> userModList = Lists.newArrayList(values);
 
         userModList.stream()
-            .filter(p -> !p.getSegments().isEmpty())
-            .collect(Collectors.groupingBy(UserModCommand::getCommand))
-            .entrySet().stream()
-            .collect(Collectors.toMap( e -> ImmutableMap.of(e.getKey(), e.getValue().stream()
-                            .map(UserModCommand::getSegments).collect(Collectors.toList())
-                    .stream().flatMap(List::stream).collect(Collectors.toSet())),
-                    k -> k.getValue().stream().sorted((e1, e2) -> e1.getTimestamp()
-                            .compareTo(e2.getTimestamp())).findFirst().get().getTimestamp())
-            ).forEach((k,v) -> {
-                k.forEach( (s, f) -> {
-                    UserModCommand cmd = new UserModCommand(v, key.toString(), s, new ArrayList<>(f));
+                .filter(p -> !p.getSegments().isEmpty())
+                .collect(Collectors.groupingBy(UserModCommand::getCommand))
+                .entrySet().stream()
+                .map(e -> new AbstractMap.SimpleEntry<Map<String,Set<String>>,Instant>(ImmutableMap.of(e.getKey(), e.getValue().stream()
+                        .map(UserModCommand::getSegments)
+                        .flatMap(List::stream)
+                        .collect(Collectors.toSet())),
+                        e.getValue()
+                                .stream().max((e1, e2) -> e1.getTimestamp()
+                                .compareTo(e2.getTimestamp())).get().getTimestamp())
+                ).forEach(k -> {
+            k.getKey().forEach((r,s) ->{
+                UserModCommand cmd = new UserModCommand(k.getValue(), key.toString(), r, new ArrayList(s));
                     try {
-                        handlers.get(s).handle(cmd);
+                        handlers.get(r).handle(cmd);
                     } catch (IOException e) {
                         logger.error("Exception occured. Arguments: {}, exception code: {}", key.toString(), e);
                         context.getCounter(appName, errorCounter).increment(1);

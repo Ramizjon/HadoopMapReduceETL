@@ -10,6 +10,7 @@ public class UserModCommand {
     String command;
     List<String> segments;
 
+
     public UserModCommand(Instant timestamp, String userId, String command, List<String> segments) {
         this.userId = userId;
         this.command = command;
