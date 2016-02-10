@@ -68,7 +68,6 @@ public class AbstractCookieReducerTestCase {
         AbstractCookieReducer reducer = createInstance(handlers);
         reducer.reduce(new Text("11"), values, context);
 
-
         verify(handler, times(2)).handle(umcCaptor.capture());
         verify(mapRedCounter, times(1)).increment(1);
 
