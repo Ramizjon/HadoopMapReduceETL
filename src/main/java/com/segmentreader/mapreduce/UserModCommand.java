@@ -10,6 +10,7 @@ public class UserModCommand {
     String command;
     List<String> segments;
 
+
     public UserModCommand(Instant timestamp, String userId, String command, List<String> segments) {
         this.userId = userId;
         this.command = command;
@@ -57,15 +58,6 @@ public class UserModCommand {
         this.timestamp = timestamp;
     }
 
-    public String toLine() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(getUserId() + " " + getCommand() + " ");
-        for (String s : this.segments) {
-            sb.append(s + " ");
-        }
-        return sb.toString();
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o)
@@ -95,5 +87,15 @@ public class UserModCommand {
         result = result * stPoint + getSegments().hashCode();
         result = result * stPoint + getTimestamp().hashCode();
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return "UserModCommand{" +
+                "timestamp=" + timestamp +
+                ", userId='" + userId + '\'' +
+                ", command='" + command + '\'' +
+                ", segments=" + segments +
+                '}';
     }
 }

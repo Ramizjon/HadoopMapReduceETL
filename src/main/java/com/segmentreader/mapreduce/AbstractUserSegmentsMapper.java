@@ -3,10 +3,8 @@ package com.segmentreader.mapreduce;
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.hadoop.io.LongWritable;
-import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.slf4j.Logger;
@@ -14,21 +12,19 @@ import org.slf4j.LoggerFactory;
 
 import com.amazonaws.services.cloudfront.model.InvalidArgumentException;
 import com.segmentreader.dataformats.Convertor;
-import com.segmentreader.useroperations.OperationHandler;
 
 public abstract class AbstractUserSegmentsMapper extends
-        Mapper<LongWritable, Text, NullWritable, NullWritable> {
+        Mapper<LongWritable, Text, Text, UserModCommand> {
     
     private static final Logger logger = LoggerFactory
             .getLogger(AbstractUserSegmentsMapper.class);
     
-    private static final String mapCounter = "mycounter";
-    private static final String errorCounter = "errorcounter";
+    private static final String mapCounter = "mapcounter";
+    private static final String errorCounter = "map_error_counter";
     private static final String appName = "segmentreader";
 
     // class dependencies
     private List<Closeable> closeables = getCloseables();
-    private Map<String, OperationHandler> handlers = getHandlers();
     private Convertor convertor = getConvertor();
 
     public void map(LongWritable key, Text value, Context context)
@@ -37,9 +33,7 @@ public abstract class AbstractUserSegmentsMapper extends
         UserModCommand cmd = null;
         try{
             cmd = convertor.convert(value.toString());
-            //logger.debug(cmd.toLine());
-            handlers.get(cmd.getCommand()).handle(cmd);
-            //context.write(NullWritable.get(), new Text(value.toLine()));
+            context.write(new Text(cmd.getUserId()), cmd);
             context.getCounter(appName, mapCounter).increment(1);
         } catch (InvalidArgumentException e) {
             logger.error("Exception occured. Arguments: {}, exception code: {}", value.toString(), e);
@@ -56,7 +50,6 @@ public abstract class AbstractUserSegmentsMapper extends
         logger.debug("Clean up completed");
     }
 
-    protected abstract Map<String, OperationHandler> getHandlers();
     protected abstract List<Closeable> getCloseables();
     protected abstract Convertor getConvertor();
 

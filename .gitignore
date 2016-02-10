@@ -1,4 +1,5 @@
 *.zip
+**/*.iml
 **/classes/
 **/*.class
 **/*.yml
@@ -9,8 +10,10 @@ build
 .project
 .settings
 .classpath
-build.gradle
-  
+.idea/
+**/gradle-wrapper.properties
+gradlew.bat
+
  #Eclipse Core
  .project
 /bin/

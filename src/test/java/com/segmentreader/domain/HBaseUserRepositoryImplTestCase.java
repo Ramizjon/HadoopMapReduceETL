@@ -16,6 +16,8 @@ import org.apache.hadoop.hbase.client.HTable;
 import org.apache.hadoop.hbase.client.Put;
 import org.junit.Test;
 
+import com.segmentreader.mapreduce.UserModCommand;
+
 public class HBaseUserRepositoryImplTestCase {
 
     private HBaseUserRepositoryImpl createRepository(HTable hTable)
@@ -36,7 +38,7 @@ public class HBaseUserRepositoryImplTestCase {
         Instant timestamp = parseDateToInstant("2011-12-03T10:15:30+01:00");
         List<String> list = Arrays.asList("magic mouse");
         
-        userRepo.addUser(new User(timestamp, "11", list));
+        userRepo.addUser(new UserModCommand(timestamp, "11","add", list));
         
         verify(hTable, times(1)).put(any(Put.class));
     }
@@ -50,9 +52,9 @@ public class HBaseUserRepositoryImplTestCase {
         userRepo.setBufferSize(2);
 
         List<String> list = Arrays.asList("magic mouse");
-        userRepo.addUser(new User(timestamp, "11", list));
+        userRepo.addUser(new UserModCommand(timestamp,"11","add", list));
         verify(hTable, times(0)).put(any(Put.class));
-        userRepo.addUser(new User(timestamp, "23", list));
+        userRepo.addUser(new UserModCommand(timestamp, "23","add", list));
         verify(hTable, times(2)).put(any(Put.class));
     }
 
