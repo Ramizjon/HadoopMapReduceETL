@@ -12,7 +12,7 @@ build
 .classpath
 .idea/
 **/gradle-wrapper.properties
-**/gradlew.bat
+gradlew.bat
 
  #Eclipse Core
  .project
