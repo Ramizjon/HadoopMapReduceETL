@@ -39,6 +39,10 @@ task getHomeDir  {
     println gradle.gradleHomeDir
 }
 
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.0'
+}
+
 jar {
     manifest {
         attributes 'Implementation-Title': 'Gradle Jar File Example',
