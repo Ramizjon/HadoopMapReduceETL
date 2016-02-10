@@ -43,19 +43,21 @@ public abstract class AbstractCookieReducer extends
                         e.getValue()
                                 .stream().max((e1, e2) -> e1.getTimestamp()
                                 .compareTo(e2.getTimestamp())).get().getTimestamp())
-                ).forEach(k -> {
-            k.getKey().forEach((r,s) ->{
-                UserModCommand cmd = new UserModCommand(k.getValue(), key.toString(), r, new ArrayList(s));
-                    try {
-                        handlers.get(r).handle(cmd);
-                    } catch (IOException e) {
-                        logger.error("Exception occured. Arguments: {}, exception code: {}", key.toString(), e);
-                        context.getCounter(appName, errorCounter).increment(1);
-                    }
-                });
-        });
+                ).forEach(k -> {callHandlers(k, key, context);});
         context.getCounter(appName,reduceCounter).increment(1);
     }
 
-     protected abstract Map<String, OperationHandler> getHandlers();
+    private void callHandlers (AbstractMap.SimpleEntry<Map<String,Set<String>>,Instant> k, Text key, Context context) {
+       k.getKey().forEach((r,s) -> {
+           UserModCommand cmd = new UserModCommand(k.getValue(), key.toString(), r, new ArrayList(s));
+           try {
+               handlers.get(r).handle(cmd);
+           } catch (IOException e) {
+               logger.error("Exception occured. Arguments: {}, exception code: {}", key.toString(), e);
+               context.getCounter(appName, errorCounter).increment(1);
+           }
+       });
+    }
+
+    protected abstract Map<String, OperationHandler> getHandlers();
 }

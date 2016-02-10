@@ -89,4 +89,13 @@ public class UserModCommand {
         return result;
     }
 
+    @Override
+    public String toString() {
+        return "UserModCommand{" +
+                "timestamp=" + timestamp +
+                ", userId='" + userId + '\'' +
+                ", command='" + command + '\'' +
+                ", segments=" + segments +
+                '}';
+    }
 }
