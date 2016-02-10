@@ -1,4 +1,4 @@
-celos.importDefaults("common");
+celos.importDefaults("defaults");
 
 var ROOT = "/user/" + CELOS_USER;
 var APPLICATION_PATH = ROOT  + "/deploy/map-reduce/workflow.xml";
@@ -14,7 +14,8 @@ function defineWorkflow() {
             // These properties are passed to the Oozie job
             "oozie.wf.application.path": APPLICATION_PATH,
             "oozie.use.system.libpath": "true",
-            "inputPath": INPUT_PATH
+            "inputPath": INPUT_PATH,
+            "hive_defaults": HIVE_SITE_DEFAULTS
         })
     });
 }
