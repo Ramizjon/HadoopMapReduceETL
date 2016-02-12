@@ -1,5 +1,5 @@
 apply plugin: 'java'
-apply plugin: 'eclipse'
+apply plugin: 'idea'
 group = "com.ramiz.testone"
 version = '1.0'
 sourceCompatibility = 1.8
@@ -11,7 +11,7 @@ configurations {
 }
 
 ext {
-    cdhVersion = "cdh5.4.2"
+    cdhVersion = "cdh5.5.0"
     hadoopClientVersion = "2.6.0"
     jUnitVersion = "4.8.2"
     hBaseVersion = "1.0.0"
@@ -21,6 +21,7 @@ ext {
     simpleJoptVersion = "4.9"
     mockitoVersion = "1.9.5"
     guavaVersion = "19.0"
+    kryoVersion = "2.16"
     mainClass = "com.segmentreader.mapreduce.Main"
 }
 
@@ -71,6 +72,7 @@ dependencies {
     compile "org.slf4j:slf4j-api:${slf4JVersion}"
     compile "net.sf.jopt-simple:jopt-simple:${simpleJoptVersion}"
     compile "com.google.guava:guava:${guavaVersion}"
+    compile "com.esotericsoftware.kryo:kryo:${kryoVersion}"
     testCompile "junit:junit:${jUnitVersion}"
     testCompile "org.mockito:mockito-all:${mockitoVersion}"
     
@@ -80,9 +82,3 @@ dependencies {
     
 }
 
-
-eclipse {
-    classpath {
-        defaultOutputDir = file("${buildDir}/eclipse-classes")
-    }
-}

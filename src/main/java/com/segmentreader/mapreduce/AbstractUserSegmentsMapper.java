@@ -4,6 +4,7 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.util.List;
 
+import com.segmentreader.utils.UserModContainer;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
@@ -14,7 +15,7 @@ import com.amazonaws.services.cloudfront.model.InvalidArgumentException;
 import com.segmentreader.dataformats.Convertor;
 
 public abstract class AbstractUserSegmentsMapper extends
-        Mapper<LongWritable, Text, Text, UserModCommand> {
+        Mapper<LongWritable, Text, Text, UserModContainer> {
     
     private static final Logger logger = LoggerFactory
             .getLogger(AbstractUserSegmentsMapper.class);
@@ -31,9 +32,10 @@ public abstract class AbstractUserSegmentsMapper extends
             throws IOException, InterruptedException {
         logger.debug("Map job started");
         UserModCommand cmd = null;
+
         try{
             cmd = convertor.convert(value.toString());
-            context.write(new Text(cmd.getUserId()), cmd);
+            context.write(new Text(cmd.getUserId()), new UserModContainer(cmd));
             context.getCounter(appName, mapCounter).increment(1);
         } catch (InvalidArgumentException e) {
             logger.error("Exception occured. Arguments: {}, exception code: {}", value.toString(), e);

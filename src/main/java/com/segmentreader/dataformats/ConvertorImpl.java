@@ -2,6 +2,7 @@ package com.segmentreader.dataformats;
 
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -17,7 +18,7 @@ public class ConvertorImpl implements Convertor {
             throw new InvalidArgumentException("Validation failed: not enough arguments");
         }
 
-        List<String> segmentsList = Arrays.asList(arr).subList(3, arr.length);
+        ArrayList<String> segmentsList = new ArrayList<>(Arrays.asList(arr).subList(3, arr.length));
         Instant timestamp = parseDateToInstant(arr[0]);
         return new UserModCommand(timestamp, arr[1], arr[2], segmentsList);
     }

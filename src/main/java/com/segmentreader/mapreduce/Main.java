@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
+import com.segmentreader.utils.UserModContainer;
 import javafx.util.Pair;
 import joptsimple.OptionException;
 import joptsimple.OptionParser;
@@ -68,12 +69,13 @@ public class Main extends Configured implements Tool {
         job.setJarByClass(Main.class);
 
         job.setMapOutputKeyClass(Text.class);
-        job.setMapOutputValueClass(UserModCommand.class);
+        job.setMapOutputValueClass(UserModContainer.class);
 
         job.setOutputKeyClass(Text.class);
-        job.setOutputValueClass(Text.class);
+        job.setOutputValueClass(UserModContainer.class);
 
         job.setMapperClass(AppContext.UserSegmentsMapper.class);
+        job.setCombinerClass(AppContext.CookieReducer.class);
         job.setReducerClass(AppContext.CookieReducer.class);
         job.setInputFormatClass(TextInputFormat.class);
         job.setOutputFormatClass(TextOutputFormat.class);

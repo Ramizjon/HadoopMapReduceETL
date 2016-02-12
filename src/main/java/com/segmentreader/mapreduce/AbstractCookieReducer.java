@@ -6,6 +6,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import com.google.common.collect.ImmutableMap;
+import com.segmentreader.utils.UserModContainer;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
 
@@ -15,7 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public abstract class AbstractCookieReducer extends
-        Reducer<Text, UserModCommand, Text, Text> {
+        Reducer<Text, UserModContainer, Text, UserModContainer> {
 
     private static final Logger logger = LoggerFactory
             .getLogger(AbstractUserSegmentsMapper.class);
@@ -27,10 +28,12 @@ public abstract class AbstractCookieReducer extends
     private static final String deleteOp = OperationHandler.DELETE_OPERATION;
 
     @Override
-    public void reduce( Text key, Iterable<UserModCommand> values, Context context)
+    public void reduce( Text key, Iterable<UserModContainer> values, Context context)
             throws IOException, InterruptedException {
 
-        List<UserModCommand> userModList = Lists.newArrayList(values);
+        List<UserModContainer> userModContainerList = Lists.newArrayList(values);
+        List <UserModCommand> userModList = userModContainerList.stream().map(e -> e.get())
+                .collect(Collectors.toList());
 
         userModList.stream()
                 .filter(p -> !p.getSegments().isEmpty())
@@ -52,7 +55,8 @@ public abstract class AbstractCookieReducer extends
            UserModCommand cmd = new UserModCommand(k.getValue(), key.toString(), r, new ArrayList(s));
            try {
                handlers.get(r).handle(cmd);
-           } catch (IOException e) {
+               context.write(new Text(cmd.getUserId()),new UserModContainer(cmd));
+           } catch (IOException|InterruptedException e) {
                logger.error("Exception occured. Arguments: {}, exception code: {}", key.toString(), e);
                context.getCounter(appName, errorCounter).increment(1);
            }

@@ -1,17 +1,31 @@
 package com.segmentreader.mapreduce;
 
+import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.KryoSerializable;
+import com.esotericsoftware.kryo.io.Input;
+import com.esotericsoftware.kryo.io.Output;
+import com.google.common.io.ByteStreams;
+import org.apache.commons.net.ntp.TimeStamp;
+import org.apache.hadoop.io.WritableComparable;
+import org.apache.hadoop.io.WritableUtils;
+
+import java.beans.Transient;
+import java.io.*;
 import java.time.Instant;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-public class UserModCommand {
+public class UserModCommand implements Serializable {
     Instant timestamp;
     String userId;
     String command;
-    List<String> segments;
+
+     ArrayList<String> segments;
 
 
-    public UserModCommand(Instant timestamp, String userId, String command, List<String> segments) {
+    public UserModCommand(Instant timestamp, String userId, String command, ArrayList<String> segments) {
         this.userId = userId;
         this.command = command;
         this.segments = segments;
@@ -19,7 +33,7 @@ public class UserModCommand {
     }
 
     public UserModCommand() {
-        segments = new LinkedList<>();
+        segments = new ArrayList<>();
     }
 
     public String getUserId() {
@@ -42,7 +56,7 @@ public class UserModCommand {
         return segments;
     }
 
-    public void setSegments(List<String> segments) {
+    public void setSegments(ArrayList<String> segments) {
         this.segments = segments;
     }
 
@@ -98,4 +112,25 @@ public class UserModCommand {
                 ", segments=" + segments +
                 '}';
     }
+
+
+    private Object toObject(byte[] bytes) throws IOException, ClassNotFoundException {
+        Object obj = null;
+        ByteArrayInputStream bis = null;
+        ObjectInputStream ois = null;
+        try {
+            bis = new ByteArrayInputStream(bytes);
+            ois = new ObjectInputStream(bis);
+            obj = ois.readObject();
+        } finally {
+            if (bis != null) {
+                bis.close();
+            }
+            if (ois != null) {
+                ois.close();
+            }
+        }
+        return obj;
+    }
+
 }
