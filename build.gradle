@@ -74,7 +74,7 @@ dependencies {
     compile "com.google.guava:guava:${guavaVersion}"
     compile "com.esotericsoftware.kryo:kryo:${kryoVersion}"
     testCompile "junit:junit:${jUnitVersion}"
-    testCompile "org.mockito:mockito-all:${mockitoVersion}"
+    compile "org.mockito:mockito-all:${mockitoVersion}"
     
     //compile "com.twitter:parquet-hadoop:${parquetVersion}"
    	//compile "com.twitter:parquet-hive-bundle:${hiveBundleVersion}"

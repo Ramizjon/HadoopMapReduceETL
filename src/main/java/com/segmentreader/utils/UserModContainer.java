@@ -9,7 +9,6 @@ public class UserModContainer implements WritableComparable, Serializable {
 
     private UserModCommand userModCommand;
 
-
     public UserModCommand get() {
         return userModCommand;
     }

@@ -8,6 +8,7 @@ import static org.mockito.Mockito.verify;
 import java.io.IOException;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -38,7 +39,7 @@ public class HBaseUserRepositoryImplTestCase {
         Instant timestamp = parseDateToInstant("2011-12-03T10:15:30+01:00");
         List<String> list = Arrays.asList("magic mouse");
         
-        userRepo.addUser(new UserModCommand(timestamp, "11","add", list));
+        userRepo.addUser(new UserModCommand(timestamp, "11","add", new ArrayList<>(list)));
         
         verify(hTable, times(1)).put(any(Put.class));
     }
@@ -51,7 +52,7 @@ public class HBaseUserRepositoryImplTestCase {
         HBaseUserRepositoryImpl userRepo = createRepository(hTable);
         userRepo.setBufferSize(2);
 
-        List<String> list = Arrays.asList("magic mouse");
+        ArrayList<String> list = new ArrayList<>(Arrays.asList("magic mouse"));
         userRepo.addUser(new UserModCommand(timestamp,"11","add", list));
         verify(hTable, times(0)).put(any(Put.class));
         userRepo.addUser(new UserModCommand(timestamp, "23","add", list));

@@ -40,6 +40,7 @@ public class Main extends Configured implements Tool {
           int res = ToolRunner.run(new Configuration(), new Main(), args);
           logger.info("Application has finished execution with result: " + res);
           System.exit(res);
+
     }
 
     public int run(String args[]) throws Exception {

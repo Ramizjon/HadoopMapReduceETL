@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.junit.Test;
@@ -20,7 +21,7 @@ public class ConvertorImplTestCase {
        String input = "2011-12-03T10:15:30+01:00,14,add,generatedlink,closedtab";
        Convertor convertor = new ConvertorImpl();
        Instant timestamp = parseDateToInstant("2011-12-03T10:15:30+01:00");
-       UserModCommand expected = new UserModCommand(timestamp, "14","add", Arrays.asList("generatedlink", "closedtab"));
+       UserModCommand expected = new UserModCommand(timestamp, "14","add", new ArrayList<>(Arrays.asList("generatedlink", "closedtab")));
        UserModCommand umc = convertor.convert(input);
        
        assertEquals(expected, umc);
