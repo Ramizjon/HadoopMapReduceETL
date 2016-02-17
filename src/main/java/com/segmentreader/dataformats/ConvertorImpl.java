@@ -4,14 +4,13 @@ import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import com.amazonaws.services.cloudfront.model.InvalidArgumentException;
-import com.segmentreader.mapreduce.UserModCommand;
+import com.segmentreader.mapreduce.MapperUserModCommand;
 
 public class ConvertorImpl implements Convertor {
 
-    public UserModCommand convert(String value) throws InvalidArgumentException {
+    public MapperUserModCommand convert(String value) throws InvalidArgumentException {
         String[] arr = value.split(",");
 
         if (arr.length < 4) {
@@ -20,7 +19,7 @@ public class ConvertorImpl implements Convertor {
 
         ArrayList<String> segmentsList = new ArrayList<>(Arrays.asList(arr).subList(3, arr.length));
         Instant timestamp = parseDateToInstant(arr[0]);
-        return new UserModCommand(timestamp, arr[1], arr[2], segmentsList);
+        return new MapperUserModCommand(timestamp, arr[1], arr[2], segmentsList);
     }
     
     private Instant parseDateToInstant (String date) {

@@ -7,13 +7,15 @@ import static org.mockito.Mockito.verify;
 import java.io.IOException;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import com.segmentreader.mapreduce.MapperUserModCommand;
+import com.segmentreader.mapreduce.ReducerUserModCommand;
 import org.junit.Test;
 
 import com.segmentreader.domain.UserRepository;
-import com.segmentreader.mapreduce.UserModCommand;
 
 public class AddOperationHandlerTestCase {
 
@@ -32,7 +34,8 @@ public class AddOperationHandlerTestCase {
         UserRepository repo = mock(UserRepository.class);
         AddOperationHandler handler = createInstance(repo);
         Instant timestamp = Instant.from(DateTimeFormatter.ISO_DATE_TIME.parse("2011-12-03T10:15:30+01:00"));
-        UserModCommand nonEmptyUserMod = new UserModCommand(timestamp, "user33", "add", new ArrayList<>(Arrays.asList("website click")));
+        ReducerUserModCommand nonEmptyUserMod = new ReducerUserModCommand("user33", "add",
+                new AbstractMap.SimpleEntry<ArrayList<String>, Instant>(new ArrayList<>(Arrays.asList("website click")), timestamp));
         // act
         handler.handle(nonEmptyUserMod);
         

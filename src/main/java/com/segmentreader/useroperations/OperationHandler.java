@@ -2,7 +2,8 @@ package com.segmentreader.useroperations;
 
 import java.io.IOException;
 
-import com.segmentreader.mapreduce.UserModCommand;
+import com.segmentreader.mapreduce.MapperUserModCommand;
+import com.segmentreader.mapreduce.ReducerUserModCommand;
 
 public interface OperationHandler {
     public static final String ADD_OPERATION = "add";
@@ -12,5 +13,5 @@ public interface OperationHandler {
      * Handles user operation regarding it's type
      * @param value
      */
-	void handle(UserModCommand value) throws IOException;
+	void handle(ReducerUserModCommand value) throws IOException;
 }

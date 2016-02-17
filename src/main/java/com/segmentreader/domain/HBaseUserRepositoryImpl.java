@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.segmentreader.mapreduce.MapperUserModCommand;
+import com.segmentreader.mapreduce.ReducerUserModCommand;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.client.Delete;
@@ -14,16 +16,14 @@ import org.apache.hadoop.hbase.util.Bytes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.segmentreader.mapreduce.UserModCommand;
-
 public class HBaseUserRepositoryImpl implements UserRepository, Closeable {
     private static final Logger logger = LoggerFactory
             .getLogger(HBaseUserRepositoryImpl.class);
 
-    private static final int BUFFER_SIZE = 20;
+    private static final int BUFFER_SIZE = 1;
     private static final String COLUMN_FAMILY = "general";
 
-    List<UserModCommand> cachedList;
+    List<ReducerUserModCommand> cachedList;
     private HTable hTable;
     private int bufferSize = BUFFER_SIZE;
 
@@ -42,7 +42,7 @@ public class HBaseUserRepositoryImpl implements UserRepository, Closeable {
     }
 
     @Override
-    public void addUser(UserModCommand user)
+    public void addUser(ReducerUserModCommand user)
             throws IOException {
         cachedList.add(user);
         this.checkForBulk();
@@ -61,10 +61,10 @@ public class HBaseUserRepositoryImpl implements UserRepository, Closeable {
 
     protected void flush() throws IOException {
         Put put = null;
-        for (UserModCommand u : cachedList) {
+        for (ReducerUserModCommand u : cachedList) {
             put = new Put(Bytes.toBytes(u.getUserId()));
-            for (String segm : u.getSegments()) {
-                String timeStamp = u.getTimestamp().toString();
+            for (String segm : u.getSegmentTimestamps().getKey()) {
+                String timeStamp = u.getSegmentTimestamps().getValue().toString();
                 put.add(Bytes.toBytes(COLUMN_FAMILY), Bytes.toBytes(segm),
                         Bytes.toBytes(timeStamp));
             }
@@ -83,5 +83,4 @@ public class HBaseUserRepositoryImpl implements UserRepository, Closeable {
     public void close() throws IOException {
         flush();
     }
-
 }

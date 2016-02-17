@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
+import com.segmentreader.utils.CSVConverter;
 import com.segmentreader.utils.UserModContainer;
 import javafx.util.Pair;
 import joptsimple.OptionException;
@@ -19,6 +20,7 @@ import joptsimple.util.KeyValuePair;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
@@ -40,7 +42,6 @@ public class Main extends Configured implements Tool {
           int res = ToolRunner.run(new Configuration(), new Main(), args);
           logger.info("Application has finished execution with result: " + res);
           System.exit(res);
-
     }
 
     public int run(String args[]) throws Exception {
@@ -73,10 +74,10 @@ public class Main extends Configured implements Tool {
         job.setMapOutputValueClass(UserModContainer.class);
 
         job.setOutputKeyClass(Text.class);
-        job.setOutputValueClass(UserModContainer.class);
+        job.setOutputValueClass(NullWritable.class);
 
         job.setMapperClass(AppContext.UserSegmentsMapper.class);
-        job.setCombinerClass(AppContext.CookieReducer.class);
+       // job.setCombinerClass(AppContext.CookieReducer.class);
         job.setReducerClass(AppContext.CookieReducer.class);
         job.setInputFormatClass(TextInputFormat.class);
         job.setOutputFormatClass(TextOutputFormat.class);

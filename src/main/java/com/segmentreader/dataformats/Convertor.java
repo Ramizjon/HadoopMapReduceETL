@@ -1,8 +1,8 @@
 package com.segmentreader.dataformats;
 
 import com.amazonaws.services.cloudfront.model.InvalidArgumentException;
-import com.segmentreader.mapreduce.UserModCommand;
+import com.segmentreader.mapreduce.MapperUserModCommand;
 
 public interface Convertor {
-    public UserModCommand convert(String value) throws InvalidArgumentException;
+    public MapperUserModCommand convert(String value) throws InvalidArgumentException;
 }

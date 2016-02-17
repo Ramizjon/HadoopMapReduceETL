@@ -3,23 +3,25 @@ package com.segmentreader.mapreduce;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.*;
+import java.util.AbstractMap.SimpleEntry;
 import java.util.stream.Collectors;
 
 import com.google.common.collect.ImmutableMap;
+import com.segmentreader.utils.CSVConverter;
 import com.segmentreader.utils.UserModContainer;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
 
 import com.google.common.collect.Lists;
 import com.segmentreader.useroperations.OperationHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+@Slf4j
 public abstract class AbstractCookieReducer extends
-        Reducer<Text, UserModContainer, Text, UserModContainer> {
+        Reducer<Text, UserModContainer<MapperUserModCommand>, Text, NullWritable> {
 
-    private static final Logger logger = LoggerFactory
-            .getLogger(AbstractUserSegmentsMapper.class);
+
     private Map<String, OperationHandler> handlers = getHandlers();
     private static final String reduceCounter = "reduce_counter";
     private static final String errorCounter = "reduce_error_counter";
@@ -28,39 +30,45 @@ public abstract class AbstractCookieReducer extends
     private static final String deleteOp = OperationHandler.DELETE_OPERATION;
 
     @Override
-    public void reduce( Text key, Iterable<UserModContainer> values, Context context)
+    public void reduce(Text key, Iterable<UserModContainer<MapperUserModCommand>> values, Context context)
             throws IOException, InterruptedException {
 
-        List<UserModContainer> userModContainerList = Lists.newArrayList(values);
-        List <UserModCommand> userModList = userModContainerList.stream().map(e -> e.get())
-                .collect(Collectors.toList());
+        List <MapperUserModCommand>  userModList =
+                Lists.newArrayList(values)
+                        .stream()
+                        .map(e -> e.getData())
+                        .collect(Collectors.toList());
+
+        userModList.forEach(u -> {
+            log.info(u.toString());
+        });
 
         userModList.stream()
                 .filter(p -> !p.getSegments().isEmpty())
-                .collect(Collectors.groupingBy(UserModCommand::getCommand))
+                .collect(Collectors.groupingBy(MapperUserModCommand::getCommand))
                 .entrySet().stream()
-                .map(e -> new AbstractMap.SimpleEntry<Map<String,Set<String>>,Instant>(ImmutableMap.of(e.getKey(), e.getValue().stream()
-                        .map(UserModCommand::getSegments)
+                .map(e -> ImmutableMap.of(e.getKey(), new SimpleEntry<Set<String>, Instant>(
+                    e.getValue().stream()
+                        .map(MapperUserModCommand::getSegments)
                         .flatMap(List::stream)
-                        .collect(Collectors.toSet())),
+                        .collect(Collectors.toSet()),
                         e.getValue()
-                                .stream().max((e1, e2) -> e1.getTimestamp()
-                                .compareTo(e2.getTimestamp())).get().getTimestamp())
-                ).forEach(k -> {callHandlers(k, key, context);});
-        context.getCounter(appName,reduceCounter).increment(1);
+                            .stream().max((e1, e2) -> e1.getTimestamp()
+                            .compareTo(e2.getTimestamp())).get().getTimestamp())))
+                .forEach(e -> { e.forEach((f,s) -> {callHandlers(s, f, key, context); }); });
     }
 
-    private void callHandlers (AbstractMap.SimpleEntry<Map<String,Set<String>>,Instant> k, Text key, Context context) {
-       k.getKey().forEach((r,s) -> {
-           UserModCommand cmd = new UserModCommand(k.getValue(), key.toString(), r, new ArrayList(s));
-           try {
-               handlers.get(r).handle(cmd);
-               context.write(new Text(cmd.getUserId()),new UserModContainer(cmd));
-           } catch (IOException|InterruptedException e) {
-               logger.error("Exception occured. Arguments: {}, exception code: {}", key.toString(), e);
-               context.getCounter(appName, errorCounter).increment(1);
-           }
-       });
+    private void callHandlers (SimpleEntry<Set<String>,Instant> keyValuePair, String command, Text key, Context context) {
+        SimpleEntry<ArrayList<String>, Instant> inputEntry
+                = new SimpleEntry(new ArrayList<>(keyValuePair.getKey()),keyValuePair.getValue());
+        ReducerUserModCommand rumc = new ReducerUserModCommand(key.toString(),command, inputEntry);
+            try {
+                handlers.get(command).handle(rumc);
+                context.write(new Text(CSVConverter.convertUserModToCSV(rumc)), NullWritable.get());
+            } catch (IOException | InterruptedException e) {
+                log.error("Exception occured. Arguments: {}, exception code: {}", key.toString(), e);
+                context.getCounter(appName, errorCounter).increment(1);
+            }
     }
 
     protected abstract Map<String, OperationHandler> getHandlers();

@@ -1,43 +1,24 @@
 package com.segmentreader.utils;
 
-import com.segmentreader.mapreduce.UserModCommand;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.apache.commons.io.IOUtils;
 import org.apache.hadoop.io.WritableComparable;
 
 import java.io.*;
 
-public class UserModContainer implements WritableComparable, Serializable {
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class UserModContainer<T extends Comparable<T>> implements WritableComparable<UserModContainer>, Serializable {
 
-    private UserModCommand userModCommand;
-
-    public UserModCommand get() {
-        return userModCommand;
-    }
-
-    public void put(UserModCommand umc) {
-        userModCommand = umc;
-    }
-
-    public UserModContainer(UserModCommand userModCommand) {
-        this.userModCommand = userModCommand;
-    }
+    private T data;
 
     @Override
-    public int compareTo(Object o) {
-        if (!(o instanceof UserModCommand)) {
-            throw new IllegalArgumentException();
-        }
-        UserModCommand inputUmc = (UserModCommand) o;
-        int result = 0;
-        result = userModCommand.getTimestamp().compareTo(((UserModCommand) o).getTimestamp());
-        if (result == 0){
-            if (userModCommand.getUserId().equals(((UserModCommand) o).getUserId())
-                    && userModCommand.getCommand().equals(((UserModCommand) o).getCommand())) {
-                result = 0;
-            }
-        }
-        return result;
+    public int compareTo(UserModContainer o) {
+        return this.data.compareTo((T) o.getData());
     }
-
 
     @Override
     public void write(DataOutput out) throws IOException {
@@ -47,26 +28,31 @@ public class UserModContainer implements WritableComparable, Serializable {
             ObjectOutputStream oos
                     = new ObjectOutputStream (bos);
         ) {
-            oos.writeObject(this.userModCommand);
+            oos.writeObject(this. data);
             oos.flush();
             bytes = bos.toByteArray();
         }
         out.write(bytes);
     }
 
-
     @Override
     public void readFields(DataInput in) throws IOException {
-        UserModCommand umc = null;
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        IOUtils.copy((DataInputStream)in, bos);
+        byte[] bytes = bos.toByteArray();
         try( ByteArrayInputStream byteInputStream
-                     =  (ByteArrayInputStream)in;
+                     = new ByteArrayInputStream(bytes);
              ObjectInputStream ois
                      = new ObjectInputStream(byteInputStream);
         ){
-            umc = (UserModCommand) ois.readObject();
+            data = (T) ois.readObject();
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
-        this.put(umc);
+    }
+
+    @Override
+    public String toString(){
+        return data.toString();
     }
 }

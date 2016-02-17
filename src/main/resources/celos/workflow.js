@@ -3,6 +3,7 @@ celos.importDefaults("defaults");
 var ROOT = "/user/" + CELOS_USER;
 var APPLICATION_PATH = ROOT  + "/deploy/map-reduce/workflow.xml";
 var INPUT_PATH = ROOT + "/input/${year}-${month}-${day}/${hour}00";
+var OUTPUT_PATH = ROOT + "/output/${year}-${month}-${day}/${hour}00";
 
 function defineWorkflow() {
     celos.defineWorkflow({
@@ -15,6 +16,7 @@ function defineWorkflow() {
             "oozie.wf.application.path": APPLICATION_PATH,
             "oozie.use.system.libpath": "true",
             "inputPath": INPUT_PATH,
+            "outputPath": OUTPUT_PATH,
             "hive_defaults": HIVE_SITE_DEFAULTS
         })
     });
