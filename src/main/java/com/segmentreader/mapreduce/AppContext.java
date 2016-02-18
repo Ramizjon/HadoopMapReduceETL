@@ -14,6 +14,11 @@ import com.segmentreader.domain.UserRepository;
 import com.segmentreader.useroperations.AddOperationHandler;
 import com.segmentreader.useroperations.DeleteOperationHandler;
 import com.segmentreader.useroperations.OperationHandler;
+import com.segmentreader.utils.ParquetAppender;
+import org.apache.hadoop.mapred.FileOutputFormat;
+import org.apache.hadoop.mapred.JobClient;
+import org.apache.hadoop.mapred.JobConf;
+import org.apache.hadoop.mapred.RunningJob;
 
 
 /**
@@ -41,6 +46,7 @@ public class AppContext {
 
     public static class CookieReducer extends AbstractCookieReducer {
 
+        @Override
         protected Map<String, OperationHandler> getHandlers() {
             Map<String, OperationHandler> handlersMap = new HashMap<String, OperationHandler>();
             handlersMap.put(OperationHandler.ADD_OPERATION,
@@ -49,9 +55,14 @@ public class AppContext {
                     new AppContext.DeleteOperationHandlerImpl());
             return handlersMap;
         }
+
+        @Override
+        protected ParquetAppender<ParquetCompatibleUserModCommand> getParquetAppender(Context context) {
+            return new ParquetAppender<ParquetCompatibleUserModCommand>(FileOutputFormat.getOutputPath(
+                    new JobConf(context.getConfiguration())).toString(), ParquetCompatibleUserModCommand.class);
+        }
     }
-    
-    
+
     /**
      * implementation of main application mapper class
      * 

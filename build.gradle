@@ -23,6 +23,13 @@ ext {
     guavaVersion = "19.0"
     kryoVersion = "2.16"
     lombokVersion = "1.16.6"
+    parquetHadoopVersion = "1.5.0"
+    parquetHiveVersion = "1.2.8"
+    hiveSerDeVersion = "1.1.0"
+    parquetColumnVersion = "1.8.1"
+    oxmlSchemasVersion = "1.3"
+    parquetAvroVersion = "1.5.0"
+
     mainClass = "com.segmentreader.mapreduce.Main"
 }
 
@@ -70,6 +77,16 @@ dependencies {
 
     provided "org.apache.hadoop:hadoop-client:${hadoopClientVersion}-${cdhVersion}"
     compile "org.apache.hbase:hbase-client:${hBaseVersion}-${cdhVersion}"
+    compile "com.twitter:parquet-hadoop:${parquetHadoopVersion}-${cdhVersion}"
+    compile "com.twitter:parquet-hive:${parquetHiveVersion}"
+    compile "org.apache.hive:hive-serde:${hiveSerDeVersion}-${cdhVersion}"
+    compile "org.apache.parquet:parquet-column:${parquetColumnVersion}"
+    compile "org.apache.poi:ooxml-schemas:${oxmlSchemasVersion}"
+    compile "com.twitter:parquet-avro:${parquetAvroVersion}-${cdhVersion}"
+
+
+
+
     compile "org.slf4j:slf4j-api:${slf4JVersion}"
     compile "net.sf.jopt-simple:jopt-simple:${simpleJoptVersion}"
     compile "com.google.guava:guava:${guavaVersion}"
@@ -77,7 +94,8 @@ dependencies {
     testCompile "junit:junit:${jUnitVersion}"
     compile "org.mockito:mockito-all:${mockitoVersion}"
     provided "org.projectlombok:lombok:${lombokVersion}"
-    
+
+
     //compile "com.twitter:parquet-hadoop:${parquetVersion}"
    	//compile "com.twitter:parquet-hive-bundle:${hiveBundleVersion}"
    // compile 'ch.qos.logback:logback-classic:' + {hbaseClassicVersion

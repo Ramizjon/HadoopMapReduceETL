@@ -18,9 +18,6 @@ import com.segmentreader.dataformats.Convertor;
 @Slf4j
 public abstract class AbstractUserSegmentsMapper extends
         Mapper<LongWritable, Text, Text, UserModContainer<MapperUserModCommand>> {
-    
-    private static final Logger logger = LoggerFactory
-            .getLogger(AbstractUserSegmentsMapper.class);
 
     private static final String mapCounter = "mapcounter";
     private static final String errorCounter = "map_error_counter";
@@ -32,7 +29,7 @@ public abstract class AbstractUserSegmentsMapper extends
 
     public void map(LongWritable key, Text value, Context context)
             throws IOException, InterruptedException {
-        logger.debug("Map job started");
+        log.debug("Map job started");
         MapperUserModCommand cmd = null;
 
         try{
@@ -42,7 +39,7 @@ public abstract class AbstractUserSegmentsMapper extends
             context.write(new Text(cmd.getUserId()), umc);
             context.getCounter(appName, mapCounter).increment(1);
         } catch (InvalidArgumentException e) {
-            logger.error("Exception occured. Arguments: {}, exception code: {}", value.toString(), e);
+            log.error("Exception occured. Arguments: {}, exception code: {}", value.toString(), e);
             context.getCounter(appName, errorCounter).increment(1);
         }
     }
@@ -53,7 +50,7 @@ public abstract class AbstractUserSegmentsMapper extends
         for (Closeable closeable : closeables) {
             closeable.close();
         }
-        logger.debug("Clean up completed");
+        log.debug("Clean up completed");
     }
 
     protected abstract List<Closeable> getCloseables();
