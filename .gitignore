@@ -11,6 +11,8 @@ build
 .settings
 .classpath
 .idea/
+.ipr
+.iws
 **/gradle-wrapper.properties
 gradlew.bat
 
