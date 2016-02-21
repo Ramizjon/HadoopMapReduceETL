@@ -7,10 +7,15 @@ import java.util.AbstractMap.SimpleEntry;
 import java.util.stream.Collectors;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
 import com.segmentreader.utils.CSVConverter;
 import com.segmentreader.utils.ParquetAppender;
 import com.segmentreader.utils.UserModContainer;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.avro.Schema;
+import org.apache.avro.generic.GenericData;
+import org.apache.avro.generic.GenericRecord;
+import org.apache.avro.reflect.ReflectData;
 import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
@@ -21,10 +26,9 @@ import parquet.hadoop.ParquetWriter;
 
 @Slf4j
 public abstract class AbstractCookieReducer extends
-        Reducer<Text, UserModContainer<MapperUserModCommand>, Text, NullWritable> {
+        Reducer<Text, UserModContainer<MapperUserModCommand>, Void , GenericRecord> {
 
     private Map<String, OperationHandler> handlers = getHandlers();
-    private ParquetAppender<ParquetCompatibleUserModCommand> parquetAppender;
     private static final String reduceCounter = "reduce_counter";
     private static final String errorCounter = "reduce_error_counter";
     private static final String appName = "segmentreader";
@@ -32,43 +36,49 @@ public abstract class AbstractCookieReducer extends
     @Override
     public void reduce(Text key, Iterable<UserModContainer<MapperUserModCommand>> values, Context context)
             throws IOException, InterruptedException {
-        if(parquetAppender==null){
-            parquetAppender = getParquetAppender(context);
-        }
         List <MapperUserModCommand>  userModList =
                 Lists.newArrayList(values)
                         .stream()
                         .map(e -> e.getData())
                         .collect(Collectors.toList());
 
-        userModList.forEach(u -> {
-            log.info(u.toString());
-        });
-
         userModList.stream()
                 .filter(p -> !p.getSegments().isEmpty())
                 .collect(Collectors.groupingBy(MapperUserModCommand::getCommand))
-                .entrySet().stream()
-                .map(e -> ImmutableMap.of(e.getKey(), new SimpleEntry<Set<String>, Instant>(
-                    e.getValue().stream()
-                        .map(MapperUserModCommand::getSegments)
-                        .flatMap(List::stream)
-                        .collect(Collectors.toSet()),
-                        e.getValue()
-                            .stream().max((e1, e2) -> e1.getTimestamp()
-                            .compareTo(e2.getTimestamp())).get().getTimestamp())))
-                .forEach(e -> { e.forEach((f,s) -> {callHandlers(s, f, key, context); }); });
-        
+                .entrySet()
+                .stream()
+                .map(AbstractCookieReducer::getSimpleEntry)
+                .forEach(e -> {
+                    Map<String, String> map = new HashMap<>();
+                    e.getValue().forEach(p -> {map.put(p.getKey(),p.getValue());});
+                    callHandlers(map, e.getKey(), key, context);
+                });
     }
 
-    private void callHandlers (SimpleEntry<Set<String>,Instant> keyValuePair, String command, Text key, Context context) {
-        SimpleEntry<ArrayList<String>, Instant> inputEntry
-                = new SimpleEntry(new ArrayList<>(keyValuePair.getKey()),keyValuePair.getValue());
-        ReducerUserModCommand rumc = new ReducerUserModCommand(key.toString(),command, inputEntry);
+
+    public static SimpleEntry<String, List<SimpleEntry<String, String>>> getSimpleEntry(Map.Entry<String, List<MapperUserModCommand>> e) {
+        List<SimpleEntry<String, String>> readyMap = e.getValue()
+                .stream()
+                .flatMap(mapperUserModCommand -> {
+                    return mapperUserModCommand.getSegments()
+                            .stream().distinct()
+                            .map(s -> new SimpleEntry<>(s, mapperUserModCommand.getTimestamp().toString()));
+                }).collect(Collectors.toList());
+
+        return new SimpleEntry<>(e.getKey(), readyMap);
+    }
+
+
+    private void callHandlers (Map<String, String> readyMap, String command, Text key, Context context) {
+        ReducerUserModCommand rumc = new ReducerUserModCommand(key.toString(), command, readyMap);
             try {
                 handlers.get(command).handle(rumc);
-                parquetAppender.append(new ParquetCompatibleUserModCommand(rumc));
-                context.write(new Text(CSVConverter.convertUserModToCSV(rumc)), NullWritable.get());
+                Schema schema = ReflectData.get().getSchema(ReducerUserModCommand.class);
+                GenericRecord record = new GenericData.Record(schema);
+                record.put("userId", rumc.getUserId());
+                record.put("command", rumc.getCommand());
+                record.put("segmentTimestamps", rumc.getSegmentTimestamps());
+                context.write(null, record);
                 context.getCounter(appName,reduceCounter).increment(1);
             } catch (IOException|InterruptedException e) {
                 log.error("Exception occured. Arguments: {}, exception code: {}", key.toString(), e);
@@ -76,12 +86,5 @@ public abstract class AbstractCookieReducer extends
             }
     }
 
-    @Override
-    protected void cleanup(Context context
-    ) throws IOException, InterruptedException {
-        parquetAppender.close();
-    }
-
     protected abstract Map<String, OperationHandler> getHandlers();
-    protected abstract ParquetAppender<ParquetCompatibleUserModCommand> getParquetAppender(Context context);
 }

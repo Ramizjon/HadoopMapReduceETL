@@ -1,5 +1,13 @@
 <workflow-app xmlns="uri:oozie:workflow:0.1" name="${celosWorkflowName}">
-    <start to="hiveaction-input" />
+    <start to="fsDeleteAction" />
+    <action name="fsDeleteAction">
+        <fs>
+            <delete path='${outputPath}/_common_metadata'/>
+            <delete path='${outputPath}/_metadata'/>
+        </fs>
+        <ok to="hiveaction-input"/>
+        <error to="fail"/>
+    </action>
     <action name="hiveaction-input">
         <hive xmlns="uri:oozie:hive-action:0.2">
             <job-tracker>quickstart.cloudera:8032</job-tracker>

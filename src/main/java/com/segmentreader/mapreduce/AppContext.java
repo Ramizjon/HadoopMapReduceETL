@@ -55,12 +55,7 @@ public class AppContext {
                     new AppContext.DeleteOperationHandlerImpl());
             return handlersMap;
         }
-
-        @Override
-        protected ParquetAppender<ParquetCompatibleUserModCommand> getParquetAppender(Context context) {
-            return new ParquetAppender<ParquetCompatibleUserModCommand>(FileOutputFormat.getOutputPath(
-                    new JobConf(context.getConfiguration())).toString(), ParquetCompatibleUserModCommand.class);
-        }
+        
     }
 
     /**

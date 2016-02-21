@@ -60,14 +60,12 @@ public class HBaseUserRepositoryImpl implements UserRepository, Closeable {
     }
 
     protected void flush() throws IOException {
-        Put put = null;
         for (ReducerUserModCommand u : cachedList) {
-            put = new Put(Bytes.toBytes(u.getUserId()));
-            for (String segm : u.getSegmentTimestamps().getKey()) {
-                String timeStamp = u.getSegmentTimestamps().getValue().toString();
-                put.add(Bytes.toBytes(COLUMN_FAMILY), Bytes.toBytes(segm),
-                        Bytes.toBytes(timeStamp));
-            }
+            Put put = new Put(Bytes.toBytes(u.getUserId()));
+            u.getSegmentTimestamps().forEach((a,s) -> {
+                put.add(Bytes.toBytes(COLUMN_FAMILY), Bytes.toBytes(a),
+                        Bytes.toBytes(s));
+            });
             hTable.put(put);
         }
     }

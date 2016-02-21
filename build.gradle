@@ -84,13 +84,11 @@ dependencies {
     compile "org.apache.poi:ooxml-schemas:${oxmlSchemasVersion}"
     compile "com.twitter:parquet-avro:${parquetAvroVersion}-${cdhVersion}"
 
-
-
-
     compile "org.slf4j:slf4j-api:${slf4JVersion}"
     compile "net.sf.jopt-simple:jopt-simple:${simpleJoptVersion}"
     compile "com.google.guava:guava:${guavaVersion}"
     compile "com.esotericsoftware.kryo:kryo:${kryoVersion}"
+    compile "com.codepoetics:protonpack:1.8"
     testCompile "junit:junit:${jUnitVersion}"
     compile "org.mockito:mockito-all:${mockitoVersion}"
     provided "org.projectlombok:lombok:${lombokVersion}"

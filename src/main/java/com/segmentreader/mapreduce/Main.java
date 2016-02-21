@@ -1,5 +1,8 @@
 package com.segmentreader.mapreduce;
 
+import com.codepoetics.protonpack.StreamUtils;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
 import com.segmentreader.useroperations.OperationHandler;
 import com.segmentreader.utils.ParquetAppender;
 import com.segmentreader.utils.UserModContainer;
@@ -7,6 +10,8 @@ import joptsimple.OptionException;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
+import org.apache.avro.Schema;
+import org.apache.avro.reflect.ReflectData;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.Path;
@@ -23,10 +28,15 @@ import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import parquet.avro.AvroParquetOutputFormat;
 
 import java.io.IOException;
 import java.time.Instant;
 import java.util.*;
+import java.util.AbstractMap.SimpleEntry;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Main extends Configured implements Tool {
     private static final Logger logger = LoggerFactory.getLogger(Main.class);
@@ -35,21 +45,6 @@ public class Main extends Configured implements Tool {
           int res = ToolRunner.run(new Configuration(), new Main(), args);
           logger.info("Application has finished execution with result: " + res);
           System.exit(res);
-
-       /* ReducerUserModCommand umc11 = new ReducerUserModCommand("22", OperationHandler.ADD_OPERATION,
-                new AbstractMap.SimpleEntry<ArrayList<String>, Instant>(new ArrayList<String>(
-                        Arrays.asList("iphone","macbook", "magic mouse")),Instant.EPOCH));
-
-        ReducerUserModCommand umc22 = new ReducerUserModCommand("22", OperationHandler.DELETE_OPERATION,
-                new AbstractMap.SimpleEntry<ArrayList<String>, Instant>(new ArrayList<String>(
-                        Arrays.asList("android","chromebook", "normal mouse")), Instant.EPOCH));
-
-        ParquetCompatibleUserModCommand pcumc1 = new ParquetCompatibleUserModCommand(umc11);
-        ParquetCompatibleUserModCommand pcumc2 = new ParquetCompatibleUserModCommand(umc22);
-        ParquetAppender tc = new ParquetAppender("/user/cloudera/output/out010203", ParquetCompatibleUserModCommand.class);
-        tc.append(pcumc1);
-        tc.append(pcumc2);
-        tc.close();*/
     }
 
     public int run(String args[]) throws Exception {
@@ -81,13 +76,19 @@ public class Main extends Configured implements Tool {
         job.setMapOutputKeyClass(Text.class);
         job.setMapOutputValueClass(UserModContainer.class);
 
-        job.setOutputKeyClass(Text.class);
-        job.setOutputValueClass(NullWritable.class);
+        job.setOutputKeyClass(Void.class);
+        job.setOutputValueClass(ReducerUserModCommand.class);
         job.setMapperClass(AppContext.UserSegmentsMapper.class);
        // job.setCombinerClass(AppContext.CookieReducer.class);
         job.setReducerClass(AppContext.CookieReducer.class);
         job.setInputFormatClass(TextInputFormat.class);
-        job.setOutputFormatClass(TextOutputFormat.class);
+
+        Schema schema = ReflectData.get().getSchema(ReducerUserModCommand.class);
+        AvroParquetOutputFormat.<ReducerUserModCommand>setSchema(job, schema);
+
+        job.setOutputFormatClass(AvroParquetOutputFormat.class);
+
+
 
         logger.info("Mapreduce job created");
         return job;
