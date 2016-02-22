@@ -24,6 +24,6 @@ public class ConvertorImpl implements Convertor {
     
     private Instant parseDateToInstant (String date) {
         return Instant.from(DateTimeFormatter.ISO_DATE_TIME.parse(date));
-     }
+    }
 
 }
