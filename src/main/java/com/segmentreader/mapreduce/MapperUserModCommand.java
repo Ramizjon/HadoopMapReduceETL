@@ -26,37 +26,6 @@ public class MapperUserModCommand implements Serializable, Comparable<MapperUser
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o)
-            return true;
-
-        if ((o == null) || !(o instanceof MapperUserModCommand)) {
-            return false;
-        }
-
-        MapperUserModCommand temp = (MapperUserModCommand) o;
-
-        if (!temp.getUserId().equals(this.getUserId())
-                || !temp.getCommand().equals(this.getCommand())
-                || !temp.getSegments().equals(this.getSegments())
-                || !temp.getTimestamp().equals(this.getTimestamp())) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        final int stPoint = 14;
-        int result = 1;
-        result = result * stPoint + getCommand().hashCode();
-        result = result * stPoint + getUserId().hashCode();
-        result = result * stPoint + getSegments().hashCode();
-        result = result * stPoint + getTimestamp().hashCode();
-        return result;
-    }
-
-    @Override
     public int compareTo(MapperUserModCommand inputUmc) {
         int result = getTimestamp().compareTo(inputUmc.getTimestamp());
         if (result == 0){

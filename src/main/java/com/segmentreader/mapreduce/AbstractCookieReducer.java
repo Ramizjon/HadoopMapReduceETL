@@ -42,6 +42,8 @@ public abstract class AbstractCookieReducer extends
                         .map(e -> e.getData())
                         .collect(Collectors.toList());
 
+        userModList.forEach(e -> log.info("reducer will receive: " + e.toString()));
+
         userModList.stream()
                 .filter(p -> !p.getSegments().isEmpty())
                 .collect(Collectors.groupingBy(MapperUserModCommand::getCommand))

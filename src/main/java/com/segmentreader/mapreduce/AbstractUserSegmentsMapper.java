@@ -35,7 +35,7 @@ public abstract class AbstractUserSegmentsMapper extends
         try{
             cmd = convertor.convert(value.toString());
             UserModContainer<MapperUserModCommand> umc = new UserModContainer<>(cmd);
-            log.info("MAPPER WILL WRITE: {}", umc.toString());
+            log.info("mapper will write: {}", umc.toString());
             context.write(new Text(cmd.getUserId()), umc);
             context.getCounter(appName, mapCounter).increment(1);
         } catch (InvalidArgumentException e) {
