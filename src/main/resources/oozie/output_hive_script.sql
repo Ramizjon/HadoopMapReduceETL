@@ -1,5 +1,4 @@
 use segments;
-drop table if exists user_operations_parquet;
 drop table if exists temp_table;
 
 create external table temp_table (
@@ -10,9 +9,9 @@ create external table temp_table (
   STORED AS
     INPUTFORMAT "parquet.hive.DeprecatedParquetInputFormat"
     OUTPUTFORMAT "parquet.hive.DeprecatedParquetOutputFormat"
-    LOCATION "${outputDir}/out";
+    LOCATION "${outputDir}";
 
-create external table user_operations_parquet (
+CREATE TABLE IF NOT EXISTS user_operations_parquet (
   userId string,
   command string,
   segmentTimestamps map<string,string>)
@@ -26,10 +25,9 @@ create external table user_operations_parquet (
   ROW FORMAT SERDE 'parquet.hive.serde.ParquetHiveSerDe'
   STORED AS
     INPUTFORMAT "parquet.hive.DeprecatedParquetInputFormat"
-    OUTPUTFORMAT "parquet.hive.DeprecatedParquetOutputFormat"
-    LOCATION "${outputDir}/out";
+    OUTPUTFORMAT "parquet.hive.DeprecatedParquetOutputFormat";
 
-  INSERT OVERWRITE TABLE user_operations_parquet
+  INSERT INTO TABLE user_operations_parquet
   PARTITION
  (year = ${year},
  month = ${month},
@@ -37,3 +35,5 @@ create external table user_operations_parquet (
  hour = ${hour},
  inout = "${input_output}")
  SELECT * FROM temp_table;
+
+ drop table temp_table;

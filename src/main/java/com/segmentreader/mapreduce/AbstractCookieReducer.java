@@ -47,7 +47,7 @@ public abstract class AbstractCookieReducer extends
                 .collect(Collectors.groupingBy(MapperUserModCommand::getCommand))
                 .entrySet()
                 .stream()
-                .map(AbstractCookieReducer::getSimpleEntry)
+                .map(this::getSimpleEntry)
                 .forEach(e -> {
                     Map<String, String> map = new HashMap<>();
                     e.getValue().forEach(p -> {map.put(p.getKey(),p.getValue());});
@@ -56,7 +56,7 @@ public abstract class AbstractCookieReducer extends
     }
 
 
-    public static SimpleEntry<String, List<SimpleEntry<String, String>>> getSimpleEntry(Map.Entry<String, List<MapperUserModCommand>> e) {
+    private SimpleEntry<String, List<SimpleEntry<String, String>>> getSimpleEntry(Map.Entry<String, List<MapperUserModCommand>> e) {
         List<SimpleEntry<String, String>> readyMap = e.getValue()
                 .stream()
                 .flatMap(mapperUserModCommand -> {

@@ -1,13 +1,5 @@
 <workflow-app xmlns="uri:oozie:workflow:0.1" name="${celosWorkflowName}">
-    <start to="fsDeleteAction" />
-    <action name="fsDeleteAction">
-        <fs>
-            <delete path='${outputPath}/_common_metadata'/>
-            <delete path='${outputPath}/_metadata'/>
-        </fs>
-        <ok to="hiveaction-input"/>
-        <error to="fail"/>
-    </action>
+    <start to="hiveaction-input" />
     <action name="hiveaction-input">
         <hive xmlns="uri:oozie:hive-action:0.2">
             <job-tracker>quickstart.cloudera:8032</job-tracker>
@@ -28,14 +20,26 @@
         <java>
             <job-tracker>quickstart.cloudera:8032</job-tracker>
             <name-node>hdfs://quickstart.cloudera:8020</name-node>
+            <prepare>
+                <delete path="${outputPath}"/>
+            </prepare>
             <main-class>com.segmentreader.mapreduce.Main</main-class>
             <arg>-i</arg>
             <arg>${inputPath}</arg>
             <arg>-o</arg>
             <arg>${outputPath}</arg>
         </java>
-        <ok to="hiveaction-output" />
+        <ok to="fsDeleteAction" />
         <error to="fail" />
+    </action>
+    <action name="fsDeleteAction">
+        <fs>
+            <delete path="hdfs://quickstart.cloudera:8020/${outputPath}/_SUCCESS"/>
+            <delete path="hdfs://quickstart.cloudera:8020/${outputPath}/_common_metadata"/>
+            <delete path="hdfs://quickstart.cloudera:8020/${outputPath}/_metadata"/>
+        </fs>
+        <ok to="hiveaction-output"/>
+        <error to="fail"/>
     </action>
     <action name="hiveaction-output">
         <hive xmlns="uri:oozie:hive-action:0.2">

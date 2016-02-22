@@ -21,7 +21,7 @@ PARTITIONED BY (
 )
 STORED AS PARQUET;
 
-INSERT OVERWRITE TABLE user_operations
+INSERT INTO TABLE user_operations
 PARTITION (year = ${year}, month = ${month}, day = ${day}, hour = ${hour}, inout = "${input_output}")
 SELECT
       split(items,",")[0] timestamp,
