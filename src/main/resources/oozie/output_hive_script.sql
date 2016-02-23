@@ -19,8 +19,7 @@ CREATE TABLE IF NOT EXISTS user_operations_parquet (
   year string,
   month string,
   day string,
-  hour string,
-  inout string
+  hour string
 )
   ROW FORMAT SERDE 'parquet.hive.serde.ParquetHiveSerDe'
   STORED AS
@@ -32,8 +31,7 @@ CREATE TABLE IF NOT EXISTS user_operations_parquet (
  (year = ${year},
  month = ${month},
  day = ${day},
- hour = ${hour},
- inout = "${input_output}")
+ hour = ${hour})
  SELECT * FROM temp_table;
 
  drop table temp_table;

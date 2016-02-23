@@ -11,7 +11,6 @@
             <param>month=${month}</param>
             <param>day=${day}</param>
             <param>hour=${hour}</param>
-            <param>input_output=input</param>
         </hive>
         <ok to="mr-node"/>
         <error to="fail"/>
@@ -52,7 +51,6 @@
             <param>month=${month}</param>
             <param>day=${day}</param>
             <param>hour=${hour}</param>
-            <param>input_output=output</param>
         </hive>
         <ok to="end"/>
         <error to="fail"/>

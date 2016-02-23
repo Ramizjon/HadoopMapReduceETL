@@ -16,13 +16,12 @@ PARTITIONED BY (
   year string,
   month string,
   day string,
-  hour string,
-  inout string
+  hour string
 )
 STORED AS PARQUET;
 
 INSERT INTO TABLE user_operations
-PARTITION (year = ${year}, month = ${month}, day = ${day}, hour = ${hour}, inout = "${input_output}")
+PARTITION (year = ${year}, month = ${month}, day = ${day}, hour = ${hour})
 SELECT
       split(items,",")[0] timestamp,
       split(items,",")[1] user_id,
