@@ -1,5 +1,7 @@
 package com.segmentreader.mapreduce;
 
+import com.google.common.collect.ComparisonChain;
+import com.google.common.collect.Ordering;
 import lombok.Data;
 import lombok.ToString;
 
@@ -27,13 +29,12 @@ public class MapperUserModCommand implements Serializable, Comparable<MapperUser
 
     @Override
     public int compareTo(MapperUserModCommand inputUmc) {
-        int result = getTimestamp().compareTo(inputUmc.getTimestamp());
-        if (result == 0){
-            result += ((inputUmc.getSegments().size() == getSegments().size())
-                    && inputUmc.getSegments().containsAll(getSegments())
-                    && (getUserId().equals(inputUmc.getUserId()))
-                    &&(getCommand().equals(inputUmc.getCommand()))) ? 0 : 1;
-        }
-        return result;
+        return ComparisonChain.start()
+                .compare(getTimestamp(), inputUmc.getTimestamp())
+                .compare(getUserId(), inputUmc.getUserId())
+                .compare(getCommand(), inputUmc.getCommand())
+                .compare(getSegments(), inputUmc.getSegments(),
+                        Ordering.<String>natural().lexicographical())
+                .result();
     }
 }

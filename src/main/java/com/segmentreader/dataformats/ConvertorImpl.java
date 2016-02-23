@@ -21,7 +21,7 @@ public class ConvertorImpl implements Convertor {
         Instant timestamp = parseDateToInstant(arr[0]);
         return new MapperUserModCommand(timestamp, arr[1], arr[2], segmentsList);
     }
-    
+
     private Instant parseDateToInstant (String date) {
         return Instant.from(DateTimeFormatter.ISO_DATE_TIME.parse(date));
     }

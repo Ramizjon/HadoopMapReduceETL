@@ -36,6 +36,8 @@ public abstract class AbstractCookieReducer extends
     @Override
     public void reduce(Text key, Iterable<UserModContainer<MapperUserModCommand>> values, Context context)
             throws IOException, InterruptedException {
+
+        values.forEach(e -> log.info("Reducer has received: " + e.toString()));
         List <MapperUserModCommand>  userModList =
                 Lists.newArrayList(values)
                         .stream()

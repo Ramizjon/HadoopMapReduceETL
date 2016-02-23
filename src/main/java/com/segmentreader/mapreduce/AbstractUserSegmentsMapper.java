@@ -31,12 +31,11 @@ public abstract class AbstractUserSegmentsMapper extends
             throws IOException, InterruptedException {
         log.debug("Map job started");
         MapperUserModCommand cmd = null;
-
         try{
             cmd = convertor.convert(value.toString());
             UserModContainer<MapperUserModCommand> umc = new UserModContainer<>(cmd);
             log.info("mapper will write: {}", umc.toString());
-            context.write(new Text(cmd.getUserId()), umc);
+            context.write(new Text(umc.getData().getUserId()),umc);
             context.getCounter(appName, mapCounter).increment(1);
         } catch (InvalidArgumentException e) {
             log.error("Exception occured. Arguments: {}, exception code: {}", value.toString(), e);
