@@ -71,10 +71,17 @@ public class HBaseUserRepositoryImpl implements UserRepository, Closeable {
     }
 
     @Override
-    public void removeUser(String rowId) throws IOException {
-        Delete delete = new Delete(Bytes.toBytes(rowId));
-        hTable.delete(delete);
-        logger.debug("User removed from row {}", rowId);
+    public void removeUser(ReducerUserModCommand user) throws IOException {
+        Delete delete = new Delete(Bytes.toBytes(user.getUserId()));
+        user.getSegmentTimestamps().forEach((u,k) -> {
+            delete.deleteColumn(Bytes.toBytes(COLUMN_FAMILY), Bytes.toBytes(u));
+            try {
+                hTable.delete(delete);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            logger.debug("Removed segment <{}> from row <{}>", u, user.getUserId());
+        });
     }
 
     @Override

@@ -11,6 +11,7 @@ import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
 import org.apache.avro.Schema;
+import org.apache.avro.generic.GenericRecord;
 import org.apache.avro.reflect.ReflectData;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
@@ -78,6 +79,7 @@ public class Main extends Configured implements Tool {
 
         job.setOutputKeyClass(Void.class);
         job.setOutputValueClass(ReducerUserModCommand.class);
+        //job.setOutputValueClass(ReducerUserModCommand.class);
         job.setMapperClass(AppContext.UserSegmentsMapper.class);
        // job.setCombinerClass(AppContext.CookieReducer.class);
         job.setReducerClass(AppContext.CookieReducer.class);

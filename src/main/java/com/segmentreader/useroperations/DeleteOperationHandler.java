@@ -12,7 +12,7 @@ public abstract class DeleteOperationHandler implements OperationHandler{
 	
 	@Override
 	public void handle(ReducerUserModCommand value) throws IOException {
-	    instance.removeUser(value.getUserId());
+	    instance.removeUser(value);
 	}
 	
 	protected abstract UserRepository getRepoInstance();

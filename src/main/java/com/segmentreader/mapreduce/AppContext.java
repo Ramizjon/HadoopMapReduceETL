@@ -55,7 +55,6 @@ public class AppContext {
                     new AppContext.DeleteOperationHandlerImpl());
             return handlersMap;
         }
-        
     }
 
     /**

@@ -7,5 +7,5 @@ import com.segmentreader.mapreduce.ReducerUserModCommand;
 
 public interface UserRepository {
 	public void addUser(ReducerUserModCommand user) throws IOException;
-	public void removeUser(String userId) throws IOException;
+	public void removeUser(ReducerUserModCommand user) throws IOException;
 }

@@ -33,5 +33,3 @@ CREATE TABLE IF NOT EXISTS user_operations_parquet (
  day = ${day},
  hour = ${hour})
  SELECT * FROM temp_table;
-
- drop table temp_table;

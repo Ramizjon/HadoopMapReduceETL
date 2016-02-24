@@ -37,14 +37,10 @@ public abstract class AbstractCookieReducer extends
     public void reduce(Text key, Iterable<UserModContainer<MapperUserModCommand>> values, Context context)
             throws IOException, InterruptedException {
 
-        values.forEach(e -> log.info("Reducer has received: " + e.toString()));
-        List <MapperUserModCommand>  userModList =
-                Lists.newArrayList(values)
-                        .stream()
-                        .map(e -> e.getData())
-                        .collect(Collectors.toList());
+        List <MapperUserModCommand> userModList = new ArrayList<>();
+        values.forEach(e -> userModList.add(e.getData()));
 
-        userModList.forEach(e -> log.info("reducer will receive: " + e.toString()));
+        userModList.forEach(e -> log.info("reducer has received: {}", e.toString()));
 
         userModList.stream()
                 .filter(p -> !p.getSegments().isEmpty())
@@ -82,6 +78,7 @@ public abstract class AbstractCookieReducer extends
                 record.put("userId", rumc.getUserId());
                 record.put("command", rumc.getCommand());
                 record.put("segmentTimestamps", rumc.getSegmentTimestamps());
+                log.info("Reducer will write: {}", record.toString());
                 context.write(null, record);
                 context.getCounter(appName,reduceCounter).increment(1);
             } catch (IOException|InterruptedException e) {
