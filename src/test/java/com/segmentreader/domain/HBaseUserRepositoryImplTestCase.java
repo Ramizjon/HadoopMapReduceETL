@@ -8,19 +8,20 @@ import static org.mockito.Mockito.verify;
 import java.io.IOException;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
-import java.util.AbstractMap;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
+import com.google.common.collect.ImmutableMap;
 import com.segmentreader.mapreduce.MapperUserModCommand;
 import com.segmentreader.mapreduce.ReducerUserModCommand;
+import com.segmentreader.useroperations.OperationHandler;
 import org.apache.hadoop.hbase.client.Delete;
 import org.apache.hadoop.hbase.client.HTable;
 import org.apache.hadoop.hbase.client.Put;
 import org.junit.Test;
 
 public class HBaseUserRepositoryImplTestCase {
+
+    private static final String timestampValue = "2011-12-03T10:15:30+01:00";
 
     private HBaseUserRepositoryImpl createRepository(HTable hTable)
             throws IOException {
@@ -34,45 +35,51 @@ public class HBaseUserRepositoryImplTestCase {
 
     @Test
     public void testUserRepositoryImplAddUserSingleRecord() throws IOException {
-//        HTable hTable = mock(HTable.class);
-//        HBaseUserRepositoryImpl userRepo = createRepository(hTable);
-//        userRepo.setBufferSize(1);
-//        Instant timestamp = parseDateToInstant("2011-12-03T10:15:30+01:00");
-//        List<String> list = Arrays.asList("magic mouse");
-//
-//        userRepo.addUser(new ReducerUserModCommand("11","add",
-//                new AbstractMap.SimpleEntry<ArrayList<String>, Instant>(new ArrayList<>(list),timestamp)));
-//
-//        verify(hTable, times(1)).put(any(Put.class));
+        HTable hTable = mock(HTable.class);
+        HBaseUserRepositoryImpl userRepo = createRepository(hTable);
+        userRepo.setBufferSize(1);
+        String timestamp = "2011-12-03T10:15:30+01:00";
+        Map<String, String> map11 = ImmutableMap.of("iphone", timestamp.toString(), "macbook", timestamp.toString(),
+                "magic mouse", timestamp.toString());
+        ReducerUserModCommand umc11 = new ReducerUserModCommand("11", OperationHandler.ADD_OPERATION, map11);
+
+        userRepo.addUser(umc11);
+
+        verify(hTable, times(1)).put(any(Put.class));
     }
 
     @Test
     public void testUserRepositoryImplAddUserMultipleRecords()
             throws IOException {
-//        HTable hTable = mock(HTable.class);
-//        Instant timestamp = parseDateToInstant("2011-12-03T10:15:30+01:00");
-//        HBaseUserRepositoryImpl userRepo = createRepository(hTable);
-//        userRepo.setBufferSize(2);
-//
-//        ArrayList<String> list = new ArrayList<>(Arrays.asList("magic mouse"));
-//        userRepo.addUser(new ReducerUserModCommand("11","add",
-//                new AbstractMap.SimpleEntry<ArrayList<String>, Instant>(list,timestamp)));
-//        verify(hTable, times(0)).put(any(Put.class));
-//        userRepo.addUser(new ReducerUserModCommand("23","add",
-//                new AbstractMap.SimpleEntry<ArrayList<String>, Instant>(list,timestamp)));
-//        verify(hTable, times(2)).put(any(Put.class));
+        HTable hTable = mock(HTable.class);
+
+        HBaseUserRepositoryImpl userRepo = createRepository(hTable);
+        userRepo.setBufferSize(2);
+        Map<String, String> map11 = ImmutableMap.of("iphone", timestampValue, "macbook", timestampValue,
+                "magic mouse", timestampValue);
+        ReducerUserModCommand umc11 = new ReducerUserModCommand("11", OperationHandler.ADD_OPERATION, map11);
+        Map<String, String> map22 = ImmutableMap.of("android", timestampValue, "chromebook", timestampValue,
+                "normal mouse", timestampValue);
+        ReducerUserModCommand umc22 = new ReducerUserModCommand("11", OperationHandler.ADD_OPERATION, map22);
+
+        userRepo.addUser(umc11);
+        userRepo.addUser(umc22);
+
+        verify(hTable, times(2)).put(any(Put.class));
     }
 
     @Test
     public void testUserRepositoryImplDeleteUserSingleRecord() throws IOException {
         HTable hTable = mock(HTable.class);
+        Map<String, String> map11 = ImmutableMap.of("iphone", timestampValue, "macbook", timestampValue,
+                "magic mouse", timestampValue);
+        ReducerUserModCommand umc11 = new ReducerUserModCommand("11", OperationHandler.ADD_OPERATION, map11);
         HBaseUserRepositoryImpl userRepo = createRepository(hTable);
-        userRepo.setBufferSize(1);;
-        userRepo.removeUser("user1");
-        verify(hTable, times(1)).delete(any(Delete.class));
+
+        userRepo.setBufferSize(1);
+        userRepo.removeUser(umc11);
+
+        verify(hTable, times(3)).delete(any(Delete.class));
     }
 
-    private Instant parseDateToInstant (String date) {
-        return Instant.from(DateTimeFormatter.ISO_DATE_TIME.parse(date));
-     }
 }

@@ -43,7 +43,7 @@ public class DeleteOperationHandlerTestCase {
         ReducerUserModCommand userMod = new ReducerUserModCommand("11", OperationHandler.ADD_OPERATION, map11);
         deleteHandler.handle(userMod);
 
-        verify(userRepo, times(1)).removeUser("11");
+        verify(userRepo, times(1)).removeUser(userMod);
     }
 
 }
