@@ -11,10 +11,7 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
@@ -23,7 +20,6 @@ import org.apache.hadoop.mapreduce.Mapper.Context;
 import org.junit.Test;
 
 import com.amazonaws.services.cloudfront.model.InvalidArgumentException;
-import com.google.common.collect.ImmutableMap;
 import com.segmentreader.dataformats.Convertor;
 import com.segmentreader.useroperations.OperationHandler;
 
@@ -53,7 +49,7 @@ public class AbstractUserSegmentsMapperTestCase {
         Context context = mock(Context.class);
         Counter mapRedCounter = mock(Counter.class);
         Instant timestamp = Instant.from(DateTimeFormatter.ISO_DATE_TIME.parse("2011-12-03T10:15:30+01:00"));
-        UserModCommand userMod = new UserModCommand(timestamp, "user22", "delete", Arrays.asList("iphone"));
+        MapperUserModCommand userMod = new MapperUserModCommand(timestamp, "user22", "delete", new ArrayList<>(Arrays.asList("iphone")));
         
         String input = "2011-12-03T10:15:30+01:00,user22,delete,iphone";
         AbstractUserSegmentsMapper testMapper = createInstance( null, convertor);

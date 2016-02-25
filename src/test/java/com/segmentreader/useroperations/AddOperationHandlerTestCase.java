@@ -7,14 +7,21 @@ import static org.mockito.Mockito.verify;
 import java.io.IOException;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
+import java.util.AbstractMap;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Map;
 
+import com.google.common.collect.ImmutableMap;
+import com.segmentreader.mapreduce.MapperUserModCommand;
+import com.segmentreader.mapreduce.ReducerUserModCommand;
 import org.junit.Test;
 
 import com.segmentreader.domain.UserRepository;
-import com.segmentreader.mapreduce.UserModCommand;
 
 public class AddOperationHandlerTestCase {
+
+    private static final String timestampValue = Instant.EPOCH.toString();
 
     private AddOperationHandler createInstance(UserRepository repo) {
         return new AddOperationHandler() {
@@ -31,12 +38,14 @@ public class AddOperationHandlerTestCase {
         UserRepository repo = mock(UserRepository.class);
         AddOperationHandler handler = createInstance(repo);
         Instant timestamp = Instant.from(DateTimeFormatter.ISO_DATE_TIME.parse("2011-12-03T10:15:30+01:00"));
-        UserModCommand nonEmptyUserMod = new UserModCommand(timestamp, "user33", "add", Arrays.asList("website click"));
+        Map<String, String> map11 = ImmutableMap.of("iphone", timestampValue, "macbook", timestampValue,
+                "magic mouse", timestampValue);
+        ReducerUserModCommand umc11 = new ReducerUserModCommand("11", OperationHandler.ADD_OPERATION, map11);
         // act
-        handler.handle(nonEmptyUserMod);
-        
+        handler.handle(umc11);
+
         //assert
-        verify(repo, times(1)).addUser(nonEmptyUserMod);
+        verify(repo, times(1)).addUser(umc11);
     }
    
    

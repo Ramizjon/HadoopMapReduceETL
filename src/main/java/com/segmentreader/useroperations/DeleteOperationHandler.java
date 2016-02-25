@@ -3,15 +3,16 @@ package com.segmentreader.useroperations;
 import java.io.IOException;
 
 import com.segmentreader.domain.UserRepository;
-import com.segmentreader.mapreduce.UserModCommand;
+import com.segmentreader.mapreduce.MapperUserModCommand;
+import com.segmentreader.mapreduce.ReducerUserModCommand;
 
 public abstract class DeleteOperationHandler implements OperationHandler{
 
 	UserRepository instance = getRepoInstance();
 	
 	@Override
-	public void handle(UserModCommand value) throws IOException {
-	    instance.removeUser(value.getUserId());
+	public void handle(ReducerUserModCommand value) throws IOException {
+	    instance.removeUser(value);
 	}
 	
 	protected abstract UserRepository getRepoInstance();

@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.segmentreader.mapreduce.MapperUserModCommand;
+import com.segmentreader.mapreduce.ReducerUserModCommand;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.client.Delete;
@@ -14,16 +16,14 @@ import org.apache.hadoop.hbase.util.Bytes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.segmentreader.mapreduce.UserModCommand;
-
 public class HBaseUserRepositoryImpl implements UserRepository, Closeable {
     private static final Logger logger = LoggerFactory
             .getLogger(HBaseUserRepositoryImpl.class);
 
-    private static final int BUFFER_SIZE = 20;
+    private static final int BUFFER_SIZE = 1;
     private static final String COLUMN_FAMILY = "general";
 
-    List<UserModCommand> cachedList;
+    List<ReducerUserModCommand> cachedList;
     private HTable hTable;
     private int bufferSize = BUFFER_SIZE;
 
@@ -42,7 +42,7 @@ public class HBaseUserRepositoryImpl implements UserRepository, Closeable {
     }
 
     @Override
-    public void addUser(UserModCommand user)
+    public void addUser(ReducerUserModCommand user)
             throws IOException {
         cachedList.add(user);
         this.checkForBulk();
@@ -60,28 +60,32 @@ public class HBaseUserRepositoryImpl implements UserRepository, Closeable {
     }
 
     protected void flush() throws IOException {
-        Put put = null;
-        for (UserModCommand u : cachedList) {
-            put = new Put(Bytes.toBytes(u.getUserId()));
-            for (String segm : u.getSegments()) {
-                String timeStamp = u.getTimestamp().toString();
-                put.add(Bytes.toBytes(COLUMN_FAMILY), Bytes.toBytes(segm),
-                        Bytes.toBytes(timeStamp));
-            }
+        for (ReducerUserModCommand u : cachedList) {
+            Put put = new Put(Bytes.toBytes(u.getUserId()));
+            u.getSegmentTimestamps().forEach((a,s) -> {
+                put.add(Bytes.toBytes(COLUMN_FAMILY), Bytes.toBytes(a),
+                        Bytes.toBytes(s));
+            });
             hTable.put(put);
         }
     }
 
     @Override
-    public void removeUser(String rowId) throws IOException {
-        Delete delete = new Delete(Bytes.toBytes(rowId));
-        hTable.delete(delete);
-        logger.debug("User removed from row {}", rowId);
+    public void removeUser(ReducerUserModCommand user) throws IOException {
+        Delete delete = new Delete(Bytes.toBytes(user.getUserId()));
+        user.getSegmentTimestamps().forEach((u,k) -> {
+            delete.deleteColumn(Bytes.toBytes(COLUMN_FAMILY), Bytes.toBytes(u));
+            try {
+                hTable.delete(delete);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            logger.debug("Removed segment <{}> from row <{}>", u, user.getUserId());
+        });
     }
 
     @Override
     public void close() throws IOException {
         flush();
     }
-
 }

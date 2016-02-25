@@ -7,15 +7,22 @@ import static org.mockito.Mockito.verify;
 import java.io.IOException;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
+import java.util.AbstractMap;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Map;
 
+import com.google.common.collect.ImmutableMap;
+import com.segmentreader.mapreduce.MapperUserModCommand;
+import com.segmentreader.mapreduce.ReducerUserModCommand;
 import org.junit.Test;
 
 import com.segmentreader.domain.UserRepository;
-import com.segmentreader.mapreduce.UserModCommand;
 
 
 public class DeleteOperationHandlerTestCase {
+
+    private static final String timestampValue = Instant.EPOCH.toString();
 
     private DeleteOperationHandler createInstance(UserRepository repo) {
         return new DeleteOperationHandler() {
@@ -31,11 +38,12 @@ public class DeleteOperationHandlerTestCase {
         UserRepository userRepo = mock(UserRepository.class);
         DeleteOperationHandler deleteHandler = createInstance(userRepo);
         Instant timestamp = Instant.from(DateTimeFormatter.ISO_DATE_TIME.parse("2011-12-03T10:15:30+01:00"));
-        UserModCommand userMod = new UserModCommand(timestamp, "user22", "add", Arrays.asList("website click"));
-        
+        Map<String, String> map11 = ImmutableMap.of("iphone", timestampValue, "macbook", timestampValue,
+                "magic mouse", timestampValue);
+        ReducerUserModCommand userMod = new ReducerUserModCommand("11", OperationHandler.ADD_OPERATION, map11);
         deleteHandler.handle(userMod);
-        
-        verify(userRepo, times(1)).removeUser("user22");
+
+        verify(userRepo, times(1)).removeUser("11");
     }
 
 }

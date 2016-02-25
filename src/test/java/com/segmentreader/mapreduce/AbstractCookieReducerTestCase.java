@@ -12,8 +12,7 @@ import java.io.IOException;
 import java.time.Instant;
 import java.util.*;
 
-import com.google.common.collect.Lists;
-import org.apache.hadoop.hbase.security.User;
+import com.segmentreader.utils.UserModContainer;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Counter;
 import org.apache.hadoop.mapreduce.Reducer.Context;
@@ -22,7 +21,6 @@ import org.junit.Test;
 import com.google.common.collect.ImmutableMap;
 import com.segmentreader.useroperations.OperationHandler;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 
 public class AbstractCookieReducerTestCase {
 
@@ -36,31 +34,29 @@ public class AbstractCookieReducerTestCase {
             }
         };
     }
-
-
     
     @Test
     public void testAbstractCookieReducer() throws IOException, InterruptedException {
         LinkedList lasd = new LinkedList();
         OperationHandler handler = mock(OperationHandler.class);
-        ArgumentCaptor<UserModCommand> umcCaptor = ArgumentCaptor.forClass(UserModCommand.class);
+        ArgumentCaptor<ReducerUserModCommand> umcCaptor = ArgumentCaptor.forClass(ReducerUserModCommand.class);
         Counter mapRedCounter = mock(Counter.class);
         Instant timeStamp = Instant.EPOCH;
         Map<String, OperationHandler> handlers = ImmutableMap.of(OperationHandler.DELETE_OPERATION, handler,
                 OperationHandler.ADD_OPERATION, handler);
-        List<String> umc1Segments = Arrays.asList("iphone", "macbook", "magic mouse");
+        ArrayList<String> umc1Segments = new ArrayList<>(Arrays.asList("iphone", "macbook", "magic mouse"));
         Collections.reverse(umc1Segments);
-        List<String> umc2Segments = Arrays.asList("dakine bag", "dakine case", "dakine gloves");
+        ArrayList<String> umc2Segments = new ArrayList<>(Arrays.asList("dakine bag", "dakine case", "dakine gloves"));
         Collections.reverse(umc2Segments);
-        List<String> umc3Segments = Arrays.asList("page closed", "page opened", "page reloaded");
+        ArrayList<String> umc3Segments = new ArrayList<>(Arrays.asList("page closed", "page opened", "page reloaded"));
         Collections.reverse(umc3Segments);
-        List<String> umc4Segments = Arrays.asList("link highlighted", "link copied", "link clicked");
+        ArrayList<String> umc4Segments = new ArrayList<>(Arrays.asList("link highlighted", "link copied", "link clicked"));
         Collections.reverse(umc4Segments);
-        UserModCommand umc = new UserModCommand(timeStamp,"11",OperationHandler.ADD_OPERATION,umc1Segments);
-        UserModCommand umc1 = new UserModCommand(timeStamp,"11",OperationHandler.DELETE_OPERATION, umc2Segments);
-        UserModCommand umc3 = new UserModCommand(timeStamp,"11",OperationHandler.DELETE_OPERATION, umc3Segments);
-        UserModCommand umc4 = new UserModCommand(timeStamp,"11",OperationHandler.ADD_OPERATION, umc4Segments);
-        Iterable<UserModCommand> values = Arrays.asList(umc,umc1,umc3,umc4);
+        UserModContainer<MapperUserModCommand> umc = new UserModContainer<>(new MapperUserModCommand(timeStamp,"11",OperationHandler.ADD_OPERATION,umc1Segments));
+        UserModContainer<MapperUserModCommand> umc1 = new UserModContainer<>(new MapperUserModCommand(timeStamp,"11",OperationHandler.DELETE_OPERATION, umc2Segments));
+        UserModContainer<MapperUserModCommand> umc3 = new UserModContainer<>(new MapperUserModCommand(timeStamp,"11",OperationHandler.DELETE_OPERATION, umc3Segments));
+        UserModContainer<MapperUserModCommand> umc4 = new UserModContainer<>(new MapperUserModCommand(timeStamp,"11",OperationHandler.ADD_OPERATION, umc4Segments));
+        Iterable<UserModContainer<MapperUserModCommand>> values = Arrays.asList(umc,umc1,umc3,umc4);
         Context context = mock(Context.class);
         
         when(context.getCounter("segmentreader", "reduce_counter")).thenReturn(mapRedCounter);
@@ -72,12 +68,12 @@ public class AbstractCookieReducerTestCase {
         verify(mapRedCounter, times(1)).increment(1);
 
         //aggregated items
-        List<String> expectedFirstUmcSegments  = Arrays.asList("magic mouse", "link copied", "macbook", "link clicked", "iphone", "link highlighted");
-        List<String> expectedSecondUmcSegments  = Arrays.asList("page closed", "dakine bag", "page opened", "page reloaded", "dakine case", "dakine gloves");
-        UserModCommand expectedUmc1 = new UserModCommand(timeStamp,"11",OperationHandler.ADD_OPERATION,expectedFirstUmcSegments);
-        UserModCommand expectedUmc2 = new UserModCommand(timeStamp,"11",OperationHandler.DELETE_OPERATION,expectedSecondUmcSegments);
+        ArrayList<String> expectedFirstUmcSegments  = new ArrayList<>(Arrays.asList("magic mouse", "link copied", "macbook", "link clicked", "iphone", "link highlighted"));
+        ArrayList<String> expectedSecondUmcSegments  = new ArrayList<>(Arrays.asList("page closed", "dakine bag", "page opened", "page reloaded", "dakine case", "dakine gloves"));
+        MapperUserModCommand expectedUmc1 = new MapperUserModCommand(timeStamp,"11",OperationHandler.ADD_OPERATION,expectedFirstUmcSegments);
+        MapperUserModCommand expectedUmc2 = new MapperUserModCommand(timeStamp,"11",OperationHandler.DELETE_OPERATION,expectedSecondUmcSegments);
 
-        List<UserModCommand> expectedUmcList = new LinkedList<>();
+        List<MapperUserModCommand> expectedUmcList = new LinkedList<>();
         expectedUmcList.add(expectedUmc1);
         expectedUmcList.add(expectedUmc2);
         assertThat(expectedUmcList, is(umcCaptor.getAllValues()));
