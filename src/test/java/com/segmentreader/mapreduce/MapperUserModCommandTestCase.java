@@ -31,7 +31,7 @@ public class MapperUserModCommandTestCase {
         MapperUserModCommand umc22 = new MapperUserModCommand(Instant.EPOCH, "22", OperationHandler.ADD_OPERATION,
                 testHelper.toArrayList(Arrays.asList("iphone","macbook", "magic mouse")));
 
-        assertEquals(1, umc11.compareTo(umc22)); //not equal
+        assertEquals(-1, umc11.compareTo(umc22)); //not equal
     }
 
     @Test
@@ -42,7 +42,7 @@ public class MapperUserModCommandTestCase {
         MapperUserModCommand umc22 = new MapperUserModCommand(Instant.EPOCH, "11", OperationHandler.DELETE_OPERATION,
                 testHelper.toArrayList(Arrays.asList("iphone","macbook", "magic mouse")));
 
-        assertEquals(1, umc11.compareTo(umc22)); //not equal
+        assertEquals(-1, umc11.compareTo(umc22)); //not equal
     }
 
     @Test

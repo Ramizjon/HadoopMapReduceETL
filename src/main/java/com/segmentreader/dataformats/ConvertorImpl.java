@@ -12,7 +12,6 @@ public class ConvertorImpl implements Convertor {
 
     public MapperUserModCommand convert(String value) throws InvalidArgumentException {
         String[] arr = value.split(",");
-
         if (arr.length < 4) {
             throw new InvalidArgumentException("Validation failed: not enough arguments");
         }

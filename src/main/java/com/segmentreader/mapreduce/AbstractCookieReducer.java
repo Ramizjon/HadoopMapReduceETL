@@ -40,8 +40,6 @@ public abstract class AbstractCookieReducer extends
         List <MapperUserModCommand> userModList = new ArrayList<>();
         values.forEach(e -> userModList.add(e.getData()));
 
-        userModList.forEach(e -> log.info("reducer has received: {}", e.toString()));
-
         userModList.stream()
                 .filter(p -> !p.getSegments().isEmpty())
                 .collect(Collectors.groupingBy(MapperUserModCommand::getCommand))
@@ -78,7 +76,6 @@ public abstract class AbstractCookieReducer extends
                 record.put("userId", rumc.getUserId());
                 record.put("command", rumc.getCommand());
                 record.put("segmentTimestamps", rumc.getSegmentTimestamps());
-                log.info("Reducer will write: {}", record.toString());
                 context.write(null, record);
                 context.getCounter(appName,reduceCounter).increment(1);
             } catch (IOException|InterruptedException e) {

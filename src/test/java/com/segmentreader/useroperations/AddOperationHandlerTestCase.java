@@ -48,6 +48,4 @@ public class AddOperationHandlerTestCase {
         verify(repo, times(1)).addUser(umc11);
     }
    
-   
-   
 }
