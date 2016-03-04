@@ -27,9 +27,6 @@ import com.receiver.mapreduce.AppContext.NexusUserSegmentsMapperImpl;
 
 import static org.mockito.Mockito.*;
 
-/**
- * Created by admin on 3/4/16.
- */
 public class NexusMapperTestCase {
 
     private NexusUserSegmentsMapper createInstance(

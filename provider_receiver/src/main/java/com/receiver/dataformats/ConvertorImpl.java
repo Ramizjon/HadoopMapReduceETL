@@ -37,9 +37,6 @@ public class ConvertorImpl implements Convertor {
         String[] pathArray = outputPath.split("/");
         String timestamp = pathArray[pathArray.length-3]+"T"+pathArray[pathArray.length-2]+":00:00";
 
-        log.info("segmentsToAdd: {}", elements[1]);
-        log.info("segmentToRemover: {}", elements[2]);
-
         String[] segmentsToAdd = elements[1].split(",");
         String[] segmentsToRemove = elements[2].split(",");
 
