@@ -1,0 +1,17 @@
+*.zip
+**/classes/
+**/*.class
+**/*.yml
+**/*.gitkeep
+**/resources
+**/target
+**/.gradle
+build
+.project
+.settings
+.classpath
+build.gradle
+  
+ #Eclipse Core
+ .project
+/bin/

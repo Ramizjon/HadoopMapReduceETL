@@ -1,0 +1,74 @@
+<workflow-app xmlns="uri:oozie:workflow:0.1" name="${celosWorkflowName}">
+    <start to="mr-receiver"/>
+    <action name="mr-receiver">
+        <java>
+            <job-tracker>quickstart.cloudera:8032</job-tracker>
+            <name-node>hdfs://quickstart.cloudera:8020</name-node>
+            <prepare>
+                <delete path="${receiverOutputPath}"/>
+            </prepare>
+            <main-class>com.receiver.mapreduce.Main</main-class>
+            <arg>-n</arg>
+            <arg>${inputNexusPath}</arg>
+            <arg>-f</arg>
+            <arg>${inputFacebookPath}</arg>
+            <arg>-o</arg>
+            <arg>${receiverOutputPath}</arg>
+        </java>
+        <ok to="fsDeleteAction"/>
+        <error to="fail"/>
+    </action>
+
+    <action name="fsDeleteAction">
+        <fs>
+            <delete path="hdfs://quickstart.cloudera:8020/${receiverOutputPath}/facebook/_SUCCESS"/>
+            <delete path="hdfs://quickstart.cloudera:8020/${receiverOutputPath}/facebook/_common_metadata"/>
+            <delete path="hdfs://quickstart.cloudera:8020/${receiverOutputPath}/facebook/_metadata"/>
+            <delete path="hdfs://quickstart.cloudera:8020/${receiverOutputPath}/nexus/_SUCCESS"/>
+            <delete path="hdfs://quickstart.cloudera:8020/${receiverOutputPath}/nexus/_common_metadata"/>
+            <delete path="hdfs://quickstart.cloudera:8020/${receiverOutputPath}/nexus/_metadata"/>
+        </fs>
+        <ok to="hiveaction-input-facebook"/>
+        <error to="fail"/>
+    </action>
+
+    <action name="hiveaction-input-facebook">
+        <hive xmlns="uri:oozie:hive-action:0.2">
+            <job-tracker>quickstart.cloudera:8032</job-tracker>
+            <name-node>hdfs://quickstart.cloudera:8020</name-node>
+            <job-xml>${hive_defaults}</job-xml>
+            <script>input_hive_script.sql</script>
+            <param>inputDir=${receiverOutputPath}/facebook</param>
+            <param>year=${year}</param>
+            <param>month=${month}</param>
+            <param>day=${day}</param>
+            <param>hour=${hour}</param>
+            <param>provider=facebook</param>
+        </hive>
+        <ok to="hiveaction-input-nexus"/>
+        <error to="fail"/>
+    </action>
+
+    <action name="hiveaction-input-nexus">
+        <hive xmlns="uri:oozie:hive-action:0.2">
+            <job-tracker>quickstart.cloudera:8032</job-tracker>
+            <name-node>hdfs://quickstart.cloudera:8020</name-node>
+            <job-xml>${hive_defaults}</job-xml>
+            <script>input_hive_script.sql</script>
+            <param>inputDir=${receiverOutputPath}/nexus</param>
+            <param>year=${year}</param>
+            <param>month=${month}</param>
+            <param>day=${day}</param>
+            <param>hour=${hour}</param>
+            <param>provider=nexus</param>
+        </hive>
+        <ok to="end"/>
+        <error to="fail"/>
+    </action>
+
+    <kill name="fail">
+        <message>Java app failed, error
+            message[${wf:errorMessage(wf:lastErrorNode())}]</message>
+    </kill>
+    <end name="end" />
+</workflow-app>

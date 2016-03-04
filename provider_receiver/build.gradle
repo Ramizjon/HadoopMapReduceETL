@@ -1,0 +1,60 @@
+
+    ext {
+        hadoopClientVersion = "2.6.0"
+        jUnitVersion = "4.8.2"
+        hBaseVersion = "1.0.0"
+        slf4JVersion = "1.7.13"
+        parquetVersion = "1.5.0"
+        hiveBundleVersion = "1.4.1"
+        simpleJoptVersion = "4.9"
+        mockitoVersion = "1.9.5"
+        kryoVersion = "2.16"
+        parquetHadoopVersion = "1.5.0"
+        parquetHiveVersion = "1.2.8"
+        hiveSerDeVersion = "1.1.0"
+        parquetColumnVersion = "1.8.1"
+        oxmlSchemasVersion = "1.3"
+        parquetAvroVersion = "1.5.0"
+        mainClass = "com.receiver.mapreduce.Main"
+    }
+
+    task fatJar(type: Jar) {
+        manifest {
+            attributes 'Implementation-Title': 'receiver jar',
+                    'Implementation-Version': version,
+                    'Main-Class': "${mainClass}"
+        }
+        baseName = project.name + '-all-' + "${cdhVersion}"
+        from { (configurations.compile-configurations.provided).collect { it.isDirectory() ? it : zipTree(it)}}
+        with jar
+    }
+
+    jar {
+        manifest {
+            attributes 'Implementation-Title': 'receiver fatJar',
+                    'Implementation-Version': version,
+                    'Main-Class': "${mainClass}"
+        }
+    }
+
+
+dependencies {
+
+    provided "org.apache.hadoop:hadoop-client:${hadoopClientVersion}-${cdhVersion}"
+    compile "org.apache.hbase:hbase-client:${hBaseVersion}-${cdhVersion}"
+    compile "com.twitter:parquet-hadoop:${parquetHadoopVersion}-${cdhVersion}"
+    compile "com.twitter:parquet-hive:${parquetHiveVersion}"
+    compile "org.apache.hive:hive-serde:${hiveSerDeVersion}-${cdhVersion}"
+    compile "org.apache.parquet:parquet-column:${parquetColumnVersion}"
+    compile "org.apache.poi:ooxml-schemas:${oxmlSchemasVersion}"
+    compile "com.twitter:parquet-avro:${parquetAvroVersion}-${cdhVersion}"
+
+    compile "org.slf4j:slf4j-api:${slf4JVersion}"
+    compile "net.sf.jopt-simple:jopt-simple:${simpleJoptVersion}"
+    compile "com.esotericsoftware.kryo:kryo:${kryoVersion}"
+    compile "com.codepoetics:protonpack:1.8"
+    compile "org.hamcrest:hamcrest-all:1.3"
+    compile "org.mockito:mockito-all:${mockitoVersion}"
+    compile project(':common')
+    testCompile "junit:junit:${jUnitVersion}"
+}
