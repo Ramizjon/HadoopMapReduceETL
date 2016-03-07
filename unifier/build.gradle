@@ -1,6 +1,6 @@
 
     ext {
-        mainClass = "com.unifier.nexusprovider.Main"
+        mainClass = "com.unifier.com.unifier.nexusprovider.Main"
     }
 
     jar {
