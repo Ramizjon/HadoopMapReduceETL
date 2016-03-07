@@ -1,6 +1,8 @@
-package com.aggregator.mapreduce;
+package com.aggregator;
 
 import com.aggregator.domain.HBaseUserRepositoryImpl;
+import com.aggregator.mapreduce.AbstractCookieReducer;
+import com.aggregator.mapreduce.AbstractUserSegmentsMapper;
 import com.aggregator.useroperations.AddOperationHandler;
 import com.aggregator.useroperations.DeleteOperationHandler;
 import com.aggregator.useroperations.OperationHandler;
@@ -37,7 +39,6 @@ public class AppContext {
     }
 
     public static class CookieReducer extends AbstractCookieReducer {
-
         @Override
         protected Map<String, OperationHandler> getHandlers() {
             Map<String, OperationHandler> handlersMap = new HashMap<String, OperationHandler>();
@@ -47,19 +48,20 @@ public class AppContext {
                     new AppContext.DeleteOperationHandlerImpl());
             return handlersMap;
         }
-    }
-    /**
-     * implementation of main application mapper class
-     * 
-     * @author Ramizjon
-     *
-     */
-    public static class UserSegmentsMapper extends AbstractUserSegmentsMapper {
-        
+
         @Override
         protected List<Closeable> getCloseables() {
             return Arrays.<Closeable> asList(getUserRepoInstance());
         }
+    }
+    /**
+     * implementation of main application mapper class
+     *
+     * @author Ramizjon
+     *
+     */
+    public static class UserSegmentsMapper extends AbstractUserSegmentsMapper {
+
     }
 
     /**
@@ -68,7 +70,6 @@ public class AppContext {
      *
      */
     public static class AddOperationHandlerImpl extends AddOperationHandler {
-
         @Override
         protected UserRepository getRepoInstance() {
             return getUserRepoInstance();

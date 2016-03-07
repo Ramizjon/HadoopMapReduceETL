@@ -1,5 +1,6 @@
-package com.aggregator.mapreduce;
+package com.aggregator;
 
+import com.aggregator.mapreduce.ReducerUserModCommand;
 import com.aggregator.utils.UserModContainer;
 import com.common.mapreduce.MapperUserModCommand;
 import joptsimple.OptionException;

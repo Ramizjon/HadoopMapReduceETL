@@ -23,14 +23,8 @@ import static org.mockito.Mockito.*;
 
 public class AbstractUserSegmentsMapperTestCase {
 
-    private AbstractUserSegmentsMapper createInstance(
-            List<Closeable> closeables) {
-        return new AbstractUserSegmentsMapper() {
-            @Override
-            protected List<Closeable> getCloseables() {
-                return closeables;
-            }
-        };
+    private AbstractUserSegmentsMapper createInstance() {
+        return new AbstractUserSegmentsMapper(){};
     }
 
     @Test
@@ -53,7 +47,7 @@ public class AbstractUserSegmentsMapperTestCase {
         genericRecord.put("command", userModCommand.getCommand());
         genericRecord.put("segments", segmentsArray);
 
-        AbstractUserSegmentsMapper testMapper = createInstance(null);
+        AbstractUserSegmentsMapper testMapper = createInstance();
         when(context.getCounter("aggregator", "mapcounter")).thenReturn(mapRedCounter);
 
         //act stage
@@ -66,14 +60,5 @@ public class AbstractUserSegmentsMapperTestCase {
     }
     
 
-    @Test
-    public void testMapperCleanup() throws IOException, InterruptedException {
-        Context context = mock(Context.class);
-        List<Closeable> closeables = Arrays.asList(mock (Closeable.class));
-        AbstractUserSegmentsMapper testMapper = createInstance( closeables);
-        
-        testMapper.cleanup(context);
-        
-        verify(closeables.get(0), times(1)).close();
-    }
+
 }

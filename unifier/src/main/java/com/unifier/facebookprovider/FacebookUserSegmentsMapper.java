@@ -2,7 +2,6 @@ package com.unifier.facebookprovider;
 
 import com.amazonaws.services.cloudfront.model.InvalidArgumentException;
 import com.common.mapreduce.MapperUserModCommand;
-import com.unifier.dataformats.Convertor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericData;
@@ -11,8 +10,10 @@ import org.apache.avro.reflect.ReflectData;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
+import utils.Convertor;
 
 import java.io.IOException;
+import java.util.AbstractMap.SimpleEntry;
 import java.util.List;
 
 /**
@@ -24,16 +25,16 @@ public abstract class FacebookUserSegmentsMapper extends
 
         private static final String mapCounter = "facebook_map_counter";
         private static final String errorCounter = "facebook_map_error_counter";
-        private static final String appName = "facebook_provider_reader";
+        private static final String groupName = "facebook_provider_reader";
 
-        private Convertor convertor = getConvertor();
+        private FacebookConvertor convertor = getConvertor();
 
         public void map(LongWritable key, Text value, Context context)
                 throws IOException, InterruptedException {
             log.debug("Map job started");
             List<MapperUserModCommand> cmdList = null;
             try{
-                cmdList = convertor.convertFacebookUMC(value.toString(), context);
+                cmdList = convertor.convert(new SimpleEntry<String, Context>(value.toString(), context));
                 cmdList.forEach(e -> {
                     Schema schema = ReflectData.get().getSchema(MapperUserModCommand.class);
                     GenericRecord record = new GenericData.Record(schema);
@@ -48,14 +49,14 @@ public abstract class FacebookUserSegmentsMapper extends
                     }
                 });
 
-                context.getCounter(appName, mapCounter).increment(1);
+                context.getCounter(groupName, mapCounter).increment(1);
             } catch (InvalidArgumentException e) {
                 log.error("Exception occured. Arguments: {}, exception code: {}", value.toString(), e);
-                context.getCounter(appName, errorCounter).increment(1);
+                context.getCounter(groupName, errorCounter).increment(1);
             }
         }
 
-        protected abstract Convertor getConvertor();
+        protected abstract FacebookConvertor getConvertor();
 
         @Override
         public String toString() {

@@ -7,7 +7,7 @@
             <prepare>
                 <delete path="${aggregatorOutputPath}"/>
             </prepare>
-            <main-class>com.aggregator.mapreduce.Main</main-class>
+            <main-class>com.aggregator.Main</main-class>
             <arg>-i</arg>
             <arg>${aggregatorInputPath}</arg>
             <arg>-o</arg>

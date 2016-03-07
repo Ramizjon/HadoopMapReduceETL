@@ -1,13 +1,11 @@
-package com.unifier.mapreduce;
+package com.unifier;
 
+import com.codepoetics.protonpack.StreamUtils;
 import com.common.mapreduce.MapperUserModCommand;
 import com.unifier.facebookprovider.FacebookProvider;
 import com.unifier.nexusprovider.NexusProvider;
 import com.unifier.utils.Provider;
-import joptsimple.OptionException;
-import joptsimple.OptionParser;
-import joptsimple.OptionSet;
-import joptsimple.OptionSpec;
+import joptsimple.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericRecord;
@@ -27,53 +25,48 @@ import parquet.avro.AvroParquetOutputFormat;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 @Slf4j
 public class Main extends Configured implements Tool {
 
-
-    private final List<Triple<String,String,Provider>> tripleProvidersList = Arrays.asList(
-        new Triple<String, String, Provider>("n", "nexus data provider input path", new NexusProvider()),
-        new Triple<String,String, Provider>("f", "facebook data provider input path", new FacebookProvider())
+    private final List<Triple<String, String, Provider>> tripleProvidersList = Arrays.asList(
+            new Triple<String, String, Provider>("n", "nexus data provider input path", new NexusProvider()),
+            new Triple<String, String, Provider>("f", "facebook data provider input path", new FacebookProvider())
     );
 
     public static void main(String[] args) throws Exception {
-          int res = ToolRunner.run(new Configuration(), new Main(), args);
-          log.info("Application has finished execution with result: " + res);
-          System.exit(res);
+        int res = ToolRunner.run(new Configuration(), new Main(), args);
+        log.info("Application has finished execution with result: " + res);
+        System.exit(res);
     }
 
     public int run(String args[]) throws Exception {
         int ret = 0;
         OptionParser optionParser = new OptionParser("n:f:o:");
         OptionSpec<String> outPutOptionSpec = optionParser.accepts("o", "output path").withRequiredArg().ofType(String.class).required();
-        try {
-            tripleProvidersList.forEach(e -> {
-                OptionSpec<String> optionSpec;
-                if (e.getThird().isOptional()){
-                    optionSpec = optionParser.accepts(e.getFirst(),
-                            e.getSecond()).withOptionalArg().ofType(String.class);
-                }
-                else {
-                    optionSpec = optionParser.accepts(e.getFirst(),
-                            e.getSecond()).withRequiredArg().ofType(String.class).required();
-                }
+        List <OptionSpec<String>> optionSpecs = new LinkedList<>();
+        tripleProvidersList.forEach(e -> {
+            ArgumentAcceptingOptionSpec<String> argumentAcceptingOptionSpec =
+                    optionParser.accepts(e.getFirst(), e.getSecond()).withOptionalArg().ofType(String.class);
+
+            optionSpecs.add(e.getThird().isOptional()?argumentAcceptingOptionSpec:argumentAcceptingOptionSpec.required());
+        });
+
+        OptionSet options = optionParser.parse(args);
+
+        StreamUtils.zip(tripleProvidersList.stream(), optionSpecs.stream(),
+            (l,r) -> {
                 try {
-                    OptionSet options = optionParser.parse(args);
-                    if (options.hasArgument(optionSpec)) {
-                        Job job = createJob(options.valueOf(optionSpec), options.valueOf(outPutOptionSpec), e.getThird().getMapper());
-                        job.submit();
-                    }
-                } catch (IOException | InterruptedException | ClassNotFoundException e1) {
-                    throw new RuntimeException(e1);
+                    Job job = createJob(options.valueOf(r), options.valueOf(outPutOptionSpec), l.getThird().getMapper());
+                    job.submit();
+                } catch (IOException|InterruptedException|ClassNotFoundException e) {
+                    throw new RuntimeException(e);
                 }
+                return null;
             });
 
-        } catch (OptionException e) {
-            optionParser.printHelpOn(System.out);
-            ret = -1;
-        }
         return ret;
     }
 
@@ -81,7 +74,7 @@ public class Main extends Configured implements Tool {
         log.info("Info for current createJob call: \ninputpath: {}\noutputPath: {}", inputPath, outputPath);
         Job job = new Job(getConf(), type.getClass().getName());
         FileInputFormat.addInputPath(job, new Path(inputPath));
-        FileOutputFormat.setOutputPath(job, new Path(outputPath+"/"+type.toString()));
+        FileOutputFormat.setOutputPath(job, new Path(outputPath + "/" + type.toString()));
 
         job.setNumReduceTasks(0);
         job.setJarByClass(Main.class);

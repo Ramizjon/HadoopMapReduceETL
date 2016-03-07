@@ -10,8 +10,10 @@ import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.avro.reflect.ReflectData;
 import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
@@ -27,6 +29,7 @@ public abstract class AbstractCookieReducer extends
         Reducer<Text, UserModContainer<MapperUserModCommand>, Void , GenericRecord> {
 
     private Map<String, OperationHandler> handlers = getHandlers();
+    private List<Closeable> closeables = getCloseables();
     private static final String reduceCounter = "reduce_counter";
     private static final String errorCounter = "reduce_error_counter";
     private static final String appName = "aggregator";
@@ -49,6 +52,7 @@ public abstract class AbstractCookieReducer extends
                     e.getValue().forEach(p -> {map.put(p.getKey(),p.getValue());});
                     callHandlers(map, e.getKey(), key, context);
                 });
+        cleanup(context);
     }
 
 
@@ -82,5 +86,15 @@ public abstract class AbstractCookieReducer extends
             }
     }
 
+    @Override
+    protected void cleanup(Context context) throws IOException,
+            InterruptedException {
+        for (Closeable closeable : closeables) {
+            closeable.close();
+        }
+        log.debug("Clean up completed");
+    }
+
+    protected abstract List<Closeable> getCloseables();
     protected abstract Map<String, OperationHandler> getHandlers();
 }

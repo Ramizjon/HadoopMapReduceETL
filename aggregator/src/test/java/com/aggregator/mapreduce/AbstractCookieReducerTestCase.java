@@ -8,6 +8,7 @@ import static org.mockito.Mockito.when;
 import static org.junit.Assert.*;
 import static org.hamcrest.CoreMatchers.*;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.*;
@@ -16,6 +17,7 @@ import com.aggregator.utils.UserModContainer;
 import com.common.mapreduce.MapperUserModCommand;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Counter;
+import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer.Context;
 import org.junit.Test;
 
@@ -26,9 +28,12 @@ import org.mockito.ArgumentCaptor;
 public class AbstractCookieReducerTestCase {
 
 
-    private AbstractCookieReducer createInstance (Map<String, OperationHandler> handlers) {
-        
+    private AbstractCookieReducer createInstance (Map<String, OperationHandler> handlers, List<Closeable> closeables) {
         return new AbstractCookieReducer() {
+            @Override
+            protected List<Closeable> getCloseables() {
+                return closeables;
+            }
             @Override
             protected Map<String, OperationHandler> getHandlers() {
                return handlers;
@@ -40,6 +45,7 @@ public class AbstractCookieReducerTestCase {
     public void testAbstractCookieReducer() throws IOException, InterruptedException {
         LinkedList lasd = new LinkedList();
         OperationHandler handler = mock(OperationHandler.class);
+        List<Closeable> closeables = Arrays.asList(mock (Closeable.class));
         String timestampValue = Instant.EPOCH.toString();
         ArgumentCaptor<ReducerUserModCommand> umcCaptor = ArgumentCaptor.forClass(ReducerUserModCommand.class);
         Counter mapRedCounter = mock(Counter.class);
@@ -63,7 +69,7 @@ public class AbstractCookieReducerTestCase {
         
         when(context.getCounter("aggregator", "reduce_counter")).thenReturn(mapRedCounter);
         
-        AbstractCookieReducer reducer = createInstance(handlers);
+        AbstractCookieReducer reducer = createInstance(handlers,closeables);
         reducer.reduce(new Text("11"), values, context);
 
         verify(handler, times(2)).handle(umcCaptor.capture());
@@ -83,6 +89,8 @@ public class AbstractCookieReducerTestCase {
         expectedUmcList.add(expectedUmc2);
 
         assertThat(expectedUmcList, is(umcCaptor.getAllValues()));
+        verify(closeables.get(0), times(1)).close();
     }
+
 
 }

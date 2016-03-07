@@ -1,8 +1,8 @@
-package com.unifier.mapreduce;
+package com.unifier;
 
-import com.unifier.dataformats.Convertor;
-import com.unifier.dataformats.ConvertorImpl;
+import com.unifier.facebookprovider.FacebookConvertor;
 import com.unifier.facebookprovider.FacebookUserSegmentsMapper;
+import com.unifier.nexusprovider.NexusConvertor;
 import com.unifier.nexusprovider.NexusUserSegmentsMapper;
 
 
@@ -21,8 +21,8 @@ public class AppContext {
      */
     public static class NexusUserSegmentsMapperImpl extends NexusUserSegmentsMapper {
         @Override
-        protected Convertor getConvertor() {
-            return new ConvertorImpl();
+        protected NexusConvertor getConvertor() {
+            return new NexusConvertor();
         }
     }
 
@@ -35,8 +35,8 @@ public class AppContext {
     public static class FacebookUserSegmentsMapperImpl extends FacebookUserSegmentsMapper {
 
         @Override
-        protected Convertor getConvertor() {
-            return new ConvertorImpl();
+        protected FacebookConvertor getConvertor() {
+            return new FacebookConvertor();
         }
     }
 

@@ -7,7 +7,7 @@
             <prepare>
                 <delete path="${unifierOutputPath}"/>
             </prepare>
-            <main-class>com.unifier.mapreduce.Main</main-class>
+            <main-class>com.unifier.Main</main-class>
             <arg>-n</arg>
             <arg>${inputNexusPath}</arg>
             <arg>-f</arg>

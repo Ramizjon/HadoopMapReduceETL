@@ -13,7 +13,7 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 
 import com.amazonaws.services.cloudfront.model.InvalidArgumentException;
-import com.unifier.dataformats.Convertor;
+import utils.Convertor;
 
 @Slf4j
 public abstract class NexusUserSegmentsMapper extends
@@ -21,16 +21,16 @@ public abstract class NexusUserSegmentsMapper extends
 
     private static final String mapCounter = "nexus_map_counter";
     private static final String errorCounter = "nexus_map_error_counter";
-    private static final String appName = "nexus_provider_reader";
+    private static final String groupName = "nexus_provider_reader";
 
-    private Convertor convertor = getConvertor();
+    private NexusConvertor convertor = getConvertor();
 
     public void map(LongWritable key, Text value, Context context)
             throws IOException, InterruptedException {
         log.debug("Map job started");
         MapperUserModCommand cmd = null;
         try{
-            cmd = convertor.convertNexusUMC(value.toString());
+            cmd = convertor.convert(value.toString());
             Schema schema = ReflectData.get().getSchema(MapperUserModCommand.class);
             GenericRecord record = new GenericData.Record(schema);
             record.put("timestamp", cmd.getTimestamp());
@@ -38,14 +38,14 @@ public abstract class NexusUserSegmentsMapper extends
             record.put("command", cmd.getCommand());
             record.put("segments", cmd.getSegments());
             context.write(null, record);
-            context.getCounter(appName, mapCounter).increment(1);
+            context.getCounter(groupName, mapCounter).increment(1);
         } catch (InvalidArgumentException e) {
             log.error("Exception occured. Arguments: {}, exception code: {}", value.toString(), e);
-            context.getCounter(appName, errorCounter).increment(1);
+            context.getCounter(groupName, errorCounter).increment(1);
         }
     }
 
-    protected abstract Convertor getConvertor();
+    protected abstract NexusConvertor getConvertor();
 
     @Override
     public String toString() {

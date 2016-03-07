@@ -6,7 +6,7 @@ import org.apache.hadoop.mapreduce.Mapper;
 /**
  * Created by ramizjon on 3/1/16.
  */
-public abstract class Provider {
+public interface Provider {
 
     public abstract boolean isOptional();
     public abstract Mapper<?, ?, Void, GenericRecord> getMapper();

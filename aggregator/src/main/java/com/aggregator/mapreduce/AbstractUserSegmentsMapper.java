@@ -20,10 +20,9 @@ public abstract class AbstractUserSegmentsMapper extends
 
     private static final String mapCounter = "mapcounter";
     private static final String errorCounter = "map_error_counter";
-    private static final String appName = "aggregator";
+    private static final String groupName = "aggregator";
 
     // class dependencies
-    private List<Closeable> closeables = getCloseables();
 
     public void map(Void key, GenericRecord value, Context context)
             throws IOException, InterruptedException {
@@ -36,22 +35,10 @@ public abstract class AbstractUserSegmentsMapper extends
             UserModContainer<MapperUserModCommand> umc = new UserModContainer<>(cmd);
 
             context.write(new Text(umc.getData().getUserId()),umc);
-            context.getCounter(appName, mapCounter).increment(1);
+            context.getCounter(groupName, mapCounter).increment(1);
         } catch (InvalidArgumentException e) {
             log.error("Exception occured. Arguments: {}, exception code: {}", value.toString(), e);
-            context.getCounter(appName, errorCounter).increment(1);
+            context.getCounter(groupName, errorCounter).increment(1);
         }
     }
-
-    @Override
-    protected void cleanup(Context context) throws IOException,
-            InterruptedException {
-        for (Closeable closeable : closeables) {
-            closeable.close();
-        }
-        log.debug("Clean up completed");
-    }
-
-    protected abstract List<Closeable> getCloseables();
-
 }

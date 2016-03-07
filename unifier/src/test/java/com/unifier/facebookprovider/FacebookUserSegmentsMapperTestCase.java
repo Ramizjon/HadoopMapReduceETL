@@ -1,9 +1,6 @@
 package com.unifier.facebookprovider;
 
 import com.common.mapreduce.MapperUserModCommand;
-import com.unifier.dataformats.Convertor;
-import com.unifier.dataformats.ConvertorImpl;
-import com.unifier.nexusprovider.NexusUserSegmentsMapper;
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.GenericRecord;
