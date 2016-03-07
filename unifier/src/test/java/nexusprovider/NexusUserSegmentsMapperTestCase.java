@@ -1,9 +1,9 @@
 package nexusprovider;
 
 import com.common.mapreduce.MapperUserModCommand;
-import com.receiver.dataformats.Convertor;
-import com.receiver.dataformats.ConvertorImpl;
-import com.receiver.nexusprovider.NexusUserSegmentsMapper;
+import com.unifier.dataformats.Convertor;
+import com.unifier.dataformats.ConvertorImpl;
+import com.unifier.nexusprovider.NexusUserSegmentsMapper;
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.GenericRecord;

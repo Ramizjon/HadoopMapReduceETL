@@ -1,31 +1,7 @@
 
-
-ext {
-    mainClass = "com.common.mapreduce.Main"
-}
-
 jar {
     manifest {
         attributes 'Implementation-Title': 'common jar',
-                'Implementation-Version': version,
-                'Main-Class': "${mainClass}"
+                'Implementation-Version': version
     }
 }
-
-task fatJar(type: Jar) {
-    manifest {
-        attributes 'Implementation-Title': 'receiver jar',
-                'Implementation-Version': version,
-                'Main-Class': "${mainClass}"
-    }
-    baseName = project.name + '-all-' + "${cdhVersion}"
-    from { (configurations.compile-configurations.provided).collect { it.isDirectory() ? it : zipTree(it)}}
-    with jar
-}
-
-dependencies {
-    compile "com.google.guava:guava:${guavaVersion}"
-    compile "org.projectlombok:lombok:${lombokVersion}"
-}
-
-

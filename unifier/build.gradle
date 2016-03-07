@@ -1,16 +1,18 @@
 
     ext {
-        mainClass = "com.receiver.nexusprovider.Main"
+        mainClass = "com.unifier.nexusprovider.Main"
     }
 
     jar {
         manifest {
-            attributes 'Implementation-Title': 'receiver jar',
+            attributes 'Implementation-Title': 'unifier jar',
                     'Implementation-Version': version,
                     'Main-Class': "${mainClass}"
         }
         baseName = project.name + '-all-' + "${cdhVersion}"
         from { (configurations.compile-configurations.provided).collect { it.isDirectory() ? it : zipTree(it)}}
-        with jar
     }
 
+    dependencies {
+        compile project(':common')
+    }
