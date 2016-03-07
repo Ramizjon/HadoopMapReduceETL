@@ -1,3 +1,5 @@
+package com.common.mapreduce;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,3 +9,4 @@ public class TestHelper<T> {
         return new ArrayList<T>(inputList);
     }
 }
+asd

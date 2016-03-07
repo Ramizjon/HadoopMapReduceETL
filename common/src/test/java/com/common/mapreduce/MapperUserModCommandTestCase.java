@@ -1,5 +1,5 @@
+package com.common.mapreduce;
 
-import com.common.mapreduce.MapperUserModCommand;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
