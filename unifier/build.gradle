@@ -1,18 +1,16 @@
 
     ext {
-        mainClass = "com.aggregator.nexusprovider.Main"
+        mainClass = "com.receiver.nexusprovider.Main"
     }
 
     jar {
         manifest {
-            attributes 'Implementation-Title': 'aggregator fatJar',
+            attributes 'Implementation-Title': 'receiver jar',
                     'Implementation-Version': version,
                     'Main-Class': "${mainClass}"
         }
         baseName = project.name + '-all-' + "${cdhVersion}"
         from { (configurations.compile-configurations.provided).collect { it.isDirectory() ? it : zipTree(it)}}
+        with jar
     }
 
-    dependencies {
-        compile project(':common')
-    }

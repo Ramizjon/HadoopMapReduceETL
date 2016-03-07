@@ -5,7 +5,7 @@ import com.amazonaws.services.cloudfront.model.InvalidArgumentException;
 import com.common.mapreduce.MapperUserModCommand;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.avro.generic.GenericData;
+import org.apache.avro.generic.GenericData.Array;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
@@ -32,7 +32,7 @@ public abstract class AbstractUserSegmentsMapper extends
         MapperUserModCommand cmd = null;
         try {
             cmd = new MapperUserModCommand((String) value.get("timestamp"), (String) value.get("userId"), (String) value.get("command"),
-                    Lists.newArrayList((GenericData.Array<String>) value.get("segments")));
+                    Lists.newArrayList((Array<String>) value.get("segments")));
             UserModContainer<MapperUserModCommand> umc = new UserModContainer<>(cmd);
 
             context.write(new Text(umc.getData().getUserId()),umc);
