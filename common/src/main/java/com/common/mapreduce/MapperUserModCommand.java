@@ -20,7 +20,6 @@ public class MapperUserModCommand implements Serializable, Comparable<MapperUser
     String command;
     ArrayList<String> segments;
 
-
     @Override
     public int compareTo(MapperUserModCommand inputUmc) {
         return ComparisonChain.start()

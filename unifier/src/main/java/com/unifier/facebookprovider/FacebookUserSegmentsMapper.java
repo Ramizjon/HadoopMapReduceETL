@@ -16,9 +16,7 @@ import java.io.IOException;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.List;
 
-/**
- * Created by admin on 3/1/16.
- */
+
 @Slf4j
 public abstract class FacebookUserSegmentsMapper extends
             Mapper<LongWritable, Text, Void, GenericRecord> {
@@ -35,11 +33,11 @@ public abstract class FacebookUserSegmentsMapper extends
             List<MapperUserModCommand> cmdList = null;
             try{
                 cmdList = convertor.convert(new SimpleEntry<String, Context>(value.toString(), context));
+                Schema schema = new Schema.Parser().parse(getClass().getResourceAsStream("/umcSchema.avsc"));
                 cmdList.forEach(e -> {
-                    Schema schema = ReflectData.get().getSchema(MapperUserModCommand.class);
                     GenericRecord record = new GenericData.Record(schema);
                     record.put("timestamp", e.getTimestamp());
-                    record.put("userId", e.getUserId());
+                    record.put("userid", e.getUserId());
                     record.put("command", e.getCommand());
                     record.put("segments", e.getSegments());
                     try {

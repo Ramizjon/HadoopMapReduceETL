@@ -8,7 +8,6 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapred.FileOutputFormat;
 import org.apache.hadoop.mapred.JobConf;
 import org.apache.hadoop.mapreduce.Mapper;
-import org.apache.hadoop.mapreduce.Mapper.Context;
 import utils.Convertor;
 
 import java.util.AbstractMap.SimpleEntry;
@@ -16,9 +15,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * Created by admin on 3/7/16.
- */
+
 public class FacebookConvertor implements Convertor<SimpleEntry<String, Mapper<LongWritable,Text,Void,GenericRecord>.Context>, List<MapperUserModCommand> > {
 
     @Override
@@ -42,7 +39,7 @@ public class FacebookConvertor implements Convertor<SimpleEntry<String, Mapper<L
         }
         if (segmentsToRemove.length > 0) {
             ArrayList<String> segmentsToRemoveList = new ArrayList<>(Arrays.asList(segmentsToRemove));
-            umcList.add(new MapperUserModCommand(timestamp, elements[0], "remove", segmentsToRemoveList));
+            umcList.add(new MapperUserModCommand(timestamp, elements[0], "delete", segmentsToRemoveList));
         }
         return umcList;
     }

@@ -1,6 +1,7 @@
 package com.aggregator;
 
 import com.aggregator.mapreduce.ReducerUserModCommand;
+import com.aggregator.mapreduce.SegmentsCombiner;
 import com.aggregator.utils.UserModContainer;
 import com.common.mapreduce.MapperUserModCommand;
 import joptsimple.OptionException;
@@ -8,6 +9,7 @@ import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
 import org.apache.avro.Schema;
+import org.apache.avro.generic.GenericRecord;
 import org.apache.avro.reflect.ReflectData;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
@@ -22,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import parquet.avro.AvroParquetInputFormat;
 import parquet.avro.AvroParquetOutputFormat;
+import parquet.hadoop.ParquetInputFormat;
 
 import java.io.IOException;
 
@@ -66,15 +69,16 @@ public class Main extends Configured implements Tool {
         job.setOutputKeyClass(Void.class);
         job.setOutputValueClass(ReducerUserModCommand.class);
         job.setMapperClass(AppContext.UserSegmentsMapper.class);
+        job.setCombinerClass(SegmentsCombiner.class);
         job.setReducerClass(AppContext.CookieReducer.class);
 
-        Schema mapperUmcSchema = ReflectData.get().getSchema(MapperUserModCommand.class);
-        AvroParquetInputFormat.<MapperUserModCommand>setAvroReadSchema(job,mapperUmcSchema);
+        Schema mapperUmcSchema = new Schema.Parser().parse(getClass().getResourceAsStream("/umcSchema.avsc"));
         job.setInputFormatClass(AvroParquetInputFormat.class);
+        AvroParquetInputFormat.<GenericRecord>setAvroReadSchema(job, mapperUmcSchema);
 
+        job.setOutputFormatClass(AvroParquetOutputFormat.class);
         Schema reducerUmcSchema = ReflectData.get().getSchema(ReducerUserModCommand.class);
         AvroParquetOutputFormat.<ReducerUserModCommand>setSchema(job, reducerUmcSchema);
-        job.setOutputFormatClass(AvroParquetOutputFormat.class);
 
         logger.info("Mapreduce job created");
         return job;

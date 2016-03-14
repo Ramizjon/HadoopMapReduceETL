@@ -2,10 +2,14 @@ package com.unifier;
 
 import com.codepoetics.protonpack.StreamUtils;
 import com.common.mapreduce.MapperUserModCommand;
+import com.google.protobuf.TextFormat;
 import com.unifier.facebookprovider.FacebookProvider;
 import com.unifier.nexusprovider.NexusProvider;
 import com.unifier.utils.Provider;
-import joptsimple.*;
+import joptsimple.ArgumentAcceptingOptionSpec;
+import joptsimple.OptionParser;
+import joptsimple.OptionSet;
+import joptsimple.OptionSpec;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericRecord;
@@ -24,9 +28,10 @@ import org.apache.hadoop.util.ToolRunner;
 import parquet.avro.AvroParquetOutputFormat;
 
 import java.io.IOException;
+import java.util.AbstractMap.SimpleEntry;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 public class Main extends Configured implements Tool {
@@ -46,27 +51,31 @@ public class Main extends Configured implements Tool {
         int ret = 0;
         OptionParser optionParser = new OptionParser("n:f:o:");
         OptionSpec<String> outPutOptionSpec = optionParser.accepts("o", "output path").withRequiredArg().ofType(String.class).required();
-        List <OptionSpec<String>> optionSpecs = new LinkedList<>();
-        tripleProvidersList.forEach(e -> {
-            ArgumentAcceptingOptionSpec<String> argumentAcceptingOptionSpec =
-                    optionParser.accepts(e.getFirst(), e.getSecond()).withOptionalArg().ofType(String.class);
+        List <OptionSpec<String>> optionSpecs =
+            tripleProvidersList.stream().map(e -> {
+                ArgumentAcceptingOptionSpec<String> argumentAcceptingOptionSpec =
+                        optionParser.accepts(e.getFirst(), e.getSecond()).withRequiredArg().ofType(String.class);
+                return e.getThird().isOptional()?argumentAcceptingOptionSpec:argumentAcceptingOptionSpec.required();
+            }).collect(Collectors.toList());
 
-            optionSpecs.add(e.getThird().isOptional()?argumentAcceptingOptionSpec:argumentAcceptingOptionSpec.required());
-        });
+        try {
+            OptionSet options = optionParser.parse(args);
 
-        OptionSet options = optionParser.parse(args);
+            List<SimpleEntry<Triple<String, String, Provider>, OptionSpec<String>>> list =
+                    StreamUtils.zip(tripleProvidersList.stream(), optionSpecs.stream(),
+            (l,r) -> new SimpleEntry <Triple<String, String, Provider>, OptionSpec<String>> (l,r))
+                            .collect(Collectors.toList());
 
-        StreamUtils.zip(tripleProvidersList.stream(), optionSpecs.stream(),
-            (l,r) -> {
-                try {
-                    Job job = createJob(options.valueOf(r), options.valueOf(outPutOptionSpec), l.getThird().getMapper());
-                    job.submit();
-                } catch (IOException|InterruptedException|ClassNotFoundException e) {
-                    throw new RuntimeException(e);
-                }
-                return null;
-            });
-
+            for(SimpleEntry<Triple<String, String, Provider>, OptionSpec<String>> el:  list) {
+                Job job = createJob(options.valueOf(el.getValue()),
+                        options.valueOf(outPutOptionSpec),
+                        el.getKey().getThird().getMapper());
+                job.submit();
+            }
+        } catch (TextFormat.ParseException e) {
+            optionParser.printHelpOn(System.out);
+            ret = -1;
+        }
         return ret;
     }
 
@@ -80,16 +89,16 @@ public class Main extends Configured implements Tool {
         job.setJarByClass(Main.class);
 
         job.setMapOutputKeyClass(Void.class);
-        job.setMapOutputValueClass(MapperUserModCommand.class);
+        job.setMapOutputValueClass(GenericRecord.class);
 
         job.setOutputKeyClass(Void.class);
-        job.setOutputValueClass(MapperUserModCommand.class);
+        job.setOutputValueClass(GenericRecord.class);
         job.setMapperClass(type.getClass());
         job.setInputFormatClass(TextInputFormat.class);
 
-        Schema schema = ReflectData.get().getSchema(MapperUserModCommand.class);
-        AvroParquetOutputFormat.<MapperUserModCommand>setSchema(job, schema);
-
+        //Schema schema = ReflectData.get().getSchema(MapperUserModCommand.class);
+        Schema schema = new Schema.Parser().parse(getClass().getResourceAsStream("/umcSchema.avsc"));
+        AvroParquetOutputFormat.<GenericRecord>setSchema(job, schema);
         job.setOutputFormatClass(AvroParquetOutputFormat.class);
 
         log.info("Mapreduce job created wit id: {}", job.getJobID());

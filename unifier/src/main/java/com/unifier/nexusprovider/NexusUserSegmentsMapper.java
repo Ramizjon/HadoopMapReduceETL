@@ -31,10 +31,11 @@ public abstract class NexusUserSegmentsMapper extends
         MapperUserModCommand cmd = null;
         try{
             cmd = convertor.convert(value.toString());
-            Schema schema = ReflectData.get().getSchema(MapperUserModCommand.class);
+           // Schema schema = ReflectData.get().getSchema(MapperUserModCommand.class);
+            Schema schema = new Schema.Parser().parse(getClass().getResourceAsStream("/umcSchema.avsc"));
             GenericRecord record = new GenericData.Record(schema);
             record.put("timestamp", cmd.getTimestamp());
-            record.put("userId", cmd.getUserId());
+            record.put("userid", cmd.getUserId());
             record.put("command", cmd.getCommand());
             record.put("segments", cmd.getSegments());
             context.write(null, record);

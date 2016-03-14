@@ -22,8 +22,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-
-
 @Slf4j
 public abstract class AbstractCookieReducer extends
         Reducer<Text, UserModContainer<MapperUserModCommand>, Void , GenericRecord> {
@@ -41,6 +39,8 @@ public abstract class AbstractCookieReducer extends
         List <MapperUserModCommand> userModList = new ArrayList<>();
         values.forEach(e -> userModList.add(e.getData()));
 
+        log.info("Reducer has received: {}", userModList.toString());
+
         userModList.stream()
                 .filter(p -> !p.getSegments().isEmpty())
                 .collect(Collectors.groupingBy(MapperUserModCommand::getCommand))
@@ -55,7 +55,6 @@ public abstract class AbstractCookieReducer extends
         cleanup(context);
     }
 
-
     private SimpleEntry<String, List<SimpleEntry<String, String>>> getSimpleEntry(Map.Entry<String, List<MapperUserModCommand>> e) {
         List<SimpleEntry<String, String>> readyMap = e.getValue()
                 .stream()
@@ -69,7 +68,7 @@ public abstract class AbstractCookieReducer extends
     }
 
 
-    private void callHandlers (Map<String, String> readyMap, String command, Text key, Context context) {
+    protected void callHandlers (Map<String, String> readyMap, String command, Text key, Context context) {
         ReducerUserModCommand rumc = new ReducerUserModCommand(key.toString(), command, readyMap);
             try {
                 handlers.get(command).handle(rumc);
@@ -78,6 +77,7 @@ public abstract class AbstractCookieReducer extends
                 record.put("userId", rumc.getUserId());
                 record.put("command", rumc.getCommand());
                 record.put("segmentTimestamps", rumc.getSegmentTimestamps());
+                log.info("Reducer has written: {}", record.toString());
                 context.write(null, record);
                 context.getCounter(appName,reduceCounter).increment(1);
             } catch (IOException|InterruptedException e) {

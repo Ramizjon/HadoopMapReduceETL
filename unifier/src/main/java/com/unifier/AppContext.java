@@ -20,6 +20,7 @@ public class AppContext {
      *
      */
     public static class NexusUserSegmentsMapperImpl extends NexusUserSegmentsMapper {
+
         @Override
         protected NexusConvertor getConvertor() {
             return new NexusConvertor();

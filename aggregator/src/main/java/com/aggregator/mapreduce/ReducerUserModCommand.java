@@ -12,7 +12,7 @@ import java.util.Map;
 
 @Data
 @AllArgsConstructor
-public class ReducerUserModCommand implements Serializable, Comparable <ReducerUserModCommand>{
+public class ReducerUserModCommand implements Serializable , Comparable <ReducerUserModCommand>{
     String userId;
     String command;
     Map<String, String> segmentTimestamps;
