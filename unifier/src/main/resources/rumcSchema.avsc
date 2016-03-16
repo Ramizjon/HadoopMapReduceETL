@@ -1,0 +1,17 @@
+{
+  "type" : "record",
+  "name" : "hive_schema",
+  "fields" : [ {
+    "name" : "userid",
+    "type" : "string"
+  }, {
+    "name" : "command",
+    "type" : "string"
+  }, {
+    "name" : "segmenttimestamps",
+    "type" : {
+      "type" : "map",
+      "values" : "string"
+    }
+  }]
+}

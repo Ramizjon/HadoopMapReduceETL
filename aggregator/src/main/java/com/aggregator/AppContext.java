@@ -3,17 +3,10 @@ package com.aggregator;
 import com.aggregator.domain.HBaseUserRepositoryImpl;
 import com.aggregator.mapreduce.AbstractCookieReducer;
 import com.aggregator.mapreduce.AbstractUserSegmentsMapper;
-import com.aggregator.mapreduce.ReducerUserModCommand;
 import com.aggregator.useroperations.AddOperationHandler;
 import com.aggregator.useroperations.DeleteOperationHandler;
 import com.aggregator.useroperations.OperationHandler;
 import com.aggregator.domain.UserRepository;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.avro.Schema;
-import org.apache.avro.generic.GenericData;
-import org.apache.avro.generic.GenericRecord;
-import org.apache.avro.reflect.ReflectData;
-import org.apache.hadoop.io.Text;
 
 import java.io.Closeable;
 import java.io.IOException;

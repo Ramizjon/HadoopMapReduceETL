@@ -1,8 +1,8 @@
 package com.aggregator.useroperations;
 
-import java.io.IOException;
+import com.common.mapreduce.ReducerUserModCommand;
 
-import com.aggregator.mapreduce.ReducerUserModCommand;
+import java.io.IOException;
 
 public interface OperationHandler {
     public static final String ADD_OPERATION = "add";

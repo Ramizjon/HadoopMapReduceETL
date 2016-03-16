@@ -4,7 +4,7 @@ package com.aggregator.useroperations;
 import java.io.IOException;
 
 import com.aggregator.domain.UserRepository;
-import com.aggregator.mapreduce.ReducerUserModCommand;
+import com.common.mapreduce.ReducerUserModCommand;
 
 public abstract class AddOperationHandler implements OperationHandler {
 

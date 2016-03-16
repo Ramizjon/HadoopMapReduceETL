@@ -3,6 +3,7 @@ package com.unifier.nexusprovider;
 import java.io.IOException;
 
 import com.common.mapreduce.MapperUserModCommand;
+import com.common.mapreduce.ReducerUserModCommand;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericData;
@@ -28,16 +29,14 @@ public abstract class NexusUserSegmentsMapper extends
     public void map(LongWritable key, Text value, Context context)
             throws IOException, InterruptedException {
         log.debug("Map job started");
-        MapperUserModCommand cmd = null;
+        ReducerUserModCommand cmd = null;
         try{
             cmd = convertor.convert(value.toString());
-           // Schema schema = ReflectData.get().getSchema(MapperUserModCommand.class);
-            Schema schema = new Schema.Parser().parse(getClass().getResourceAsStream("/umcSchema.avsc"));
+            Schema schema = new Schema.Parser().parse(getClass().getResourceAsStream("/rumcSchema.avsc"));
             GenericRecord record = new GenericData.Record(schema);
-            record.put("timestamp", cmd.getTimestamp());
             record.put("userid", cmd.getUserId());
             record.put("command", cmd.getCommand());
-            record.put("segments", cmd.getSegments());
+            record.put("segmenttimestamps", cmd.getSegmentTimestamps());
             context.write(null, record);
             context.getCounter(groupName, mapCounter).increment(1);
         } catch (InvalidArgumentException e) {

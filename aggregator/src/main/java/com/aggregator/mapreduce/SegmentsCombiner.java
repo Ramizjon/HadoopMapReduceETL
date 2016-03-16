@@ -1,70 +1,69 @@
 package com.aggregator.mapreduce;
 
-
+import com.aggregator.useroperations.OperationHandler;
 import com.aggregator.utils.UserModContainer;
-import com.common.mapreduce.MapperUserModCommand;
-import com.google.common.collect.Lists;
+import com.common.mapreduce.ReducerUserModCommand;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.hadoop.hbase.util.Triple;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
 
+import java.io.Closeable;
 import java.io.IOException;
+import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-
-/**
- * Combiner logic is similar to Reducer one, though all methods are different.
- * That's the reason they don't extend common ancestor
- */
 @Slf4j
 public class SegmentsCombiner extends
-        Reducer<Text, UserModContainer<MapperUserModCommand>, Text, UserModContainer<MapperUserModCommand>> {
+        Reducer<Text, UserModContainer<ReducerUserModCommand>, Text, UserModContainer<ReducerUserModCommand>> {
 
-    private static final String combinerCounter = "combine_counter";
+    private static final String combineCounter = "combine_counter";
     private static final String errorCounter = "combine_error_counter";
     private static final String appName = "aggregator";
 
     @Override
-    public void reduce(Text key, Iterable<UserModContainer<MapperUserModCommand>> values, Context context)
+    public void reduce(Text key, Iterable<UserModContainer<ReducerUserModCommand>> values, Context context)
             throws IOException, InterruptedException {
-
-        List<MapperUserModCommand> userModList = new ArrayList<>();
+        List<ReducerUserModCommand> userModList = new ArrayList<>();
         values.forEach(e -> userModList.add(e.getData()));
 
         userModList.stream()
-                .filter(p -> !p.getSegments().isEmpty())
-                .collect(Collectors.groupingBy(MapperUserModCommand::getCommand))
+                .filter(p -> !p.getSegmentTimestamps().isEmpty())
+                .collect(Collectors.groupingBy(ReducerUserModCommand::getCommand))
                 .entrySet()
                 .stream()
-                .map(this::getUmcTriple)
+                .map(this::getSimpleEntry)
                 .forEach(e -> {
-                    writeToContext(e.getFirst(), e.getSecond(), e.getThird(), key, context);
+                    Map<String, String> map = new HashMap<>();
+                    e.getValue().forEach(p -> {
+                        map.put(p.getKey(), p.getValue());
+                    });
+                    writeToContext(map, e.getKey(), key, context);
                 });
         cleanup(context);
     }
 
-    private Triple<String, String, List<String>> getUmcTriple(Map.Entry<String, List<MapperUserModCommand>> e) {
-        String timestamp = e.getValue().get(0).getTimestamp();
-        String command = e.getKey();
-        List<String> segmentsList = e.getValue()
+    private SimpleEntry<String, List<SimpleEntry<String, String>>> getSimpleEntry(Map.Entry<String, List<ReducerUserModCommand>> e) {
+        List<SimpleEntry<String, String>> readyMap = e.getValue()
                 .stream()
-                .flatMap(mapperUserModCommand -> {
-                    return mapperUserModCommand.getSegments()
-                            .stream().distinct();
+                .flatMap(reducerUserModCommand -> {
+                    return reducerUserModCommand.getSegmentTimestamps()
+                            .entrySet()
+                            .stream().distinct()
+                            .map(s -> new SimpleEntry<>(s.getKey(), s.getValue()));
                 }).collect(Collectors.toList());
-        return new Triple<>(timestamp, command, segmentsList);
+
+        return new SimpleEntry<>(e.getKey(), readyMap);
     }
 
-    protected void writeToContext(String timestamp, String command, List<String> segmentsList, Text key, Context context) {
-        UserModContainer<MapperUserModCommand> umc = new UserModContainer<>(new MapperUserModCommand(timestamp, key.toString(),
-                command, Lists.newArrayList(segmentsList)));
+    private void writeToContext(Map<String, String> readyMap, String command, Text key, Context context) {
+        ReducerUserModCommand rumc = new ReducerUserModCommand(key.toString(), command, readyMap);
         try {
-            context.write(key, umc);
-            context.getCounter(appName, combinerCounter).increment(1);
+            context.write(new Text(rumc.getUserId()), new UserModContainer<ReducerUserModCommand>(rumc));
+            context.getCounter(appName, combineCounter).increment(1);
         } catch (IOException | InterruptedException e) {
             log.error("Exception occured. Arguments: {}, exception code: {}", key.toString(), e);
             context.getCounter(appName, errorCounter).increment(1);

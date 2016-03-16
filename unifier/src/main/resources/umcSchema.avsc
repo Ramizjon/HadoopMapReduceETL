@@ -19,3 +19,12 @@
        }
    }]
 }
+
+
+ {
+    "name" : "segmentTimestamps",
+    "type" : {
+      "type" : "map",
+      "values" : "string"
+    }
+  }

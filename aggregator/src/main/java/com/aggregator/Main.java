@@ -1,13 +1,13 @@
 package com.aggregator;
 
-import com.aggregator.mapreduce.ReducerUserModCommand;
 import com.aggregator.mapreduce.SegmentsCombiner;
 import com.aggregator.utils.UserModContainer;
-import com.common.mapreduce.MapperUserModCommand;
+import com.common.mapreduce.ReducerUserModCommand;
 import joptsimple.OptionException;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.avro.reflect.ReflectData;
@@ -24,10 +24,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import parquet.avro.AvroParquetInputFormat;
 import parquet.avro.AvroParquetOutputFormat;
-import parquet.hadoop.ParquetInputFormat;
 
 import java.io.IOException;
 
+@Slf4j
 public class Main extends Configured implements Tool {
     private static final Logger logger = LoggerFactory.getLogger(Main.class);
 
@@ -72,7 +72,7 @@ public class Main extends Configured implements Tool {
         job.setCombinerClass(SegmentsCombiner.class);
         job.setReducerClass(AppContext.CookieReducer.class);
 
-        Schema mapperUmcSchema = new Schema.Parser().parse(getClass().getResourceAsStream("/umcSchema.avsc"));
+        Schema mapperUmcSchema = new Schema.Parser().parse(getClass().getResourceAsStream("/rumcSchema.avsc"));
         job.setInputFormatClass(AvroParquetInputFormat.class);
         AvroParquetInputFormat.<GenericRecord>setAvroReadSchema(job, mapperUmcSchema);
 

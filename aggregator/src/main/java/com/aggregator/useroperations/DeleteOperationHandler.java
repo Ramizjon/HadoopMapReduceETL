@@ -1,7 +1,7 @@
 package com.aggregator.useroperations;
 
 import com.aggregator.domain.UserRepository;
-import com.aggregator.mapreduce.ReducerUserModCommand;
+import com.common.mapreduce.ReducerUserModCommand;
 
 import java.io.IOException;
 

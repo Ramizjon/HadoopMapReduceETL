@@ -1,13 +1,9 @@
-package com.aggregator.mapreduce;
+package com.common.mapreduce;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.time.Instant;
-import java.util.AbstractMap.SimpleEntry;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 
 @Data

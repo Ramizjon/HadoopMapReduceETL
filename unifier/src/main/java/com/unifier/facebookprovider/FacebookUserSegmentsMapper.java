@@ -2,6 +2,7 @@ package com.unifier.facebookprovider;
 
 import com.amazonaws.services.cloudfront.model.InvalidArgumentException;
 import com.common.mapreduce.MapperUserModCommand;
+import com.common.mapreduce.ReducerUserModCommand;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericData;
@@ -30,16 +31,15 @@ public abstract class FacebookUserSegmentsMapper extends
         public void map(LongWritable key, Text value, Context context)
                 throws IOException, InterruptedException {
             log.debug("Map job started");
-            List<MapperUserModCommand> cmdList = null;
+            List<ReducerUserModCommand> cmdList = null;
             try{
                 cmdList = convertor.convert(new SimpleEntry<String, Context>(value.toString(), context));
-                Schema schema = new Schema.Parser().parse(getClass().getResourceAsStream("/umcSchema.avsc"));
+                Schema schema = new Schema.Parser().parse(getClass().getResourceAsStream("/rumcSchema.avsc"));
                 cmdList.forEach(e -> {
                     GenericRecord record = new GenericData.Record(schema);
-                    record.put("timestamp", e.getTimestamp());
                     record.put("userid", e.getUserId());
                     record.put("command", e.getCommand());
-                    record.put("segments", e.getSegments());
+                    record.put("segmenttimestamps", e.getSegmentTimestamps());
                     try {
                         context.write(null, record);
                     } catch (IOException |InterruptedException e1) {

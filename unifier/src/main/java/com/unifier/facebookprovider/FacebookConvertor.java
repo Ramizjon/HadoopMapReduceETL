@@ -2,6 +2,7 @@ package com.unifier.facebookprovider;
 
 import com.amazonaws.services.cloudfront.model.InvalidArgumentException;
 import com.common.mapreduce.MapperUserModCommand;
+import com.common.mapreduce.ReducerUserModCommand;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
@@ -10,17 +11,16 @@ import org.apache.hadoop.mapred.JobConf;
 import org.apache.hadoop.mapreduce.Mapper;
 import utils.Convertor;
 
+import java.util.*;
 import java.util.AbstractMap.SimpleEntry;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.stream.Collectors;
 
 
-public class FacebookConvertor implements Convertor<SimpleEntry<String, Mapper<LongWritable,Text,Void,GenericRecord>.Context>, List<MapperUserModCommand> > {
+public class FacebookConvertor implements Convertor<SimpleEntry<String, Mapper<LongWritable, Text, Void, GenericRecord>.Context>, List<ReducerUserModCommand>> {
 
     @Override
-    public List<MapperUserModCommand>  convert(SimpleEntry<String, Mapper<LongWritable,Text,Void,GenericRecord>.Context> inputTuple) {
-        List<MapperUserModCommand> umcList = new ArrayList<>();
+    public List<ReducerUserModCommand> convert(SimpleEntry<String, Mapper<LongWritable, Text, Void, GenericRecord>.Context> inputTuple) {
+        List<ReducerUserModCommand> umcList = new ArrayList<>();
         String[] elements = inputTuple.getKey().split("/");
         if (elements.length < 3) {
             throw new InvalidArgumentException("Validation failed: not enough arguments");
@@ -28,19 +28,31 @@ public class FacebookConvertor implements Convertor<SimpleEntry<String, Mapper<L
 
         String outputPath = FileOutputFormat.getOutputPath(new JobConf(inputTuple.getValue().getConfiguration())).toString();
         String[] pathArray = outputPath.split("/");
-        String timestamp = pathArray[pathArray.length-3]+"T"+pathArray[pathArray.length-2]+":00:00";
+        String timestamp = pathArray[pathArray.length - 3] + "T" + pathArray[pathArray.length - 2] + ":00:00";
 
         String[] segmentsToAdd = elements[1].split(",");
-        String[] segmentsToRemove = elements[2].split(",");
+        String[] segmentsToDelete = elements[2].split(",");
 
         if (segmentsToAdd.length > 0) {
-            ArrayList<String> segmentsToAddList = new ArrayList<>(Arrays.asList(segmentsToAdd));
-            umcList.add(new MapperUserModCommand(timestamp, elements[0], "add", segmentsToAddList));
+            Map<String, String> segmentsToAddMap = Arrays.asList(segmentsToAdd)
+                    .stream()
+                    .collect(Collectors.toMap(
+                            e -> e,
+                            e -> timestamp
+                    ));
+            umcList.add(new ReducerUserModCommand(elements[0], "add", segmentsToAddMap));
         }
-        if (segmentsToRemove.length > 0) {
-            ArrayList<String> segmentsToRemoveList = new ArrayList<>(Arrays.asList(segmentsToRemove));
-            umcList.add(new MapperUserModCommand(timestamp, elements[0], "delete", segmentsToRemoveList));
+        if (segmentsToDelete.length > 0) {
+            Map<String, String> segmentsToDeleteMap = Arrays.asList(segmentsToDelete)
+                    .stream()
+                    .collect(Collectors.toMap(
+                            e -> e,
+                            e -> timestamp
+                    ));
+            umcList.add(new ReducerUserModCommand(elements[0], "add", segmentsToDeleteMap));
         }
         return umcList;
     }
+
+
 }

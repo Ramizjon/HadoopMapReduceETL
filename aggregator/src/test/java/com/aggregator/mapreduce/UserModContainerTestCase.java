@@ -1,6 +1,7 @@
 package com.aggregator.mapreduce;
 
 
+import com.common.mapreduce.ReducerUserModCommand;
 import com.google.common.collect.ImmutableMap;
 import com.aggregator.useroperations.OperationHandler;
 import com.aggregator.utils.UserModContainer;

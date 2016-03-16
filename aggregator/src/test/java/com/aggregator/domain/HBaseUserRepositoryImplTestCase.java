@@ -8,8 +8,8 @@ import static org.mockito.Mockito.verify;
 import java.io.IOException;
 import java.util.*;
 
+import com.common.mapreduce.ReducerUserModCommand;
 import com.google.common.collect.ImmutableMap;
-import com.aggregator.mapreduce.ReducerUserModCommand;
 import com.aggregator.useroperations.OperationHandler;
 import org.apache.hadoop.hbase.client.Delete;
 import org.apache.hadoop.hbase.client.HTable;

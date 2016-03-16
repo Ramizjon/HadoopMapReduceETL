@@ -96,8 +96,7 @@ public class Main extends Configured implements Tool {
         job.setMapperClass(type.getClass());
         job.setInputFormatClass(TextInputFormat.class);
 
-        //Schema schema = ReflectData.get().getSchema(MapperUserModCommand.class);
-        Schema schema = new Schema.Parser().parse(getClass().getResourceAsStream("/umcSchema.avsc"));
+        Schema schema = new Schema.Parser().parse(getClass().getResourceAsStream("/rumcSchema.avsc"));
         AvroParquetOutputFormat.<GenericRecord>setSchema(job, schema);
         job.setOutputFormatClass(AvroParquetOutputFormat.class);
 

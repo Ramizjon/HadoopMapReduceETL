@@ -10,7 +10,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
 import com.google.common.collect.ImmutableMap;
-import com.aggregator.mapreduce.ReducerUserModCommand;
 import org.junit.Test;
 
 import com.aggregator.domain.UserRepository;

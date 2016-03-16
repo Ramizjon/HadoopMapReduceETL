@@ -1,8 +1,8 @@
 package com.aggregator.domain;
 
-import java.io.IOException;
+import com.common.mapreduce.ReducerUserModCommand;
 
-import com.aggregator.mapreduce.ReducerUserModCommand;
+import java.io.IOException;
 
 public interface UserRepository {
 	public void addUser(ReducerUserModCommand user) throws IOException;

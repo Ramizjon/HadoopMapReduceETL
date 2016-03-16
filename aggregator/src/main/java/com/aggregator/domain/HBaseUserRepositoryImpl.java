@@ -4,7 +4,8 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
-import com.aggregator.mapreduce.ReducerUserModCommand;
+
+import com.common.mapreduce.ReducerUserModCommand;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.client.Delete;
