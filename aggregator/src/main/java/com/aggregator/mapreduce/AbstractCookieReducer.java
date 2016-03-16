@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 public abstract class AbstractCookieReducer extends
-        Reducer<Text, UserModContainer<MapperUserModCommand>, Void , GenericRecord> {
+        Reducer<Text, UserModContainer<MapperUserModCommand>, Void, GenericRecord> {
 
     private Map<String, OperationHandler> handlers = getHandlers();
     private List<Closeable> closeables = getCloseables();
@@ -36,10 +36,8 @@ public abstract class AbstractCookieReducer extends
     public void reduce(Text key, Iterable<UserModContainer<MapperUserModCommand>> values, Context context)
             throws IOException, InterruptedException {
 
-        List <MapperUserModCommand> userModList = new ArrayList<>();
+        List<MapperUserModCommand> userModList = new ArrayList<>();
         values.forEach(e -> userModList.add(e.getData()));
-
-        log.info("Reducer has received: {}", userModList.toString());
 
         userModList.stream()
                 .filter(p -> !p.getSegments().isEmpty())
@@ -49,7 +47,9 @@ public abstract class AbstractCookieReducer extends
                 .map(this::getSimpleEntry)
                 .forEach(e -> {
                     Map<String, String> map = new HashMap<>();
-                    e.getValue().forEach(p -> {map.put(p.getKey(),p.getValue());});
+                    e.getValue().forEach(p -> {
+                        map.put(p.getKey(), p.getValue());
+                    });
                     callHandlers(map, e.getKey(), key, context);
                 });
         cleanup(context);
@@ -68,22 +68,21 @@ public abstract class AbstractCookieReducer extends
     }
 
 
-    protected void callHandlers (Map<String, String> readyMap, String command, Text key, Context context) {
+    protected void callHandlers(Map<String, String> readyMap, String command, Text key, Context context) {
         ReducerUserModCommand rumc = new ReducerUserModCommand(key.toString(), command, readyMap);
-            try {
-                handlers.get(command).handle(rumc);
-                Schema schema = ReflectData.get().getSchema(ReducerUserModCommand.class);
-                GenericRecord record = new GenericData.Record(schema);
-                record.put("userId", rumc.getUserId());
-                record.put("command", rumc.getCommand());
-                record.put("segmentTimestamps", rumc.getSegmentTimestamps());
-                log.info("Reducer has written: {}", record.toString());
-                context.write(null, record);
-                context.getCounter(appName,reduceCounter).increment(1);
-            } catch (IOException|InterruptedException e) {
-                log.error("Exception occured. Arguments: {}, exception code: {}", key.toString(), e);
-                context.getCounter(appName, errorCounter).increment(1);
-            }
+        try {
+            handlers.get(command).handle(rumc);
+            Schema schema = ReflectData.get().getSchema(ReducerUserModCommand.class);
+            GenericRecord record = new GenericData.Record(schema);
+            record.put("userId", rumc.getUserId());
+            record.put("command", rumc.getCommand());
+            record.put("segmentTimestamps", rumc.getSegmentTimestamps());
+            context.write(null, record);
+            context.getCounter(appName, reduceCounter).increment(1);
+        } catch (IOException | InterruptedException e) {
+            log.error("Exception occured. Arguments: {}, exception code: {}", key.toString(), e);
+            context.getCounter(appName, errorCounter).increment(1);
+        }
     }
 
     @Override
@@ -96,5 +95,6 @@ public abstract class AbstractCookieReducer extends
     }
 
     protected abstract List<Closeable> getCloseables();
+
     protected abstract Map<String, OperationHandler> getHandlers();
 }

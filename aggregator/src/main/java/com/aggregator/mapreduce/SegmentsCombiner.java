@@ -5,14 +5,14 @@ import com.aggregator.utils.UserModContainer;
 import com.common.mapreduce.MapperUserModCommand;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.avro.Schema;
-import org.apache.avro.reflect.ReflectData;
 import org.apache.hadoop.hbase.util.Triple;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 
@@ -34,8 +34,6 @@ public class SegmentsCombiner extends
 
         List<MapperUserModCommand> userModList = new ArrayList<>();
         values.forEach(e -> userModList.add(e.getData()));
-
-        log.info("Combiner has received: {}", userModList);
 
         userModList.stream()
                 .filter(p -> !p.getSegments().isEmpty())
@@ -65,7 +63,6 @@ public class SegmentsCombiner extends
         UserModContainer<MapperUserModCommand> umc = new UserModContainer<>(new MapperUserModCommand(timestamp, key.toString(),
                 command, Lists.newArrayList(segmentsList)));
         try {
-            Schema schema = ReflectData.get().getSchema(MapperUserModCommand.class);
             context.write(key, umc);
             context.getCounter(appName, combinerCounter).increment(1);
         } catch (IOException | InterruptedException e) {
