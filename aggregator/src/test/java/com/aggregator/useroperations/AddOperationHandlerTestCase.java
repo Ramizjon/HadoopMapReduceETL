@@ -9,6 +9,7 @@ import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
+import com.common.mapreduce.ReducerUserModCommand;
 import com.google.common.collect.ImmutableMap;
 import org.junit.Test;
 

@@ -2,19 +2,17 @@ use segments;
 DROP TABLE temp_users;
 
 CREATE EXTERNAL TABLE IF NOT EXISTS temp_users(
-    timestamp string,
-    userId string,
-    command string,
-    segments array<string>
+     userId string,
+     command string,
+     segmentTimestamps map<string,string>
 )
 STORED AS PARQUET
 LOCATION "${inputDir}";
 
 CREATE TABLE IF NOT EXISTS user_operations_raw (
-  timestamp string,
-  userId string,
-  command string,
-  segments array<string>
+   userId string,
+   command string,
+   segmentTimestamps map<string,string>
 )
 PARTITIONED BY (
   year string,

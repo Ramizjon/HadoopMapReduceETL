@@ -15,6 +15,7 @@ import java.util.*;
 
 import com.aggregator.utils.UserModContainer;
 import com.common.mapreduce.MapperUserModCommand;
+import com.common.mapreduce.ReducerUserModCommand;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Counter;
 import org.apache.hadoop.mapreduce.Mapper;
@@ -43,7 +44,6 @@ public class AbstractCookieReducerTestCase {
     
     @Test
     public void testAbstractCookieReducer() throws IOException, InterruptedException {
-        LinkedList lasd = new LinkedList();
         OperationHandler handler = mock(OperationHandler.class);
         List<Closeable> closeables = Arrays.asList(mock (Closeable.class));
         String timestampValue = Instant.EPOCH.toString();
@@ -52,19 +52,18 @@ public class AbstractCookieReducerTestCase {
         String timeStamp = Instant.EPOCH.toString();
         Map<String, OperationHandler> handlers = ImmutableMap.of(OperationHandler.DELETE_OPERATION, handler,
                 OperationHandler.ADD_OPERATION, handler);
-        ArrayList<String> umc1Segments = new ArrayList<>(Arrays.asList("iphone", "macbook", "magic mouse"));
-        Collections.reverse(umc1Segments);
-        ArrayList<String> umc2Segments = new ArrayList<>(Arrays.asList("dakine bag", "dakine case", "dakine gloves"));
-        Collections.reverse(umc2Segments);
-        ArrayList<String> umc3Segments = new ArrayList<>(Arrays.asList("page closed", "page opened"));
-        Collections.reverse(umc3Segments);
-        ArrayList<String> umc4Segments = new ArrayList<>(Arrays.asList("link highlighted", "link copied"));
-        Collections.reverse(umc4Segments);
-        UserModContainer<MapperUserModCommand> umc = new UserModContainer<>(new MapperUserModCommand(timeStamp,"11",OperationHandler.ADD_OPERATION,umc1Segments));
-        UserModContainer<MapperUserModCommand> umc1 = new UserModContainer<>(new MapperUserModCommand(timeStamp,"11",OperationHandler.DELETE_OPERATION, umc2Segments));
-        UserModContainer<MapperUserModCommand> umc3 = new UserModContainer<>(new MapperUserModCommand(timeStamp,"11",OperationHandler.DELETE_OPERATION, umc3Segments));
-        UserModContainer<MapperUserModCommand> umc4 = new UserModContainer<>(new MapperUserModCommand(timeStamp,"11",OperationHandler.ADD_OPERATION, umc4Segments));
-        Iterable<UserModContainer<MapperUserModCommand>> values = Arrays.asList(umc,umc1,umc3,umc4);
+        Map<String, String> umc1Segments = ImmutableMap.of("iphone", timestampValue, "macbook", timestampValue,
+                "magic mouse", timestampValue);
+        Map<String, String> umc2Segments = ImmutableMap.of("dakine bag", timestampValue, "dakine case", timestampValue,
+                "dakine gloves", timestampValue);
+        Map<String, String> umc3Segments = ImmutableMap.of("page closed", timestampValue, "page opened", timestampValue);
+        Map<String, String> umc4Segments = ImmutableMap.of("link highlighted", timestampValue, "link copied", timestampValue);
+
+        UserModContainer<ReducerUserModCommand> umc = new UserModContainer<>(new ReducerUserModCommand("11",OperationHandler.ADD_OPERATION,umc1Segments));
+        UserModContainer<ReducerUserModCommand> umc1 = new UserModContainer<>(new ReducerUserModCommand("11",OperationHandler.DELETE_OPERATION, umc2Segments));
+        UserModContainer<ReducerUserModCommand> umc3 = new UserModContainer<>(new ReducerUserModCommand("11",OperationHandler.DELETE_OPERATION, umc3Segments));
+        UserModContainer<ReducerUserModCommand> umc4 = new UserModContainer<>(new ReducerUserModCommand("11",OperationHandler.ADD_OPERATION, umc4Segments));
+        Iterable<UserModContainer<ReducerUserModCommand>> values = Arrays.asList(umc,umc1,umc3,umc4);
         Context context = mock(Context.class);
         
         when(context.getCounter("aggregator", "reduce_counter")).thenReturn(mapRedCounter);
@@ -76,12 +75,12 @@ public class AbstractCookieReducerTestCase {
         verify(mapRedCounter, times(2)).increment(1);
 
         //aggregated items
-        Map<String, String> map11 = ImmutableMap.of("magic mouse", timestampValue, "link copied", timestampValue,
-                "macbook", timestampValue, "iphone", timestampValue, "link highlighted", timestampValue);
+        Map<String, String> map11 = ImmutableMap.of("iphone", timestampValue, "macbook", timestampValue,
+                "magic mouse", timestampValue, "link highlighted", timestampValue, "link copied", timestampValue);
         ReducerUserModCommand expectedUmc1 = new ReducerUserModCommand("11", OperationHandler.ADD_OPERATION, map11);
 
-        Map<String, String> map22 = ImmutableMap.of("page closed", timestampValue, "dakine bag", timestampValue,
-                "page opened", timestampValue, "dakine case", timestampValue, "dakine gloves", timestampValue);
+        Map<String, String> map22 = ImmutableMap.of("dakine bag", timestampValue, "dakine case", timestampValue,
+                "dakine gloves", timestampValue, "page closed", timestampValue, "page opened", timestampValue);
         ReducerUserModCommand expectedUmc2 = new ReducerUserModCommand("11", OperationHandler.DELETE_OPERATION, map22);
 
         List<ReducerUserModCommand> expectedUmcList = new LinkedList<>();

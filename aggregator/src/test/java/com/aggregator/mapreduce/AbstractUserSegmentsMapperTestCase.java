@@ -3,6 +3,8 @@ package com.aggregator.mapreduce;
 import com.aggregator.useroperations.OperationHandler;
 import com.aggregator.utils.UserModContainer;
 import com.common.mapreduce.MapperUserModCommand;
+import com.common.mapreduce.ReducerUserModCommand;
+import com.google.common.collect.ImmutableMap;
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.GenericData.Array;
@@ -15,9 +17,7 @@ import org.junit.Test;
 
 import java.io.Closeable;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 import static org.mockito.Mockito.*;
 
@@ -28,24 +28,25 @@ public class AbstractUserSegmentsMapperTestCase {
     }
 
     @Test
-    public void testMapperWithValidArgs() throws IOException, InterruptedException{
+    public void testMapper() throws IOException, InterruptedException{
         //prepare stage
         OperationHandler handler = mock(OperationHandler.class);
         Context context = mock(Context.class);
         Counter mapRedCounter = mock(Counter.class);
         String timestamp = "2011-12-03T10:15:30+01:00";
 
-        Schema familyArraySchema = Schema.createArray(ReflectData.get().getSchema(String.class));
-        Array<String> segmentsArray = new Array<String>(familyArraySchema, Arrays.asList("opened_browser", "closed_browser"));
-        MapperUserModCommand userModCommand = new MapperUserModCommand(timestamp, "15", "delete",
-                new ArrayList<>(Arrays.asList("opened_browser", "closed_browser")));
+//      Schema familyArraySchema = Schema.createArray(ReflectData.get().getSchema(String.class));
+//      Array<String> segmentsArray = new Array<String>(familyArraySchema, Arrays.asList("opened_browser", "closed_browser"));
+        HashMap<String, String> segmentTimestampsMap = new HashMap<>(ImmutableMap.of("opened_browser", timestamp, "closed_browser", timestamp));
 
-        Schema schema = ReflectData.get().getSchema(MapperUserModCommand.class);
+        ReducerUserModCommand userModCommand = new ReducerUserModCommand("15", "delete",
+                ImmutableMap.of("opened_browser", timestamp, "closed_browser", timestamp));
+
+        Schema schema = new Schema.Parser().parse(getClass().getResourceAsStream("/rumcSchema.avsc"));
         GenericRecord genericRecord = new GenericData.Record(schema);
-        genericRecord.put("timestamp", userModCommand.getTimestamp());
-        genericRecord.put("userId", userModCommand.getUserId());
+        genericRecord.put("userid", userModCommand.getUserId());
         genericRecord.put("command", userModCommand.getCommand());
-        genericRecord.put("segments", segmentsArray);
+        genericRecord.put("segmenttimestamps", segmentTimestampsMap);
 
         AbstractUserSegmentsMapper testMapper = createInstance();
         when(context.getCounter("aggregator", "mapcounter")).thenReturn(mapRedCounter);
@@ -56,7 +57,7 @@ public class AbstractUserSegmentsMapperTestCase {
         //asserts stage
         verify(mapRedCounter, times(1)).increment(1);
         verify(context, times(1)).write(new Text(userModCommand.getUserId()),
-                new UserModContainer<MapperUserModCommand>(userModCommand));
+                new UserModContainer<ReducerUserModCommand>(userModCommand));
     }
     
 
