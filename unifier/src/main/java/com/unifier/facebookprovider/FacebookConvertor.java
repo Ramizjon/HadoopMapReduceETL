@@ -1,7 +1,6 @@
 package com.unifier.facebookprovider;
 
 import com.amazonaws.services.cloudfront.model.InvalidArgumentException;
-import com.common.mapreduce.MapperUserModCommand;
 import com.common.mapreduce.ReducerUserModCommand;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.hadoop.io.LongWritable;

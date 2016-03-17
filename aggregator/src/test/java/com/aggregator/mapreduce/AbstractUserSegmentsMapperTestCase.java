@@ -2,20 +2,16 @@ package com.aggregator.mapreduce;
 
 import com.aggregator.useroperations.OperationHandler;
 import com.aggregator.utils.UserModContainer;
-import com.common.mapreduce.MapperUserModCommand;
 import com.common.mapreduce.ReducerUserModCommand;
 import com.google.common.collect.ImmutableMap;
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericData;
-import org.apache.avro.generic.GenericData.Array;
 import org.apache.avro.generic.GenericRecord;
-import org.apache.avro.reflect.ReflectData;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Counter;
 import org.apache.hadoop.mapreduce.Mapper.Context;
 import org.junit.Test;
 
-import java.io.Closeable;
 import java.io.IOException;
 import java.util.*;
 

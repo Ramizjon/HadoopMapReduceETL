@@ -1,7 +1,6 @@
 package com.unifier;
 
 import com.codepoetics.protonpack.StreamUtils;
-import com.common.mapreduce.MapperUserModCommand;
 import com.google.protobuf.TextFormat;
 import com.unifier.facebookprovider.FacebookProvider;
 import com.unifier.nexusprovider.NexusProvider;
@@ -13,7 +12,6 @@ import joptsimple.OptionSpec;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericRecord;
-import org.apache.avro.reflect.ReflectData;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.Path;

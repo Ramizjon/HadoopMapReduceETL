@@ -14,11 +14,9 @@ import java.time.Instant;
 import java.util.*;
 
 import com.aggregator.utils.UserModContainer;
-import com.common.mapreduce.MapperUserModCommand;
 import com.common.mapreduce.ReducerUserModCommand;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Counter;
-import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer.Context;
 import org.junit.Test;
 

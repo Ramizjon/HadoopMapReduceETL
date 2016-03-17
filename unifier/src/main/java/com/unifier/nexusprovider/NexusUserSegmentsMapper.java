@@ -2,19 +2,16 @@ package com.unifier.nexusprovider;
 
 import java.io.IOException;
 
-import com.common.mapreduce.MapperUserModCommand;
 import com.common.mapreduce.ReducerUserModCommand;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.GenericRecord;
-import org.apache.avro.reflect.ReflectData;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 
 import com.amazonaws.services.cloudfront.model.InvalidArgumentException;
-import utils.Convertor;
 
 @Slf4j
 public abstract class NexusUserSegmentsMapper extends

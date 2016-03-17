@@ -1,11 +1,9 @@
 package com.unifier.nexusprovider;
 
 import com.amazonaws.services.cloudfront.model.InvalidArgumentException;
-import com.common.mapreduce.MapperUserModCommand;
 import com.common.mapreduce.ReducerUserModCommand;
 import utils.Convertor;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.stream.Collectors;
