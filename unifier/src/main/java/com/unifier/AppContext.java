@@ -1,9 +1,12 @@
 package com.unifier;
 
+import com.common.mapreduce.ReducerUserModCommand;
 import com.unifier.facebookprovider.FacebookConvertor;
-import com.unifier.facebookprovider.FacebookUserSegmentsMapper;
 import com.unifier.nexusprovider.NexusConvertor;
-import com.unifier.nexusprovider.NexusUserSegmentsMapper;
+import utils.Convertor;
+
+import java.util.AbstractMap;
+import java.util.List;
 
 
 /**
@@ -19,11 +22,16 @@ public class AppContext {
      * @author Ramizjon
      *
      */
-    public static class NexusUserSegmentsMapperImpl extends NexusUserSegmentsMapper {
+    public static class NexusUserSegmentsMapperImpl extends UnifierUserSegmentsMapper {
 
         @Override
-        protected NexusConvertor getConvertor() {
+        protected Convertor<AbstractMap.SimpleEntry<String,Context>, List<ReducerUserModCommand>> getConvertor() {
             return new NexusConvertor();
+        }
+
+        @Override
+        protected String getProviderTypeName() {
+            return "nexus";
         }
     }
 
@@ -33,11 +41,16 @@ public class AppContext {
      * @author Ramizjon
      *
      */
-    public static class FacebookUserSegmentsMapperImpl extends FacebookUserSegmentsMapper {
+    public static class FacebookUserSegmentsMapperImpl extends UnifierUserSegmentsMapper {
 
         @Override
         protected FacebookConvertor getConvertor() {
             return new FacebookConvertor();
+        }
+
+        @Override
+        protected String getProviderTypeName() {
+            return "facebook";
         }
     }
 

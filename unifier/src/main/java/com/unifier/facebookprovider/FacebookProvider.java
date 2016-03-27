@@ -1,7 +1,7 @@
 package com.unifier.facebookprovider;
 
 import com.unifier.AppContext;
-import com.unifier.utils.Provider;
+import com.unifier.Provider;
 import lombok.Data;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.hadoop.mapreduce.Mapper;

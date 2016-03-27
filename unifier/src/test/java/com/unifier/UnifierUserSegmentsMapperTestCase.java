@@ -1,7 +1,8 @@
-package com.unifier.facebookprovider;
+package com.unifier;
 
 import com.common.mapreduce.ReducerUserModCommand;
 import com.google.common.collect.ImmutableMap;
+import com.unifier.facebookprovider.FacebookConvertor;
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.GenericRecord;
@@ -17,15 +18,21 @@ import java.util.HashMap;
 import java.util.List;
 
 import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
+public class UnifierUserSegmentsMapperTestCase {
 
-public class FacebookUserSegmentsMapperTestCase {
-
-    private FacebookUserSegmentsMapper createInstance(FacebookConvertor convertor) {
-        return new FacebookUserSegmentsMapper() {
+    private UnifierUserSegmentsMapper createInstance(FacebookConvertor convertor) {
+        return new UnifierUserSegmentsMapper() {
             @Override
             protected FacebookConvertor getConvertor() {
                 return convertor;
+            }
+
+            @Override
+            protected String getProviderTypeName() {
+                return "unifier";
             }
         };
     }
@@ -59,10 +66,10 @@ public class FacebookUserSegmentsMapperTestCase {
         List<ReducerUserModCommand> cmdList = Arrays.asList(userModCommand, userModCommand1);
 
         String input = "11/link_clicked,link_hovered/page_closed,page_opened";
-        FacebookUserSegmentsMapper testMapper = createInstance(convertor);
-        when(context.getCounter("facebook_provider_reader", "facebook_map_counter")).thenReturn(mapRedCounter);
+        UnifierUserSegmentsMapper testMapper = createInstance(convertor);
+        when(context.getCounter("unifier.provider_reader", "unifier.map_counter")).thenReturn(mapRedCounter);
         when(convertor.convert(new AbstractMap.SimpleEntry<String, Mapper<org.apache.hadoop.io.LongWritable, org.apache.hadoop.io.Text, java.lang.Void, org.apache.avro.generic.GenericRecord>.Context>(
-        input, context))).thenReturn(cmdList);
+                input, context))).thenReturn(cmdList);
 
         //act stage
         testMapper.map(null, new Text(input), context);
@@ -74,5 +81,4 @@ public class FacebookUserSegmentsMapperTestCase {
 
     }
 }
-
 

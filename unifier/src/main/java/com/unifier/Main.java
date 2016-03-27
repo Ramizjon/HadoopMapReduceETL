@@ -4,7 +4,6 @@ import com.codepoetics.protonpack.StreamUtils;
 import com.google.protobuf.TextFormat;
 import com.unifier.facebookprovider.FacebookProvider;
 import com.unifier.nexusprovider.NexusProvider;
-import com.unifier.utils.Provider;
 import joptsimple.ArgumentAcceptingOptionSpec;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;

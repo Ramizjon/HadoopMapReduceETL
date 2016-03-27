@@ -64,7 +64,7 @@ public class AbstractCookieReducerTestCase {
         Iterable<UserModContainer<ReducerUserModCommand>> values = Arrays.asList(umc,umc1,umc3,umc4);
         Context context = mock(Context.class);
         
-        when(context.getCounter("aggregator", "reduce_counter")).thenReturn(mapRedCounter);
+        when(context.getCounter("aggregator", "reducer.counter")).thenReturn(mapRedCounter);
         
         AbstractCookieReducer reducer = createInstance(handlers,closeables);
         reducer.reduce(new Text("11"), values, context);

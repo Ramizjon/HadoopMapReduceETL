@@ -1,4 +1,4 @@
-package com.unifier.utils;
+package com.unifier;
 
 import org.apache.avro.generic.GenericRecord;
 import org.apache.hadoop.mapreduce.Mapper;

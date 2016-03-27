@@ -20,15 +20,10 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Slf4j
-public abstract class AbstractCookieReducer extends
-        Reducer<Text, UserModContainer<ReducerUserModCommand>, Void, GenericRecord> {
+public abstract class AbstractCookieReducer extends AbstractReducer <Void, GenericRecord> {
 
     private Map<String, OperationHandler> handlers = getHandlers();
     private List<Closeable> closeables = getCloseables();
-
-    private static final String reduceCounter = "reduce_counter";
-    private static final String errorCounter = "reduce_error_counter";
-    private static final String appName = "aggregator";
 
     @Override
     protected void cleanup(Context context) throws IOException,
@@ -39,44 +34,7 @@ public abstract class AbstractCookieReducer extends
         log.debug("Clean up completed");
     }
 
-    @Override
-    public void reduce(Text key, Iterable<UserModContainer<ReducerUserModCommand>> values, Context context)
-            throws IOException, InterruptedException {
-
-        List<ReducerUserModCommand> userModList = new ArrayList<>();
-        values.forEach(e -> userModList.add(e.getData()));
-
-        userModList.stream()
-                .filter(p -> !p.getSegmentTimestamps().isEmpty())
-                .collect(Collectors.groupingBy(ReducerUserModCommand::getCommand))
-                .entrySet()
-                .stream()
-                .map(this::getSimpleEntry)
-                .forEach(e -> {
-                    Map<String, String> map = new HashMap<>();
-                    e.getValue().forEach(p -> {
-                        map.put(p.getKey(), p.getValue());
-                    });
-                    writeToContext(map, e.getKey(), key, context);
-                });
-
-        cleanup(context);
-    }
-
-    private SimpleEntry<String, List<SimpleEntry<String, String>>> getSimpleEntry(Map.Entry<String, List<ReducerUserModCommand>> e) {
-        List<SimpleEntry<String, String>> readyMap = e.getValue()
-                .stream()
-                .flatMap(reducerUserModCommand -> {
-                    return reducerUserModCommand.getSegmentTimestamps()
-                            .entrySet()
-                            .stream().distinct()
-                            .map(s -> new SimpleEntry<>(s.getKey(), s.getValue()));
-                }).collect(Collectors.toList());
-
-        return new SimpleEntry<>(e.getKey(), readyMap);
-    }
-
-    private void writeToContext(Map<String, String> readyMap, String command, Text key, Context context) {
+    protected void writeToContext(Map<String, String> readyMap, String command, Text key, Context context) {
         ReducerUserModCommand rumc = new ReducerUserModCommand(key.toString(), command, readyMap);
         try {
             handlers.get(command).handle(rumc);
@@ -96,4 +54,10 @@ public abstract class AbstractCookieReducer extends
     protected abstract List<Closeable> getCloseables();
 
     protected abstract Map<String, OperationHandler> getHandlers();
+
+    @Override
+    protected String getReducerType() {
+        return "reducer";
+    }
+
 }
