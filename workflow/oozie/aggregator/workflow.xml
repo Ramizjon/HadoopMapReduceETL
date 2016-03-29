@@ -1,0 +1,51 @@
+<workflow-app xmlns="uri:oozie:workflow:0.1" name="${celosWorkflowName}">
+    <start to="mr-aggregator" />
+    <action name="mr-aggregator">
+        <java>
+            <job-tracker>quickstart.cloudera:8032</job-tracker>
+            <name-node>hdfs://quickstart.cloudera:8020</name-node>
+            <prepare>
+                <delete path="${aggregatorOutputPath}"/>
+            </prepare>
+            <main-class>com.aggregator.Main</main-class>
+            <arg>-i</arg>
+            <arg>${aggregatorInputPath}</arg>
+            <arg>-o</arg>
+            <arg>${aggregatorOutputPath}</arg>
+        </java>
+        <ok to="fsDeleteAction" />
+        <error to="fail" />
+    </action>
+
+    <action name="fsDeleteAction">
+        <fs>
+            <delete path="hdfs://quickstart.cloudera:8020/${aggregatorOutputPath}/_SUCCESS"/>
+            <delete path="hdfs://quickstart.cloudera:8020/${aggregatorOutputPath}/_common_metadata"/>
+            <delete path="hdfs://quickstart.cloudera:8020/${aggregatorOutputPath}/_metadata"/>
+        </fs>
+        <ok to="hiveaction-output"/>
+        <error to="fail"/>
+    </action>
+
+    <action name="hiveaction-output">
+        <hive xmlns="uri:oozie:hive-action:0.2">
+            <job-tracker>quickstart.cloudera:8032</job-tracker>
+            <name-node>hdfs://quickstart.cloudera:8020</name-node>
+            <job-xml>${hive_defaults}</job-xml>
+            <script>output_hive_script.sql</script>
+            <param>outputDir=${aggregatorOutputPath}</param>
+            <param>year=${year}</param>
+            <param>month=${month}</param>
+            <param>day=${day}</param>
+            <param>hour=${hour}</param>
+        </hive>
+        <ok to="end"/>
+        <error to="fail"/>
+    </action>
+
+    <kill name="fail">
+        <message>Java app failed, error
+            message[${wf:errorMessage(wf:lastErrorNode())}]</message>
+    </kill>
+    <end name="end" />
+</workflow-app>

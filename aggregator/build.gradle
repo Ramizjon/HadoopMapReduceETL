@@ -1,0 +1,18 @@
+
+    ext {
+        mainClass = "com.aggregator.Main"
+    }
+
+    jar {
+        manifest {
+            attributes 'Implementation-Title': 'aggregator fatJar',
+                    'Implementation-Version': version,
+                    'Main-Class': "${mainClass}"
+        }
+        baseName = project.name + '-all-' + "${cdhVersion}"
+        from { (configurations.compile-configurations.provided).collect { it.isDirectory() ? it : zipTree(it)}}
+    }
+
+    dependencies {
+        compile project(':common')
+    }
