@@ -1,0 +1,23 @@
+<workflow-app xmlns="uri:oozie:workflow:0.1" name="${celosWorkflowName}">
+    <start to="hiveaction-output" />
+
+    <action name="hiveaction-output">
+        <hive xmlns="uri:oozie:hive-action:0.2">
+            <job-tracker>quickstart.cloudera:8032</job-tracker>
+            <name-node>hdfs://quickstart.cloudera:8020</name-node>
+            <job-xml>${hive_defaults}</job-xml>
+            <script>report_script.sql</script>
+            <param>year=${year}</param>
+            <param>month=${month}</param>
+            <param>day=${day}</param>
+        </hive>
+        <ok to="end"/>
+        <error to="fail"/>
+    </action>
+
+    <kill name="fail">
+        <message>Java app failed, error
+            message[${wf:errorMessage(wf:lastErrorNode())}]</message>
+    </kill>
+    <end name="end" />
+</workflow-app>
