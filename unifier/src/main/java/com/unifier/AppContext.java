@@ -42,7 +42,6 @@ public class AppContext {
      *
      */
     public static class FacebookUserSegmentsMapperImpl extends UnifierUserSegmentsMapper {
-
         @Override
         protected FacebookConvertor getConvertor() {
             return new FacebookConvertor();

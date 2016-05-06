@@ -48,7 +48,7 @@ public class FacebookConvertor implements Convertor<SimpleEntry<String, Mapper<L
                             e -> e,
                             e -> timestamp
                     ));
-            umcList.add(new ReducerUserModCommand(elements[0], "add", segmentsToDeleteMap));
+            umcList.add(new ReducerUserModCommand(elements[0], "delete", segmentsToDeleteMap));
         }
         return umcList;
     }

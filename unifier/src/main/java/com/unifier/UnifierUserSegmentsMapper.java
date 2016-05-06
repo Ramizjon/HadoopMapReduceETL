@@ -43,7 +43,6 @@ public abstract class UnifierUserSegmentsMapper extends
                     throw new RuntimeException(e1);
                 }
             });
-
             context.getCounter(groupName, mapCounter).increment(1);
         } catch (InvalidArgumentException e) {
             log.error("Exception occured. Arguments: {}, exception code: {}", value.toString(), e);
