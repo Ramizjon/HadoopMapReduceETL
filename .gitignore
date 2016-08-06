@@ -17,6 +17,8 @@ build
 **/gradle-wrapper.properties
 gradlew.bat
 
+!.travis.yml
+
  #Eclipse Core
  .project
 /bin/
